@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080307">
+<title>Poppy Playtime | پرونده کارخانه</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700;800;900&display=swap');
+:root{--red:#ff174d;--red2:#ff4b6e;--dark:#070307;--panel:#12090d;--panel2:#1a0b11;--white:#fff;--muted:#c4aeb5;--line:#ff315522;--bg:#050205;--card-bg:linear-gradient(145deg,#160a10dd,#090509ee)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--white);font-family:Vazirmatn,Inter,Arial,sans-serif;overflow-x:hidden;transition:background .3s,color .3s}
+body.light-mode{--dark:#f5f0f2;--panel:#ffffff;--panel2:#fdf5f7;--white:#1a0b11;--muted:#5a4a50;--line:#ff315544;--bg:#f5f0f2;--card-bg:linear-gradient(145deg,#ffffffdd,#fdf5f7ee)}
+body.perf-mode canvas,body.perf-mode .grid,body.perf-mode .noise{display:none!important}
+body.perf-mode .char-img:before{display:none}
+body.perf-mode .hero h1{animation:none!important}
+body.perf-mode *{animation-duration:0s!important;transition-duration:.15s!important}
+body.perf-mode .char:hover .char-img img{transform:none}
+button{font:inherit;cursor:pointer;color:inherit}
+#app{min-height:100vh;position:relative;isolation:isolate}
+#app:before{content:"";position:fixed;inset:0;z-index:-4;background:radial-gradient(circle at 12% 12%,#6e071e44,transparent 27%),radial-gradient(circle at 90% 80%,#c30b3540,transparent 29%),linear-gradient(135deg,#030203,#0e0509 50%,#040204)}
+body.light-mode #app:before{background:radial-gradient(circle at 12% 12%,#6e071e22,transparent 27%),radial-gradient(circle at 90% 80%,#c30b3522,transparent 29%),linear-gradient(135deg,#f9f4f6,#f0e6ea 50%,#f9f4f6)}
+canvas{position:fixed;inset:0;width:100%;height:100%;z-index:-3;opacity:.78}
+.grid{position:fixed;inset:0;z-index:-2;opacity:.13;pointer-events:none;background-image:linear-gradient(#ff174d22 1px,transparent 1px),linear-gradient(90deg,#ff174d22 1px,transparent 1px);background-size:55px 55px;mask-image:linear-gradient(to bottom,black,transparent)}
+.noise{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+#progressBar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--red),var(--red2));z-index:9999;width:0%;transition:width .1s;box-shadow:0 0 15px var(--red)}
+.topbar{position:fixed;top:16px;left:16px;right:16px;z-index:40;min-height:58px;display:flex;align-items:center;justify-content:space-between;padding:8px 12px 8px 16px;border:1px solid #ff335a33;background:#0b0509b8;border-radius:18px;backdrop-filter:blur(18px);box-shadow:0 10px 45px #0008;gap:8px}
+body.light-mode .topbar{background:#ffffffee}
+.brand{font-weight:900;letter-spacing:2px;font-size:13px;font-family:'Oswald',Vazirmatn,sans-serif;white-space:nowrap}
+.brand span{color:#ff4c70}
+.actions{display:flex;gap:6px;flex-wrap:nowrap}
+.lang,.menuBtn,.themeBtn,.searchBtn,.perfBtn,.musicBtn{border:1px solid #ff527055;background:#ff174d0c;border-radius:12px;padding:9px 12px;transition:.2s;font-family:'Oswald',Vazirmatn,sans-serif;white-space:nowrap;font-size:13px;position:relative}
+.lang:hover,.menuBtn:hover,.themeBtn:hover,.searchBtn:hover,.perfBtn:hover,.musicBtn:hover{background:#ff174d22;box-shadow:0 0 25px #ff174d22}
+.perfBtn.active,.musicBtn.active{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border-color:transparent}
+.searchBtn.hidden{display:none}
+.searchPanel{position:fixed;top:88px;left:16px;right:16px;z-index:60;display:none}
+.searchPanel.show{display:block;animation:slideDown .25s}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.searchInput{width:100%;padding:14px 18px;background:var(--panel);border:1px solid var(--line);border-radius:14px;color:var(--white);font-family:inherit;font-size:14px;box-shadow:0 15px 50px #0009}
+.searchInput:focus{outline:none;border-color:#ff496c88}
+.searchResults{margin-top:8px;max-height:60vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:0 15px 50px #0009;display:none}
+.searchResults.show{display:block}
+.searchResults .resultItem{padding:12px 14px;border-radius:10px;cursor:pointer;font-size:13px;line-height:1.7;color:var(--muted);border-bottom:1px solid var(--line)}
+.searchResults .resultItem:last-child{border-bottom:none}
+.searchResults .resultItem:hover{background:#ff174d22;color:#fff}
+.searchResults .resultItem strong{color:var(--red2);display:block;font-size:13px;margin-bottom:4px;font-family:'Oswald',Vazirmatn,sans-serif}
+.searchResults .empty{text-align:center;padding:20px;color:var(--muted);font-size:13px}
+#toastBox{position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none;width:min(400px,calc(100vw - 32px))}
+.toast{padding:14px 20px;background:linear-gradient(135deg,#2a0a13,#a80b36);border:1px solid #ff4b6e88;border-radius:14px;color:#fff;font-size:13px;line-height:1.7;box-shadow:0 15px 50px #0008;animation:toastIn .35s cubic-bezier(.34,1.56,.64,1);pointer-events:auto;text-align:center}
+.toast.error{background:linear-gradient(135deg,#3a0505,#8a0b0b);border-color:#ff4444aa}
+.toast.success{background:linear-gradient(135deg,#0a3a1a,#1b8e5b);border-color:#4bff88aa}
+@keyframes toastIn{from{opacity:0;transform:translateY(-30px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+.announcementToast{position:relative;overflow:hidden;background:linear-gradient(135deg,#18050d,#ff174d,#ff4b6e);border:1px solid #ffb0c088;border-radius:16px;padding:13px 18px;color:#fff;font-size:13px;font-weight:800;line-height:1.8;box-shadow:0 18px 55px #ff174d55,0 0 25px #ff174d33;animation:announcementDrop .8s cubic-bezier(.16,1,.3,1),announcementGlow 2.4s ease-in-out infinite alternate;text-align:center}
+.announcementToast:before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,#ffffff25 45%,transparent 70%);transform:translateX(-120%);animation:announcementShine 2.8s ease-in-out .35s infinite}
+.announcementToast:after{content:"";position:absolute;top:-35px;left:50%;width:90px;height:90px;transform:translateX(-50%);background:#fff4;border-radius:50%;filter:blur(22px);pointer-events:none}
+@keyframes announcementDrop{0%{opacity:0;transform:translateY(-120px) scale(.82) rotateX(-18deg)}55%{opacity:1;transform:translateY(10px) scale(1.02) rotateX(0)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes announcementGlow{from{box-shadow:0 18px 55px #ff174d55,0 0 18px #ff174d22}to{box-shadow:0 22px 70px #ff174d88,0 0 34px #ff4b6e55}}
+@keyframes announcementShine{0%,20%{transform:translateX(-120%)}55%,100%{transform:translateX(120%)}}
+.musicPanel{position:fixed;top:88px;left:16px;z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 15px 50px #0009;display:none;width:260px}
+.musicPanel.show{display:block;animation:slideDown .25s}
+.musicPanel h4{margin:0 0 10px;font-size:13px;color:var(--red2);font-family:'Oswald',Vazirmatn,sans-serif}
+.musicPanel input[type=range]{width:100%;accent-color:var(--red)}
+.musicPanel .musicRow{display:flex;gap:8px;margin-top:8px}
+.musicPanel .musicRow button{flex:1;padding:8px;background:#ff174d22;border:1px solid #ff496c88;border-radius:8px;color:#ff6a88;font-size:12px;font-family:'Oswald',Vazirmatn,sans-serif}
+.musicPanel .musicRow button:hover{background:#ff174d44;color:#fff}
+.screen{min-height:100vh;padding:105px 6vw 65px;display:none;align-items:center;justify-content:center;animation:screenIn .4s cubic-bezier(.2,.8,.2,1)}
+.screen.active{display:flex}
+@keyframes screenIn{from{opacity:0;transform:translateY(15px) scale(.99)}to{opacity:1;transform:none}}
+.hero{text-align:center;max-width:1050px}
+.kicker{font-size:12px;letter-spacing:5px;color:#ff6b88;margin-bottom:20px;text-transform:uppercase;font-family:'Oswald',sans-serif}
+.hero h1{font-size:clamp(48px,10vw,150px);line-height:.95;margin:0;font-weight:900;letter-spacing:1px;padding:0 10px;font-family:'Cinzel Decorative',serif;background:linear-gradient(180deg,#fff,#ffe9ee 33%,#ff4c71 70%,#a9072e);-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 0 30px #ff174d66)}
+body:not(.light-mode):not(.perf-mode) .hero h1{animation:flicker 6s infinite}
+@keyframes flicker{0%,19%,21%,23%,25%,54%,56%,100%{opacity:1}20%,24%,55%{opacity:.85}}
+.hero p{color:var(--muted);line-height:2;font-size:clamp(15px,2vw,19px);max-width:780px;margin:32px auto}
+.cta{position:relative;overflow:hidden;border:1px solid #ff668355;border-radius:15px;padding:15px 42px;background:linear-gradient(135deg,#2a0a13,#a80b36);box-shadow:0 0 35px #ff174d2e,inset 0 0 25px #ffb4c01a;transition:.25s;font-weight:800;font-family:'Oswald',Vazirmatn,sans-serif;letter-spacing:1px}
+.cta:before{content:"";position:absolute;inset:-80%;background:linear-gradient(90deg,transparent,#fff5,transparent);transform:translateX(-70%) rotate(15deg);animation:shine 3.4s infinite}
+@keyframes shine{55%,100%{transform:translateX(70%) rotate(15deg)}}
+.cta:hover{transform:translateY(-4px);box-shadow:0 0 55px #ff174d88}
+.section{width:min(1250px,100%)}
+.heading{text-align:center;margin-bottom:34px}
+.heading h2{font-size:clamp(31px,5vw,56px);margin:0 0 7px;font-family:'Oswald',Vazirmatn,sans-serif;font-weight:700;letter-spacing:1px}
+.heading p{color:var(--muted);margin:0}
+.navgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:24px}
+.navcard{border:1px solid #ff31552c;background:linear-gradient(145deg,#170910,#0c0609);padding:15px 10px;border-radius:15px;text-align:center;transition:.25s;min-height:74px}
+body.light-mode .navcard{background:linear-gradient(145deg,#fff,#fdf5f7)}
+.navcard:hover{transform:translateY(-4px);border-color:#ff496c88;box-shadow:0 12px 35px #ff174d18}
+.navcard strong{display:block;font-family:'Oswald',Vazirmatn,sans-serif}
+.navcard small{color:#b28f98}
+.content{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.card{background:var(--card-bg);border:1px solid #ff315526;border-radius:24px;padding:24px;box-shadow:0 18px 65px #0009;position:relative;overflow:hidden}
+.card:after{content:"";position:absolute;width:170px;height:170px;right:-100px;bottom:-100px;border-radius:50%;background:#ff174d16;filter:blur(15px)}
+.card h3{margin:0 0 12px;font-size:25px;font-family:'Oswald',Vazirmatn,sans-serif;font-weight:600}
+.card h3 span{color:#ff5577}
+.card p,.card li{color:var(--muted);line-height:2}
+.card ul{padding-right:22px}
+.chapter{scroll-margin-top:95px}
+.chapter .year{color:#ff6a88;font-size:12px;letter-spacing:2px;font-family:'Oswald',sans-serif}
+.chapter h3{font-size:31px}
+.full{grid-column:1/-1}
+.quote{border-right:3px solid var(--red);padding:10px 18px;background:#ff174d09;color:#f4dce2;border-radius:10px;margin:15px 0}
+body.light-mode .quote{color:#5a4a50}
+.chapter-banner{margin-bottom:20px;border-radius:18px;overflow:hidden;border:1px solid var(--line);position:relative;aspect-ratio:16/7;background:#0a0508}
+.chapter-banner img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
+.chapter-banner:hover img{transform:scale(1.05)}
+.characterGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.char{border:1px solid #ff31552c;background:#10070c;padding:16px;border-radius:18px;transition:.3s;cursor:pointer}
+body.light-mode .char{background:#fff}
+.char:hover{transform:translateY(-5px);border-color:#ff577588;box-shadow:0 15px 40px #ff174d22}
+.char-img{width:100%;height:210px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#1a0812,#2a0a1a);display:flex;align-items:center;justify-content:center;margin:10px 0;border:1px solid var(--line);position:relative}
+.char-img:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#1a0812 0%,#2a0a1a 50%,#1a0812 100%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.char-img img{position:relative;z-index:1}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+body.light-mode .char-img{background:linear-gradient(135deg,#fff0f5,#ffe4ec)}
+.char-img img{width:100%;height:100%;object-fit:contain;padding:8px;transition:transform .4s ease}
+.char:hover .char-img img{transform:scale(1.1)}
+.char b{font-size:17px;font-family:'Oswald',Vazirmatn,sans-serif;font-weight:600}
+.char small{color:#ff6a88;display:block;margin:5px 0 4px;font-size:11px;font-family:'Oswald',sans-serif;letter-spacing:1px}
+.char p{font-size:13px;line-height:1.9;color:var(--muted);margin:8px 0 0}
+.theory-tag{display:inline-block;background:#ff174d22;color:#ff6a88;border:1px solid #ff496c44;font-size:10px;padding:3px 8px;border-radius:999px;margin-top:10px;font-family:'Oswald',sans-serif;letter-spacing:.5px}
+.filterBar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:20px 0 18px;grid-column:1/-1}
+.filterBtn{border:1px solid #ff315544;background:#ff174d0c;color:var(--muted);border-radius:999px;padding:8px 18px;font-size:13px;font-family:'Oswald',Vazirmatn,sans-serif;transition:.25s;letter-spacing:.5px}
+.filterBtn:hover{background:#ff174d22;color:#fff;border-color:#ff496c88}
+.filterBtn.active{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border-color:transparent;box-shadow:0 5px 20px #ff174d55}
+.mystery{border-left:2px solid #ff174d;background:linear-gradient(90deg,#ff174d08,transparent);padding:17px;margin:12px 0;border-radius:12px}
+.mystery b{font-family:'Oswald',Vazirmatn,sans-serif;color:#ff6a88}
+.timeline{display:flex;gap:10px;overflow-x:auto;padding-bottom:12px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.timeline::-webkit-scrollbar{height:6px}
+.timeline::-webkit-scrollbar-track{background:#ff174d11;border-radius:3px}
+.timeline::-webkit-scrollbar-thumb{background:#ff174d66;border-radius:3px}
+.yearcard{flex:0 0 140px;padding:18px 12px;border:1px solid #ff31552c;border-radius:16px;background:#10070b;text-align:center;transition:.3s}
+body.light-mode .yearcard{background:#fff}
+.yearcard:hover{transform:translateY(-4px);border-color:#ff496c88}
+.yearcard b{font-size:24px;color:#ff5275;display:block;font-family:'Oswald',sans-serif}
+.yearcard span{font-size:12px;color:#cbb8be}
+.footer{padding:50px 20px 30px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;width:100%}
+.footer-card{background:var(--card-bg);border:1px solid var(--line);border-radius:28px;padding:35px 40px;max-width:600px;width:100%;text-align:center;position:relative;overflow:hidden;box-shadow:0 20px 60px #0007;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.footer-card .glow{position:absolute;width:150px;height:150px;border-radius:50%;filter:blur(30px);opacity:.08}
+.footer-card .glow.tr{top:-50px;right:-50px;background:var(--red)}
+.footer-card .glow.bl{bottom:-50px;left:-50px;background:var(--red2)}
+.footer-card .icon{font-size:36px;margin-bottom:15px}
+.footer-card h3{margin:0 0 10px;font-size:22px;font-family:'Oswald',Vazirmatn,sans-serif;width:100%;text-align:center}
+.footer-card p{color:var(--muted);margin:0 0 20px;font-size:14px;line-height:1.8;width:100%;text-align:center}
+.footer-link{display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;text-decoration:none;padding:14px 32px;border-radius:16px;font-weight:700;font-size:15px;box-shadow:0 10px 35px #ff174d55;transition:.3s;border:1px solid #ff668366;font-family:'Oswald',Vazirmatn,sans-serif;margin:0 auto}
+.footer-link:before{content:"📢";font-size:20px}
+.footer-link:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 15px 45px #ff174d88}
+.footer-link .small{font-size:10px;opacity:.85;font-weight:400;letter-spacing:1px}
+.footer-bottom{margin-top:25px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;width:100%;text-align:center}
+.coming-soon{background:linear-gradient(135deg,#2a0a13,#a80b36);border:1px solid #ff496c88;border-radius:20px;padding:20px 30px;text-align:center;font-family:'Oswald',Vazirmatn,sans-serif;font-weight:600;font-size:15px;letter-spacing:.5px;box-shadow:0 10px 40px #ff174d33;max-width:600px;width:100%;animation:pulseGlow 3s ease-in-out infinite;margin:0 auto}
+@keyframes pulseGlow{0%,100%{box-shadow:0 10px 40px #ff174d33}50%{box-shadow:0 10px 50px #ff174d66}}
+.coming-soon span{color:#fff;font-size:20px;display:block;margin-bottom:5px}
+.lightbox{position:fixed;inset:0;z-index:200;background:#000e;backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s}
+.lightbox.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lightbox img{max-width:95vw;max-height:90vh;object-fit:contain;border-radius:16px;box-shadow:0 30px 100px #ff174d55;animation:zoomIn .3s}
+@keyframes zoomIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.lightbox .closeX{position:absolute;top:20px;right:20px;width:50px;height:50px;border-radius:50%;background:#ff174d;border:none;color:#fff;font-size:26px;cursor:pointer;box-shadow:0 5px 25px #ff174d88}
+.backTop{position:fixed;bottom:30px;right:30px;z-index:99;width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red2));border:none;color:#fff;font-size:22px;box-shadow:0 8px 30px #ff174d66;cursor:pointer;transition:.4s cubic-bezier(.34,1.56,.64,1);display:none;align-items:center;justify-content:center;transform:translateY(120px) scale(.5);opacity:0}
+.backTop.show{display:flex;transform:translateY(0) scale(1);opacity:1}
+.backTop:hover{transform:translateY(-5px) scale(1.08)}
+.chatButton{position:fixed;bottom:calc(30px + env(safe-area-inset-bottom));left:calc(30px + env(safe-area-inset-left));right:auto;z-index:100;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.chatButton button{position:relative;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red2));border:none;color:#fff;font-size:24px;box-shadow:0 8px 30px #ff174d55;cursor:pointer;transition:.4s cubic-bezier(.34,1.56,.64,1);transform:translateY(120px) scale(.5);opacity:0}
+.chatButton.show button{transform:translateY(0) scale(1);opacity:1}
+.chatButton button:hover{transform:scale(1.15);box-shadow:0 12px 40px #ff174d88}
+.chatButton button:after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid #ff174d88;animation:pulse 2s infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:1}100%{transform:scale(1.3);opacity:0}}
+.commentModal{position:fixed;bottom:100px;left:30px;z-index:102;width:380px;max-height:560px;background:var(--panel);border:1px solid var(--line);border-radius:24px;box-shadow:0 20px 80px #0008;display:none;flex-direction:column;overflow:hidden}
+.commentModal.show{display:flex;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.commentHeader{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.commentHeader h4{margin:0;color:var(--red2);font-size:16px}
+.commentHeader button{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 8px}
+.commentList{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:12px;max-height:280px;min-height:100px}
+.commentItem{background:var(--dark);padding:12px;border-radius:12px;border:1px solid var(--line)}
+.commentItem .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.commentItem .meta strong{color:var(--red2);font-size:13px}
+.commentItem .meta small{color:var(--muted);font-size:10px}
+.commentItem p{margin:0;font-size:13px;line-height:1.8;color:var(--muted);word-break:break-word}
+.commentItem.is-mine{border-color:#ff4b6e88;background:linear-gradient(145deg,#1d0a10,#2a0d16)}
+.mine-badge{display:inline-block;background:#ff174d;color:#fff;padding:2px 8px;border-radius:999px;font-size:9px;margin-right:6px}
+.commentForm{padding:15px;border-top:1px solid var(--line)}
+.commentForm input,.commentForm textarea{width:100%;padding:10px;margin-bottom:8px;background:var(--dark);border:1px solid var(--line);border-radius:10px;color:var(--white);font-family:inherit;resize:none;font-size:13px}
+.commentForm button{width:100%;padding:11px;background:linear-gradient(135deg,var(--red),var(--red2));border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:13px}
+.myCommentBox{padding:15px;border-top:1px solid var(--line);display:none}
+.myCommentBox.show{display:block}
+.myCommentBox .label{color:var(--muted);font-size:11px;margin-bottom:6px}
+.myCommentBox .myText{background:var(--dark);border:1px solid #ff4b6e66;border-radius:10px;padding:12px;margin-bottom:10px;font-size:13px;line-height:1.8;color:var(--white)}
+.editBtn,.deleteBtn{width:100%;padding:10px;background:transparent;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;margin-bottom:6px}
+.editBtn{border:1px solid #ff4b6e88;color:#ff4b6e}
+.editBtn:hover{background:#ff174d22}
+.editBtn:disabled{opacity:.5;cursor:not-allowed}
+.deleteBtn{border:1px solid #8a0b0b;color:#ff4444}
+.deleteBtn:hover{background:#8a0b0b33}
+.editLimit{color:var(--muted);font-size:10px;text-align:center;margin-top:8px}
+.editForm{padding:15px;border-top:1px solid var(--line);display:none}
+.editForm.show{display:block}
+.editForm textarea{width:100%;padding:10px;margin-bottom:8px;background:var(--dark);border:1px solid var(--line);border-radius:10px;color:var(--white);font-family:inherit;resize:none;font-size:13px}
+.editForm .row{display:flex;gap:8px}
+.editForm .saveBtn{flex:1;padding:10px;background:linear-gradient(135deg,var(--red),var(--red2));border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:13px}
+.editForm .cancelBtn{flex:1;padding:10px;background:transparent;border:1px solid var(--line);border-radius:10px;color:var(--muted);font-weight:600;cursor:pointer;font-size:13px}
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity .5s ease-out,transform .5s ease-out}
+.fade-in.visible{opacity:1;transform:none}
+.menuBtn{position:relative;padding:9px 14px;background:linear-gradient(135deg,#2a0a13,#a80b36);border:1px solid #ff668366;box-shadow:0 5px 20px #ff174d33;transition:.3s}
+.menuBtn:hover{transform:translateY(-2px);box-shadow:0 8px 25px #ff174d66;background:linear-gradient(135deg,#3a0d1c,#c00b3e)}
+.menuBtn:before{content:"🏠";margin-left:4px}
+.customConfirm{position:fixed;inset:0;z-index:99999;background:#000c;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .3s;pointer-events:none}
+.customConfirm.show{opacity:1;pointer-events:auto}
+.customConfirmBox{background:var(--panel);border:1px solid #ff496c77;border-radius:20px;padding:24px;max-width:380px;width:100%;box-shadow:0 30px 80px #000a;transform:scale(.9);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.customConfirm.show .customConfirmBox{transform:scale(1)}
+.customConfirmBox p{margin:0 0 20px;font-size:14px;line-height:1.9;color:var(--white);text-align:center}
+.customConfirmButtons{display:flex;gap:10px}
+.customConfirmButtons button{flex:1;padding:11px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:.2s;border:none}
+.customConfirmButtons .confirmYes{background:linear-gradient(135deg,#8a0b0b,#c00b3e);color:#fff}
+.customConfirmButtons .confirmYes:hover{transform:translateY(-2px);box-shadow:0 8px 25px #ff174d44}
+.customConfirmButtons .confirmNo{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.customConfirmButtons .confirmNo:hover{background:#ff174d22;color:#fff}
+.articleCard{background:var(--card-bg);border:1px solid #ff31552c;border-radius:20px;padding:22px;cursor:pointer;transition:.3s;position:relative;overflow:hidden}
+.articleCard:hover{transform:translateY(-5px);border-color:#ff577588;box-shadow:0 15px 40px #ff174d22}
+.articleCard:before{content:"";position:absolute;top:0;right:0;width:4px;height:100%;background:linear-gradient(180deg,var(--red),var(--red2))}
+.articleCard .articleIcon{font-size:32px;margin-bottom:10px;display:block}
+.articleCard h4{margin:0 0 10px;font-size:17px;font-family:'Oswald',Vazirmatn,sans-serif;color:#fff;line-height:1.5;padding-right:10px}
+.articleCard p{color:var(--muted);font-size:13px;line-height:1.9;margin:0;padding-right:10px}
+.articleCard .readMore{display:inline-block;color:var(--red2);font-size:11px;font-family:'Oswald',Vazirmatn,sans-serif;margin-top:12px;letter-spacing:1px;padding-right:10px}
+.articleGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px}
+@media(max-width:640px){.articleGrid{grid-template-columns:1fr}}
+.articleModal{position:fixed;inset:0;z-index:300;background:#000e;backdrop-filter:blur(15px);display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s}
+.articleModal.show{display:flex}
+.articleModalBox{background:var(--panel);border:1px solid #ff496c77;border-radius:24px;padding:32px;max-width:780px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 30px 100px #000a;position:relative;animation:zoomIn .3s}
+.articleModalBox::-webkit-scrollbar{width:6px}
+.articleModalBox::-webkit-scrollbar-thumb{background:#ff174d66;border-radius:3px}
+.articleModalBox h2{margin:0 0 8px;font-size:26px;font-family:'Oswald',Vazirmatn,sans-serif;color:#fff;line-height:1.4;padding-left:50px}
+.articleModalBox .articleMeta{color:var(--red2);font-size:11px;font-family:'Oswald',Vazirmatn,sans-serif;letter-spacing:2px;margin-bottom:20px;display:block}
+.articleModalBox p{color:var(--muted);line-height:2.1;font-size:14px;margin:0 0 16px}
+.articleModalBox h3{color:var(--red2);font-size:18px;font-family:'Oswald',Vazirmatn,sans-serif;margin:24px 0 12px}
+.articleModalBox ul{color:var(--muted);line-height:2.1;font-size:14px;padding-right:22px}
+.articleModalBox li{margin-bottom:8px}
+.articleModalBox .closeArticle{position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:50%;background:#ff174d22;border:1px solid #ff4b6e88;color:#fff;font-size:20px;cursor:pointer;transition:.2s}
+.articleModalBox .closeArticle:hover{background:#ff174d44;transform:rotate(90deg)}
+@media(max-width:900px){
+  .navgrid{grid-template-columns:repeat(4,1fr)}
+  .characterGrid{grid-template-columns:repeat(2,1fr)}
+  .content{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .topbar{top:8px;left:8px;right:8px;padding:8px 10px;gap:6px;flex-wrap:wrap}
+  .brand{font-size:10px;letter-spacing:1px}
+  .lang,.menuBtn,.themeBtn,.searchBtn,.perfBtn,.musicBtn{padding:7px 8px;font-size:11px}
+  .menuBtn:before{margin-left:0;font-size:14px}
+  .lang{font-size:10px;padding:7px 8px}
+  .themeBtn,.searchBtn,.perfBtn,.musicBtn{width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center}
+  .searchPanel{top:78px;left:8px;right:8px}
+  .musicPanel{left:8px;right:8px;width:auto;top:78px}
+  .navgrid{grid-template-columns:repeat(2,1fr)}
+  .characterGrid{grid-template-columns:1fr}
+  .hero h1{letter-spacing:0;font-size:clamp(38px,11vw,70px)}
+  .screen{padding:120px 14px 45px}
+  .commentModal{width:calc(100vw - 40px);left:20px;bottom:90px}
+  .chapter-banner{aspect-ratio:16/9}
+  .backTop{bottom:100px;right:20px;width:50px;height:50px}
+  .chatButton{bottom:calc(20px + env(safe-area-inset-bottom));left:calc(20px + env(safe-area-inset-left));right:auto}
+  .chatButton button{width:55px;height:55px;font-size:22px}
+  .articleModalBox{padding:24px 18px}
+  .articleModalBox h2{font-size:20px;padding-left:45px}
+}
+</style>
+</head>
+<body>
+<div id="progressBar"></div>
+<div id="toastBox"></div>
+<audio id="bgMusic" loop preload="auto" autoplay></audio>
+<div id="app">
+<canvas id="bg"></canvas><div class="grid"></div><div class="noise"></div>
+
+<header class="topbar">
+ <div class="brand">POPPY <span>PLAYTIME</span> // ARCHIVE</div>
+ <div class="actions">
+  <button class="searchBtn hidden" id="searchBtn" aria-label="Search">🔍</button>
+  <button class="musicBtn" id="musicBtn" title="Music">🎵</button>
+  <button class="perfBtn" id="perfBtn" title="Performance">⚡</button>
+  <button class="lang" id="lang">ENGLISH</button>
+  <button class="themeBtn" id="themeToggle">🌙</button>
+  <button class="menuBtn" id="homeBtn" aria-label="Home"></button>
+ </div>
+</header>
+
+<div class="searchPanel" id="searchPanel">
+ <input type="text" class="searchInput" id="searchInput" placeholder="جستجو... / Search...">
+ <div class="searchResults" id="searchResults"></div>
+</div>
+
+<div class="musicPanel" id="musicPanel">
+ <h4>🎵 موسیقی پس‌زمینه</h4>
+ <input type="range" id="musicVolume" min="0" max="100" value="30">
+ <div class="musicRow">
+  <button id="musicPlayPause">▶ پخش</button>
+ </div>
+</div>
+
+<section class="screen active" id="home">
+ <div class="hero">
+  <div class="kicker" data-i18n="kicker">PLAYTIME CO. // CLASSIFIED ARCHIVE</div>
+  <h1 data-i18n="hero_title">POPPY<br>PLAYTIME</h1>
+  <p data-i18n="hero_desc">پرونده‌ی کارخانه را باز کن؛ داستان فصل‌ها، شخصیت‌ها، رازها، مسیر انتشار و Project: Playtime را در یک آرشیو تعاملی و قرمز کشف کن.</p>
+  <button class="cta" id="openArchive" data-i18n="open_archive">ورود به آرشیو</button>
+ </div>
+</section>
+
+<section class="screen" id="archive">
+ <div class="section">
+  <div class="heading"><h2 data-i18n="archive_title">آرشیو POPPY PLAYTIME</h2><p data-i18n="archive_desc">یک بخش را انتخاب کن؛ هر کارت یک پرونده‌ی جداگانه را باز می‌کند.</p></div>
+  <div class="navgrid">
+   <button class="navcard" data-target="story"><strong data-i18n="nav_story">داستان</strong><small data-i18n="nav_story_sub">Chapter 1–5</small></button>
+   <button class="navcard" data-target="characters"><strong data-i18n="nav_char">شخصیت</strong><small data-i18n="nav_char_sub">پرونده شخصیت‌ها</small></button>
+   <button class="navcard" data-target="mysteries"><strong data-i18n="nav_mystery">رازها</strong><small data-i18n="nav_mystery_sub">اطلاعات تأییدشده و سرنخ</small></button>
+   <button class="navcard" data-target="releases"><strong data-i18n="nav_release">منابع انتشار</strong><small data-i18n="nav_release_sub">تاریخ و پلتفرم</small></button>
+   <button class="navcard" data-target="about"><strong data-i18n="nav_about">توضیحات</strong><small data-i18n="nav_about_sub">جهان بازی</small></button>
+   <button class="navcard" data-target="project"><strong data-i18n="nav_project">پروژه پلی‌تایم</strong><small data-i18n="nav_project_sub">PROJECT: PLAYTIME</small></button>
+   <button class="navcard" data-target="news"><strong data-i18n="nav_news">مقالات</strong><small data-i18n="nav_news_sub">تحلیل و اطلاعات تأییدشده</small></button>
+  </div>
+
+  <div id="story" class="content">
+   <article class="card full chapter fade-in">
+    <span class="year">2021 • CHAPTER 01</span>
+    <div class="chapter-banner"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch1header.webp" alt="Chapter 1" loading="lazy"></div>
+    <h3 data-i18n="ch1_title">Chapter 1 — A Tight Squeeze</h3>
+    <p data-i18n="ch1_p1">داستان در کارخانه‌ی متروکه‌ی Playtime Co. آغاز می‌شود؛ جایی که کارکنان آن سال‌ها پیش ناپدید شده‌اند. بازیکن، یکی از کارکنان سابق، پس از دریافت نامه‌ای ناشناس به کارخانه برمی‌گردد و با GrabPack درها، مدارهای برق و اشیای دور از دسترس را کنترل می‌کند. در همان ابتدا روشن می‌شود که کارخانه فقط یک ساختمان متروکه نیست و اسباب‌بازی‌های زنده و پروژه‌های محرمانه هنوز در اعماق آن حضور دارند.</p>
+    <p data-i18n="ch1_p2">بازیکن در طول کارخانه نوارهای VHS، اسناد و سرنخ‌های محیطی پیدا می‌کند. Poppy داخل یک محفظه‌ی شیشه‌ای نگهداری شده و در پایان فصل آزاد می‌شود، در حالی که Huggy Wuggy از یک نماد تبلیغاتی به نخستین تهدید بزرگ سفر بازیکن تبدیل می‌شود. پایان Chapter 1 مسیر را به بخش‌های پایین‌تر کارخانه باز می‌کند و زمینه‌ی اتفاقات Chapter 2 را می‌سازد.</p>
+    <div class="quote" data-i18n="ch1_quote">هسته‌ی فصل: کارخانه‌ی متروکه، بازگشت بازیکن، GrabPack، Poppy، Huggy Wuggy و نخستین آشکارشدن اسباب‌بازی‌های زنده.</div>
+   </article>
+   <article class="card full chapter fade-in">
+    <span class="year">2022 • CHAPTER 02</span>
+    <div class="chapter-banner"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch2MobEntWebsiteBig.webp" alt="Chapter 2" loading="lazy"></div>
+    <h3 data-i18n="ch2_title">Chapter 2 — Fly in a Web</h3>
+    <p data-i18n="ch2_p1">پس از وقایع Chapter 1، مسیر بازیکن به Game Station می‌رسد؛ مجموعه‌ای عظیم از بازی‌ها و بخش‌های آزمایشی که زیر ظاهر کودکانه‌اش، محیطی بسیار خطرناک قرار دارد. بازیکن در این بخش هم باید معماها را حل کند و هم از دام‌های طراحی‌شده برای آزمایش‌ها جان سالم به در ببرد.</p>
+    <p data-i18n="ch2_p2">Mommy Long Legs، Experiment 1222، پس از سال‌ها مراقبت از یتیمان Playcare و از دست دادن هدف خود، کنترل Game Station را در دست گرفته است. بازیکن مجبور می‌شود چند بازی را پشت سر بگذارد و هم‌زمان از دام‌های Mommy فرار کند. در پایان، Mommy از بین می‌رود و دست او توسط Prototype برداشته می‌شود؛ صحنه‌ای که حضور Prototype را مستقیم‌تر از قبل وارد داستان می‌کند.</p>
+    <div class="quote" data-i18n="ch2_quote">هسته‌ی فصل: Game Station، Mommy Long Legs، بازی‌های آزمایشی، گسترش GrabPack و آشکارتر شدن حضور Prototype.</div>
+   </article>
+   <article class="card full chapter fade-in">
+    <span class="year">2024 • CHAPTER 03</span>
+    <div class="chapter-banner"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch3MobEntWebsiteBig.webp" alt="Chapter 3" loading="lazy"></div>
+    <h3 data-i18n="ch3_title">Chapter 3 — Deep Sleep</h3>
+    <p data-i18n="ch3_p1">Chapter 3 بازیکن را به Playcare می‌برد؛ مجموعه‌ای بزرگ زیر کارخانه که برای نگهداری کودکان طراحی شده بود. در این بخش، بازیکن با Smiling Critters و به‌ویژه CatNap روبه‌رو می‌شود و درمی‌یابد که فضای کودکانه‌ی Playcare با تاریخچه‌ی تاریک آزمایش‌ها و رفتارهای خشن موجودات آن تضاد شدیدی دارد.</p>
+    <p data-i18n="ch3_p2">CatNap، با نام انسانی Theodore Grambell و عنوان آزمایشی Experiment 1188، در Playcare شکارچی اصلی است و دود قرمز او نقش مهمی در خواب و کابوس فصل دارد. DogDay و دیگر Bigger Bodyهای Smiling Critters در برابر پیروان Prototype مقاومت کرده‌اند. Chapter 3 همچنین اطلاعات مهمی درباره‌ی آزمایش روی کودکان، Playcare و نفوذ Prototype در کارخانه آشکار می‌کند.</p>
+    <div class="quote" data-i18n="ch3_quote">هسته‌ی فصل: Playcare، CatNap، Theodore Grambell، Red Smoke، Smiling Critters، DogDay و اطلاعات بیشتر درباره‌ی Bigger Bodies Initiative.</div>
+   </article>
+   <article class="card full chapter fade-in">
+    <span class="year">2025 • CHAPTER 04</span>
+    <div class="chapter-banner"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/DoeyBannerBigger.webp" alt="Chapter 4" loading="lazy"></div>
+    <h3 data-i18n="ch4_title">Chapter 4 — Safe Haven</h3>
+    <p data-i18n="ch4_p1">Chapter 4 بازیکن را به یکی از عمیق‌ترین بخش‌های کارخانه، از جمله زندان و مناطق نگهداری آزمایش‌ها می‌برد. این بخش نشان می‌دهد که Playtime Co. فقط یک کارخانه‌ی تولید اسباب‌بازی نبوده و زیرساختی بزرگ برای نگهداری، آزمایش و کنترل Bigger Bodies در زیر آن ساخته شده است.</p>
+    <p data-i18n="ch4_p2">بازیکن در این فصل با Doey the Doughman، Yarnaby و The Doctor روبه‌رو می‌شود و همراه Poppy و Kissy به سمت Safe Haven حرکت می‌کند. Yarnaby، Experiment 1166، یکی از نخستین موفقیت‌های Bigger Bodies Initiative است و The Doctor از او به‌عنوان شکارچی وفادار خود استفاده کرده است. در ادامه، Safe Haven و نقشه‌ی Poppy برای نابودی کارخانه به محور وقایع تبدیل می‌شوند.</p>
+    <div class="quote" data-i18n="ch4_quote">هسته‌ی فصل: زندان زیر کارخانه، Doey، Yarnaby، The Doctor، Safe Haven و آشکارتر شدن ساختار Bigger Bodies Initiative.</div>
+   </article>
+   <article class="card full chapter fade-in">
+    <span class="year">2026 • CHAPTER 05</span>
+    <div class="chapter-banner"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch5EpicGamesBanner.webp" alt="Chapter 5" loading="lazy"></div>
+    <h3 data-i18n="ch5_title">Chapter 5 — Broken Things</h3>
+    <p data-i18n="ch5_p1">Chapter 5 با عنوان <b>Broken Things</b> ادامه‌ی مستقیم ماجرا در اعماق کارخانه است. معرفی رسمی Mob Entertainment این فصل را روی رویارویی با «گرداننده‌ی پشت پرده» اتفاقات وحشتناک Playtime Co. متمرکز می‌کند و بازیکن را وارد قلمرو Prototype و رازهای قدیمی‌تر کارخانه می‌کند.</b> ادامه‌ی مستقیم ماجرا در اعماق کارخانه است. معرفی رسمی Mob Entertainment این فصل را روی رویارویی با «گرداننده‌ی پشت پرده» اتفاقات وحشتناک Playtime Co. متمرکز می‌کند و بازیکن را وارد قلمرو Prototype و رازهای قدیمی‌تر کارخانه می‌کند.</b> داستان را به مرحله‌ای بسیار مهم می‌رساند. معرفی رسمی بازی آن را روی مواجهه با «گرداننده‌ی پشت پرده» اتفاقات ترسناک Playtime Co. متمرکز می‌کند.</p>
+    <p data-i18n="ch5_p2">Chapter 5 اطلاعات مهمی درباره‌ی The Doctor، Prototype و ساکنان اعماق کارخانه ارائه می‌کند. اطلاعات رسمی فعلی The Doctor را دکتر Harley Sawyer معرفی می‌کند: مبتکر Bigger Bodies Initiative و دانشمندی که در نهایت خودش نیز قربانی پروژه‌ای شد که ایجاد کرده بود. Chapter 5 همچنین نقش Lily Lovebraids، Doey، Giblet و Huggy را در ادامه‌ی داستان پررنگ‌تر می‌کند. هرجا پاسخ داستان هنوز مشخص نیست، این نسخه آن را به‌عنوان راز باز باقی می‌گذارد و حدس طرفداران را جای واقعیت نمی‌نشاند.</p>
+    <div class="quote" data-i18n="ch5_quote">تاریخ انتشار رسمی Chapter 5 در Steam: 18 فوریه 2026 — توسعه‌دهنده و ناشر: Mob Entertainment.</div>
+   </article>
+  </div>
+
+  <div id="characters" class="content" style="margin-top:30px">
+   <div class="filterBar fade-in">
+    <button class="filterBtn active" data-filter="all">همه</button>
+    <button class="filterBtn" data-filter="main">اصلی</button>
+    <button class="filterBtn" data-filter="smiling">Smiling</button>
+    <button class="filterBtn" data-filter="nightmare">Nightmare</button>
+    <button class="filterBtn" data-filter="wrongside">Wrongside</button>
+   </div>
+
+   <article class="card full fade-in" data-section="main">
+    <h3 data-i18n="char_title">پرونده‌ی شخصیت‌ها</h3>
+    <p data-i18n="char_desc">روی هر دسته کلیک کن تا فیلتر بشه. روی هر کارت بزن تا عکس بزرگش رو ببینی.</p>
+    <div class="characterGrid" id="charGrid">
+     <div class="char" data-category="main"><b>Huggy Wuggy</b><small>CH.1</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/HuggyFloppy.webp" alt="Huggy Wuggy" loading="lazy"></div>
+      <p data-i18n="char_huggy">Huggy Wuggy نماد آبی Playtime Co. و Experiment 1170 است. او در سال 1984 به‌عنوان یک اسباب‌بازی محبوب عرضه شد و در داستان نخستین مانع بزرگ مسیر بازیکن در کارخانه است. اطلاعات رسمی او را باهوش، بسیار نیرومند و گوشت‌خوار توصیف می‌کند.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_huggy_theory" style="margin-top:6px">Huggy Wuggy در اطلاعات رسمی به‌عنوان Experiment 1170 شناخته می‌شود و یکی از بزرگ‌ترین و خطرناک‌ترین موجودات کارخانه است؛ جزئیات بیشتری دربارهٔ گذشته و رفتار او در طول بازی‌ها آشکار می‌شود.</p></div>
+
+     <div class="char" data-category="main"><b>Poppy</b><small>CH.1–5</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/PoppyRemasteredNoCrack.webp" alt="Poppy" loading="lazy"></div>
+      <p data-i18n="char_poppy">Poppy یکی از مهم‌ترین شخصیت‌های سری و یک عروسک انقلابی مجهز به voice box است. اطلاعات رسمی فعلی او را موجودی با حس درست و غلط و دارای برنامه‌ای جدی برای انتقام معرفی می‌کند؛ او بازیکن را برای پیشبرد نقشه‌ی خود به کار می‌گیرد.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_poppy_theory" style="margin-top:6px">Poppy احتمالاً از همان ابتدا از پروژه‌های پنهان کارخانه باخبر بوده و حضورش در محفظه‌ی شیشه‌ای، نشانه‌ی نقش ویژه‌ی او در روایت است.</p></div>
+
+     <div class="char" data-category="main"><b>Kissy Missy</b><small>CH.2+</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/KissyPosed.webp" alt="Kissy Missy" loading="lazy"></div>
+      <p data-i18n="char_kissy">Kissy Missy، Experiment 1172، همتای صورتی Huggy است. او از نظر داستانی فقط یک دشمن ساده نیست و در اطلاعات رسمی به‌عنوان نزدیک‌ترین متحد Poppy معرفی می‌شود. بخش مهمی از چیزی که او را متمایز می‌کند، حفظ بخش زیادی از ویژگی‌های انسانی گذشته‌اش است.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_kissy_theory" style="margin-top:6px">Kissy به نظر می‌رسد نسبت به Huggy آرام‌تر است و شاید نقش یک نگهبان یا محافظ را ایفا می‌کند؛ نه یک قاتل.</p></div>
+
+     <div class="char" data-category="main"><b>Mommy Long Legs</b><small>CH.2</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Normal_Mommy_Updated.webp" alt="Mommy Long Legs" loading="lazy"></div>
+      <p data-i18n="char_mommy">Mommy Long Legs، Experiment 1222، نخستین عضو مجموعه‌ی اسباب‌بازی‌های خانوادگی با پلاستیک کشسان اختصاصی Playtime است. او مدتی مراقبت از یتیمان Playcare را بر عهده داشت و پس از Hour of Joy، در اثر تنهایی، خشم و از دست دادن هدف خود، Game Station را به قلمروی خود تبدیل کرد.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_mommy_theory" style="margin-top:6px">Mommy در واقع یکی از اولین نمونه‌های زنده‌شده‌ی Playtime بوده و احتمالاً خاطراتی از دوران انسانی خود داشته که او را به این رفتار خشن سوق داده است.</p></div>
+
+     <div class="char" data-category="main"><b>CatNap</b><small>CH.3</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/CatnapFurKatch.webp" alt="CatNap" loading="lazy"></div>
+      <p data-i18n="char_catnap">CatNap، Experiment 1188، همان Theodore Grambell است و از چهره‌های اصلی Playcare به‌شمار می‌آید. Prototype در گذشته او را نجات داد و CatNap پس از تغییرات آزمایشی همچنان به او باور داشت؛ بعد از Hour of Joy، Playcare را به محل شکار و پرستش Prototype تبدیل کرد.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_catnap_theory" style="margin-top:6px">CatNap ظاهراً توانایی نفوذ به رویاها را دارد؛ توانایی‌ای که احتمالاً نتیجه‌ی آزمایش‌های مخفیانه‌ی کارخانه روی او بوده است.</p></div>
+
+     <div class="char" data-category="main"><b>DogDay</b><small>CH.3+</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/DogDayRenderRamchoopsFur.webp" alt="DogDay" loading="lazy"></div>
+      <p data-i18n="char_dogday">DogDay رهبر Smiling Critters و یک متحد Poppy در برابر Prototype است. اطلاعات رسمی او را آفتابی، قوی و مصمم معرفی می‌کند و توضیح می‌دهد که او و دیگر Bigger Bodyهای Smiling Critters کوشیدند در برابر پیروان Prototype مقاومت کنند.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_dogday_theory" style="margin-top:6px">DogDay احتمالاً یکی از معدود موجوداتی است که هنوز انسانیت خود را حفظ کرده؛ او با Prototype مخالفت می‌کند.</p></div>
+
+     <div class="char" data-category="main"><b>Miss Delight</b><small>CH.3</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/RuinMissDelight.webp" alt="Miss Delight" loading="lazy"></div>
+      <p data-i18n="char_delight">Miss Delight یکی از اسباب‌بازی‌های معلم Schoolhouse است که برای آموزش برنامه‌ی مورد تأیید Playcare و اجرای قوانین ساخته شده بود. در وضعیت فعلی داستان، او تحت ساختار Prototype به نگهبان خشن مدرسه تبدیل شده است.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_delight_theory" style="margin-top:6px">Miss Delight احتمالاً توسط Prototype تحت کنترل قرار گرفته؛ رفتار خشن او نتیجه‌ی دستکاری ذهنی است.</p></div>
+
+     <div class="char" data-category="main"><b>Prototype</b><small>CH.2–5</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/PrototypeRenderFLOTiretDuBas.webp" alt="Prototype" loading="lazy"></div>
+      <p data-i18n="char_proto">Prototype یا Experiment 1006 یکی از مرکزی‌ترین شخصیت‌های سری است. منابع رسمی او را باهوش، حیله‌گر و مورد احترام پیروانش معرفی می‌کنند و نشان می‌دهند که حضور او تقریباً در تمام مسیر بازیکن اثرگذار است. جزئیات کامل منشأ او هنوز بخشی از معمای داستان است.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_proto_theory" style="margin-top:6px">Experiment 1006 شناسهٔ رسمی Prototype است؛ از روی این شماره به‌تنهایی نمی‌توان تعداد یا سرنوشت آزمایش‌های پیشین را تعیین کرد.</p></div>
+
+     <div class="char" data-category="main"><b>Doey the Doughman</b><small>CH.4</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/PPT_Doey_Doughman.webp" alt="Doey" loading="lazy"></div>
+      <p data-i18n="char_doey">Doey the Doughman، Experiment 1322، یکی از متحدان اصلی بازیکن در Chapter 4 است. او در گذشته یک اسباب‌بازی تجاری موفق بود و در قالب Bigger Body، ذهنی چندبخشی دارد که باعث کشمکش دائمی میان سه بخش شخصیتی او می‌شود.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_doey_theory" style="margin-top:6px">Doey Dough با Experiment 1322 شناخته می‌شود و در گذشته یکی از محصولات موفق Playtime Co. بود؛ اطلاعات رسمی بعدی نقش او را در بخش Shelf و رابطه‌اش با Poppy روشن‌تر می‌کند.</p></div>
+
+     <div class="char" data-category="main"><b>Yarnaby</b><small>CH.4</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/YarnabyRenderRabbit.webp" alt="Yarnaby" loading="lazy"></div>
+      <p data-i18n="char_yarnaby">Yarnaby، Experiment 1166، یک اسباب‌بازی شیر است که به‌عنوان یکی از نخستین موفقیت‌های Bigger Bodies شناخته می‌شود. The Doctor احساسات او را دستکاری کرد و او را سال‌ها منزوی نگه داشت تا وفاداری‌اش فقط متوجه Sawyer باشد؛ بعدتر Yarnaby به شکارچی شخصی Doctor تبدیل شد.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_yarnaby_theory" style="margin-top:6px">Yarnaby با Experiment 1166 شناخته می‌شود و از موفقیت‌های اولیهٔ Bigger Bodies Initiative بود؛ Doctor Sawyer برای شکل‌دادن به وفاداری او نقش مهمی داشت.</p></div>
+
+     <div class="char" data-category="main"><b>The Doctor</b><small>CH.4–5</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/OfficialDoctorRender2.webp" alt="The Doctor" loading="lazy"></div>
+      <p data-i18n="char_doctor">The Doctor نامی است که برای Doctor Harley Sawyer استفاده می‌شود. او مبتکر Bigger Bodies Initiative و شاگرد سابق Elliot Ludwig بود. منابع رسمی فعلی او را دانشمندی بی‌رحم توصیف می‌کنند که صدها آزمایش را سازمان داد و در نهایت ذهن خودش نیز در یک ساختار سیم‌ها و پایانه‌ها گرفتار شد.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_doctor_theory" style="margin-top:6px">The Doctor نامی است که به Harley Sawyer، دانشمند و آغازگر Bigger Bodies Initiative، مربوط می‌شود؛ او از چهره‌های اصلی پشت آزمایش‌های Playtime Co. است.</p></div>
+
+     <div class="char" data-category="main"><b>Lily</b><small>CH.5</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/LilyHairDown.webp" alt="Lily" loading="lazy"></div>
+      <p data-i18n="char_lily">Lily Lovebraids، Experiment 1468، عروسک Playtime Co. برای دهه‌ی 1980 بود که شخصیت اجتماعی و خلاقی داشت. لور رسمی فعلی می‌گوید Lily به یاد نمی‌آورد زمانی غیر از یک اسباب‌بازی بوده باشد و نمی‌داند چرا The Prototype او را برای ماه‌ها در Lullaby Room زندانی کرده است.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_lily_theory" style="margin-top:6px">Lily احتمالاً یکی از قربانیان اصلی آزمایش‌هاست؛ حضورش ممکن است کلید فهمیدن راز Bigger Bodies باشد.</p></div>
+
+     <div class="char" data-category="main"><b>Boxxy Boo</b><small>CH.4+</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/BoxyBooRemake.webp" alt="Boxxy Boo" loading="lazy"></div>
+      <p data-i18n="char_boxxy">Boxy Boo یکی از شناخته‌شده‌ترین اسباب‌بازی‌های جعبه‌ای Playtime است؛ سر، دست‌ها و پاهای فنری او با طراحی یک جعبه‌ی بازشونده ترکیب شده‌اند. اطلاعات رسمی او را شخصیتی بازیگوش و غافلگیرکننده معرفی می‌کند.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_boxxy_theory" style="margin-top:6px">Boxy Boo یک اسباب‌بازی رسمی Playtime با طراحی جعبه‌ای و اندام‌های کشسان است و در روایت/جهان رسمی مجموعه به‌عنوان یکی از موجودات خطرناک کارخانه شناخته می‌شود.</p></div>
+
+     <div class="char" data-category="main"><b>Giblet</b><small>CH.5</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/GibletRenderCH5Fixed.webp" alt="Giblet" loading="lazy"></div>
+      <p data-i18n="char_giblet">Giblet یکی از شخصیت‌های جدیدتر مرتبط با Chapter 5 است و در محتوای رسمی Mob Entertainment و مطالب مربوط به این فصل حضور دارد. برای او در این نسخه هیچ گذشته‌ی انسانی یا آزمایش مشخصی که منبع رسمی تأیید نکرده باشد ساخته نشده است.</p>
+      <span class="theory-tag" data-i18n="theory_tag">اطلاعات تأییدشده</span>
+      <p data-i18n="char_giblet_theory" style="margin-top:6px">Giblet احتمالاً به عنوان یک موجود سرگرم‌کننده برای کودکان ساخته شده؛ اما امروز تبدیل به یکی از ترسناک‌ترین ساکنان کارخانه شده است.</p></div>
+    </div>
+   </article>
+
+   <article class="card full fade-in" data-section="smiling">
+    <h3 data-i18n="smiling_title">Smiling Critters — گروه کامل</h3>
+    <p data-i18n="smiling_desc">گروه اصلی Smiling Critters شامل هشت شخصیت است: CatNap، DogDay، Bobby BearHug، Bubba Bubbaphant، CraftyCorn، PickyPiggy، Hoppy Hopscotch و KickinChicken. در کنار نسخه‌های تبلیغاتی، Bigger Bodies نسخه‌های زنده و خطرناک‌تری از برخی اعضا را وارد داستان کرده است.</p>
+    <div class="chapter-banner" style="aspect-ratio:auto;background:#0a0508;padding:20px"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/SmilingGroupPhoto.webp" alt="Smiling Critters" loading="lazy" style="object-fit:contain;height:auto;max-height:400px"></div>
+   </article>
+
+   <article class="card full fade-in" data-section="nightmare">
+    <h3 data-i18n="nightmare_title">Nightmare Critters — گروه کامل</h3>
+    <p data-i18n="nightmare_desc">Nightmare Critters مجموعه‌ای از شخصیت‌های ترسناک مرتبط با فضای Chapter 4 است: Baba Chops، Icky Licky، Allister Gator، Rabie Baby، Simon Smoke، Poe، Touille و Maggie Mako. این بخش از نسبت‌دادن گذشته‌ی انسانی یا Experimentهای ساختگی به اعضا خودداری می‌کند.</p>
+    <div class="chapter-banner" style="aspect-ratio:auto;background:#0a0508;padding:20px"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/NightmareGroupPhoto.webp" alt="Nightmare Critters" loading="lazy" style="object-fit:contain;height:auto;max-height:400px"></div>
+   </article>
+
+   <article class="card full fade-in" data-section="wrongside">
+    <h3 data-i18n="wrongside_title">Wrongside Outimals — عروسک‌های Chapter 5</h3>
+    <p data-i18n="wrongside_desc">Wrongside Outimals گروهی از عروسک‌های مرتبط با Chapter 5 هستند که با زیپ، دوخت و طراحی‌های وارونه شناخته می‌شوند. در این نسخه برای اعضای گروه داستان اضافه‌ای که تأیید نشده باشد ساخته نشده است.</p>
+    <div class="characterGrid">
+     <div class="char"><b>Blanky Blankz</b><small>CH.5</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Blanky_Blankz_Plush.webp" alt="Blanky Blankz" loading="lazy"></div>
+      <p data-i18n="ws_blanky">Blanky Blankz یکی از Wrongside Outimals است؛ این عروسک با طراحی پارچه‌ای، زیپ و دوخت شناخته می‌شود. در این آرشیو هیچ داستان انسانی یا Experiment تأییدنشده‌ای به او نسبت داده نمی‌شود.</p></div>
+     <div class="char"><b>Bubby Chumz</b><small>CH.5</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/ChumRenderCH5new.webp" alt="Bubby Chumz" loading="lazy"></div>
+      <p data-i18n="ws_bubby">Bubby Chumz از مجموعه‌ی Wrongside Outimals مرتبط با Chapter 5 است. این بخش فقط ظاهر و جایگاه گروهی او را ثبت می‌کند و درباره‌ی منشأ آزمایشگاهی او حدس نمی‌زند.</p></div>
+     <div class="char"><b>Goober Gutz</b><small>CH.5</small>
+      <div class="char-img"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Goober_Gutz_Plush.webp" alt="Goober Gutz" loading="lazy"></div>
+      <p data-i18n="ws_goober">Goober Gutz نیز یکی از Wrongside Outimals است. ظاهر او با جزئیات دوخت و دهان بسته شناخته می‌شود و این آرشیو از ساختن داستانی درباره‌ی گذشته‌ی او بدون تأیید رسمی خودداری می‌کند.</p></div>
+    </div>
+   </article>
+  </div>
+
+  <div id="mysteries" class="content" style="margin-top:30px">
+   <article class="card full fade-in">
+    <h3 data-i18n="mystery_title">رازها و معماهای بزرگ</h3>
+    <div class="mystery"><b data-i18n="mystery_1_title">Bigger Bodies Initiative</b><p data-i18n="mystery_1">پروژه‌ای که پشت بسیاری از آزمایش‌های کارخانه قرار دارد و ایده‌ی تبدیل اسباب‌بازی‌ها به موجودات بسیار بزرگ‌تر و زنده را توضیح می‌دهد.</p></div>
+    <div class="mystery"><b data-i18n="mystery_2_title">Prototype / Experiment 1006</b><p data-i18n="mystery_2">هویت، هدف و تاریخچه‌ی کامل Prototype یکی از ستون‌های اصلی معمای سری است. قطعات داستانی مختلف به هوش بالا، جمع‌آوری قطعات موجودات و نفوذ گسترده‌ی او اشاره دارند.</p></div>
+    <div class="mystery"><b data-i18n="mystery_3_title">Hour of Joy</b><p data-i18n="mystery_3">رویداد فاجعه‌باری که به ناپدیدشدن و مرگ کارکنان مرتبط است و از طریق نوارها و سرنخ‌های محیطی روایت می‌شود.</p></div>
+    <div class="mystery"><b data-i18n="mystery_4_title">آزمایش‌های انسانی و کودکان</b><p data-i18n="mystery_4">یکی از تاریک‌ترین لایه‌های روایت این است که اسباب‌بازی‌های زنده فقط محصولات عادی نیستند و آزمایش‌ها به انسان‌ها و کودکان مرتبط شده‌اند.</p></div>
+    <div class="mystery"><b data-i18n="mystery_5_title">Red Smoke</b><p data-i18n="mystery_5">دود قرمز CatNap یکی از عناصر کلیدی Chapter 3 است و به خواب، توهم و کنترل ادراک مربوط می‌شود.</p></div>
+    <div class="mystery"><b data-i18n="mystery_6_title">سرنخ‌های محیطی</b><p data-i18n="mystery_6">نوارهای VHS، پوسترها، صداهای ضبط‌شده، نوشته‌های کارخانه و جزئیات اتاق‌ها بخشی از داستان را بدون دیالوگ مستقیم منتقل می‌کنند.</p></div>
+   </article>
+  </div>
+
+  <div id="releases" class="content" style="margin-top:30px">
+   <article class="card full fade-in">
+    <h3 data-i18n="release_title">منابع انتشار و تاریخ‌ها</h3>
+    <p data-i18n="release_desc">تاریخ‌های اصلی زیر از صفحات رسمی فروش/بازی و سایت رسمی گردآوری شده‌اند.</p>
+    <div class="timeline">
+     <div class="yearcard"><b>2021</b><span>Chapter 1<br>PC / Steam</span></div>
+     <div class="yearcard"><b>2022</b><span>Chapter 2<br>Steam</span></div>
+     <div class="yearcard"><b>2024</b><span>Chapter 3<br>Steam</span></div>
+     <div class="yearcard"><b>2025</b><span>Chapter 4<br>Steam</span></div>
+     <div class="yearcard"><b>2026</b><span>Chapter 5<br>Steam</span></div>
+     <div class="yearcard"><b>2022</b><span>PROJECT: PLAYTIME<br>Steam / Windows</span></div>
+    </div>
+    <ul>
+      <li data-i18n="release_1">بازی پایه Poppy Playtime در Steam در 12 اکتبر 2021 منتشر شد و Chapter 1 را شامل می‌شود.</li>
+      <li data-i18n="release_2">Chapter 2 در 5 مه 2022 منتشر شد.</li>
+      <li data-i18n="release_3">Chapter 3 در 30 ژانویه 2024 منتشر شد.</li>
+      <li data-i18n="release_4">Chapter 4 در 30 ژانویه 2025 منتشر شد.</li>
+      <li data-i18n="release_5">Chapter 5 در 18 فوریه 2026 منتشر شد.</li>
+      <li data-i18n="release_6">PROJECT: PLAYTIME در 12 دسامبر 2022 به‌صورت Early Access روی Steam منتشر شد.</li>
+    </ul>
+   </article>
+  </div>
+
+  <div id="about" class="content" style="margin-top:30px">
+   <article class="card full fade-in">
+    <h3 data-i18n="about_title">توضیحات کامل درباره‌ی Poppy Playtime</h3>
+    <p data-i18n="about_1"><b>سازنده:</b> Mob Entertainment (که در گذشته با نام EnchantedMob شناخته می‌شد).</p>
+    <p data-i18n="about_2"><b>سبک:</b> ترس و بقا، معمایی، اول‌شخص، ماجراجویی و روایت‌محور.</p>
+    <p data-i18n="about_3"><b>محیط:</b> کارخانه‌ی عظیم و متروکه‌ی Playtime Co. و بخش‌های زیرزمینی آن، از جمله Playcare.</p>
+    <p data-i18n="about_4"><b>گیم‌پلی:</b> اکتشاف، حل معما، تعامل با محیط، مخفی‌کاری و فرار از موجودات. GrabPack ابزار نمادین بازی برای انتقال برق، گرفتن اشیا و تعامل از فاصله است.</p>
+    <p data-i18n="about_5"><b>ساختار انتشار:</b> بازی پایه رایگان است و فصل‌های بعدی به‌صورت محتوای جداگانه منتشر شده‌اند؛ Steam در حال حاضر Chapter 2 تا 5 را به‌عنوان DLC فهرست می‌کند.</p>
+    <p data-i18n="about_6"><b>روایت:</b> داستان از ناپدیدشدن کارکنان کارخانه شروع می‌شود و با هر فصل لایه‌های بیشتری از آزمایش‌ها، اسباب‌بازی‌های زنده، Playcare و Prototype آشکار می‌شود.</p>
+    <p data-i18n="about_7"><b>طراحی:</b> تضاد میان ظاهر کودکانه‌ی اسباب‌بازی‌ها و محیط تاریک کارخانه، یکی از پایه‌های هویت بصری و ترس بازی است.</p>
+   </article>
+  </div>
+
+  <div id="project" class="content" style="margin-top:30px">
+   <article class="card full fade-in">
+    <h3 data-i18n="project_title">PROJECT: PLAYTIME</h3>
+    <div class="chapter-banner"><img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Project-_Playtime_trailer_banner.webp" alt="PROJECT" loading="lazy"></div>
+    <p data-i18n="project_p1">PROJECT: PLAYTIME یک بازی ترسناک چندنفره‌ی رایگان از Mob Entertainment است که در 12 دسامبر 2022 به‌صورت Early Access روی Steam منتشر شد.</p>
+    <p data-i18n="project_p2">در ساختار اصلی، شش بازیکن تلاش می‌کنند یک اسباب‌بازی بزرگ بسازند و هم‌زمان از هیولایی که در کارخانه پرسه می‌زند جان سالم به در ببرند؛ بازیکن هفتم نقش هیولا را بر عهده می‌گیرد.</p>
+    <p data-i18n="project_p3"><b>ویژگی‌ها:</b> همکاری آنلاین، نقش‌های Survivor و Monster، نقشه‌های بزرگ کارخانه، پازل، قابلیت‌های قابل ارتقا، Perkها و شخصی‌سازی ظاهری.</p>
+    <p data-i18n="project_p4"><b>سیستم موردنیاز رسمی Steam:</b> حداقل Windows 10، پردازنده Intel Core i5، رم 8GB، GTX 1050 یا Radeon RX 580 و 20GB فضای ذخیره‌سازی. سیستم پیشنهادی 12GB RAM و RTX 2060 Super یا RX 5700 XT اعلام شده است.</p>
+    <div class="quote" data-i18n="project_quote">PROJECT: PLAYTIME از نظر ساختار با فصل‌های تک‌نفره متفاوت است، اما در همان جهان Playtime Co. و Bigger Bodies Initiative قرار دارد.</div>
+   </article>
+  </div>
+
+  <div id="news" class="content" style="margin-top:30px">
+   <article class="card full fade-in">
+    <h3 data-i18n="news_title">مقالات و تحلیل‌های عمیق</h3>
+    <p data-i18n="news_desc">تحلیل‌ها، اطلاعات تأییدشده‌ها و پیش‌بینی‌های عمیق درباره‌ی دنیای Poppy Playtime. روی هر کارت بزن تا کامل بخونی.</p>
+    <div class="articleGrid">
+     <div class="articleCard" data-article="poppy-analysis">
+      <span class="articleIcon">🌹</span>
+      <h4 data-i18n="a1_title">تحلیل عمیق Poppy: قربانی یا گرداننده؟</h4>
+      <p data-i18n="a1_desc">پشت جعبه‌ی صوتی و ظاهر معصومانه‌ی Poppy، یکی از پیچیده‌ترین شخصیت‌های سری پنهان شده است...</p>
+      <span class="readMore" data-i18n="read_more">← ادامه مطلب</span>
+     </div>
+     <div class="articleCard" data-article="prototype-1006">
+      <span class="articleIcon">🦾</span>
+      <h4 data-i18n="a2_title">راز Prototype: آزمایش شماره ۱۰۰۶</h4>
+      <p data-i18n="a2_desc">شماره‌ی Experiment 1006 یک عدد ساده نیست. این شماره به‌تنهایی تعداد دقیق آزمایش‌های قبلی یا موفق و ناموفق بودن آن‌ها را ثابت نمی‌کند.</p>
+      <span class="readMore" data-i18n="read_more">← ادامه مطلب</span>
+     </div>
+     <div class="articleCard" data-article="catnap-dream">
+      <span class="articleIcon">🐱</span>
+      <h4 data-i18n="a3_title">CatNap و علم پشت دود قرمز</h4>
+      <p data-i18n="a3_desc">دود قرمز CatNap یکی از عناصر مهم روایت Chapter 3 است؛ در خود بازی با خواب، ادراک و وضعیت ذهنی مرتبط می‌شود، اما نباید منشأ علمی واقعی مشخصی برای آن فرض کرد.</p>
+      <span class="readMore" data-i18n="read_more">← ادامه مطلب</span>
+     </div>
+     <div class="articleCard" data-article="bigger-bodies">
+      <span class="articleIcon">🧪</span>
+      <h4 data-i18n="a4_title">Bigger Bodies Initiative: حقیقت مخفی</h4>
+      <p data-i18n="a4_desc">پروژه‌ای که همه چیز را توضیح می‌دهد. از تبدیل اسباب‌بازی به موجودات زنده تا ناپدیدشدن کارکنان...</p>
+      <span class="readMore" data-i18n="read_more">← ادامه مطلب</span>
+     </div>
+     <div class="articleCard" data-article="hour-of-joy">
+      <span class="articleIcon">🕰️</span>
+      <h4 data-i18n="a5_title">Hour of Joy: چه اتفاقی افتاد؟</h4>
+      <p data-i18n="a5_desc">روزی که کارکنان Playtime Co. برای همیشه ناپدید شدند. بازسازی دقیق این رویداد از روی سرنخ‌های بازی...</p>
+      <span class="readMore" data-i18n="read_more">← ادامه مطلب</span>
+     </div>
+     <div class="articleCard" data-article="chapter6">
+      <span class="articleIcon">🔮</span>
+      <h4 data-i18n="a6_title">Chapter 6: وضعیت رسمی و مرز بین واقعیت و حدس</h4>
+      <p data-i18n="a6_desc">بعد از Broken Things چه اتفاقی می‌افتد؟ تحلیل اطلاعات تأییدشده‌های محبوب طرفداران و سرنخ‌های پنهان...</p>
+      <span class="readMore" data-i18n="read_more">← ادامه مطلب</span>
+     </div>
+     <div class="articleCard" data-article="vhs-secrets">
+      <span class="articleIcon">📼</span>
+      <h4 data-i18n="a7_title">رازهای پنهان VHS Tapes</h4>
+      <p data-i18n="a7_desc">هر نوار VHS یک تیکه از پازل است. کدهای مخفی، صداهای زیر متن و پیام‌های پنهانی که فقط با دقت دیده می‌شوند...</p>
+      <span class="readMore" data-i18n="read_more">← ادامه مطلب</span>
+     </div>
+    </div>
+   </article>
+  </div>
+
+  <div class="footer">
+   <div class="footer-card">
+    <div class="glow tr"></div><div class="glow bl"></div>
+    <div class="icon">🎮</div>
+    <h3 data-i18n="footer_title">ساخته شده توسط کانال <b>Poppy Playtime HV</b></h3>
+    <p data-i18n="footer_desc">Poppy Playtime Archive<br>یک تجربه‌ی اطلاعاتی تعاملی برای طرفداران</p>
+    <a href="https://rubika.ir/poppy_play_time_HV" target="_blank" rel="noopener" class="footer-link">
+     <span>@poppy_play_time_HV</span>
+     <span class="small">سازنده‌ی وب‌سایت</span>
+    </a>
+    <div class="footer-bottom">Poppy Playtime Archive • Fan Information Experience</div>
+   </div>
+   <div class="coming-soon" data-i18n="coming_soon">
+    <span>📢</span>
+    به زودی مقالات جدیدی در این وب‌سایت قرار می‌گیرد، همراه ما باشید.
+   </div>
+  </div>
+ </div>
+</section>
+
+<div class="chatButton show" id="chatButton">
+ <button id="chatToggleBtn" title="Comments">💬</button>
+</div>
+
+<button class="backTop" id="backTop" aria-label="Back to top">↑</button>
+
+<div class="lightbox" id="lightbox">
+ <button class="closeX" id="lightboxClose">×</button>
+ <img id="lightboxImg" src="" alt="">
+</div>
+
+<div class="customConfirm" id="customConfirm">
+ <div class="customConfirmBox">
+  <p id="confirmMessage">آیا مطمئنی؟</p>
+  <div class="customConfirmButtons">
+   <button class="confirmYes" id="confirmYes">بله، حذف کن</button>
+   <button class="confirmNo" id="confirmNo">انصراف</button>
+  </div>
+ </div>
+</div>
+
+<div class="articleModal" id="articleModal">
+ <div class="articleModalBox">
+  <button class="closeArticle" id="closeArticle">×</button>
+  <h2 id="articleTitle"></h2>
+  <span class="articleMeta" id="articleMeta"></span>
+  <div id="articleContent"></div>
+ </div>
+</div>
+
+<div class="commentModal" id="commentModal">
+ <div class="commentHeader">
+  <h4>💬 نظرات</h4>
+  <button id="closeComments">✕</button>
+ </div>
+ <div class="commentList" id="commentList">
+  <p style="text-align:center;color:var(--muted);font-size:13px;">در حال بارگذاری...</p>
+ </div>
+ <div class="commentForm" id="commentForm">
+  <input id="userName" type="text" placeholder="نام شما" maxlength="50">
+  <textarea id="userComment" placeholder="نظر شما..." rows="3" maxlength="500"></textarea>
+  <button id="submitComment">ثبت نظر</button>
+ </div>
+ <div class="myCommentBox" id="myCommentBox">
+  <div class="label">نظر شما:</div>
+  <div class="myText" id="myCommentText"></div>
+  <button class="editBtn" id="editBtn">✏️ ویرایش نظر</button>
+  <button class="deleteBtn" id="deleteBtn">🗑️ حذف نظر</button>
+  <div class="editLimit" id="editLimit"></div>
+ </div>
+ <div class="editForm" id="editForm">
+  <textarea id="editComment" rows="3" maxlength="500"></textarea>
+  <div class="row">
+   <button class="saveBtn" id="saveEdit">ذخیره</button>
+   <button class="cancelBtn" id="cancelEdit">انصراف</button>
+  </div>
+ </div>
+</div>
+</div>
+
+<script>
+const API_BASE = 'https://poppy-comments-api.hosseinasgari898989.workers.dev';
+const $ = id => document.getElementById(id);
+const MAX_EDITS = 3;
+const MUSIC_URL = 'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/The%20Hour%20of%20Joy.m4a';
+function showToast(msg, type) {
+  const box = $('toastBox');
+  const t = document.createElement('div');
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.textContent = msg;
+  box.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(-20px)'; setTimeout(() => t.remove(), 300); }, 3200);
+}
+
+function normalizeText(t){
+  return t.toString().toLowerCase()
+    .replace(/[^\w\s\u0600-\u06FF]/g,'')
+    .replace(/[يى]/g,'ی').replace(/[ك]/g,'ک')
+    .replace(/[آأإ]/g,'ا').replace(/[ۀه]/g,'ه')
+    .replace(/[\u200c\u200d]/g,' ')
+    .replace(/(.)\1{2,}/g,'$1$1')
+    .replace(/\s+/g,' ').trim();
+}
+
+const getUserID = () => {
+  let id = localStorage.getItem('poppy_user_id');
+  if (!id) { id = 'user_' + Math.random().toString(36).substr(2, 12) + Date.now().toString(36); localStorage.setItem('poppy_user_id', id); }
+  return id;
+};
+function escapeHtml(str){return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+function customConfirm(message) {
+  return new Promise((resolve) => {
+    const overlay = $('customConfirm');
+    $('confirmMessage').textContent = message;
+    overlay.classList.add('show');
+    const yes = $('confirmYes');
+    const no = $('confirmNo');
+    const cleanup = (result) => {
+      overlay.classList.remove('show');
+      yes.onclick = null;
+      no.onclick = null;
+      resolve(result);
+    };
+    yes.onclick = () => cleanup(true);
+    no.onclick = () => cleanup(false);
+  });
+}
+
+function showArchive(){ $('home').classList.remove('active'); $('archive').classList.add('active'); $('searchBtn').classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'}); }
+$('openArchive').onclick = showArchive;
+$('homeBtn').onclick = () => { $('archive').classList.remove('active'); $('home').classList.add('active'); $('searchBtn').classList.add('hidden'); $('searchPanel').classList.remove('show'); window.scrollTo({top:0,behavior:'smooth'}); };
+document.querySelectorAll('.navcard').forEach(b => b.onclick = () => document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth',block:'start'}));
+
+document.querySelectorAll('.filterBtn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.filterBtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('#characters article[data-section]').forEach(art => {
+      art.style.display = (f === 'all' || art.dataset.section === f) ? 'block' : 'none';
+    });
+  };
+});
+
+const lightbox = $('lightbox');
+document.addEventListener('click', e => {
+  if (e.target.tagName === 'IMG' && e.target.closest('.char-img, .chapter-banner')) {
+    $('lightboxImg').src = e.target.src;
+    lightbox.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+});
+$('lightboxClose').onclick = () => { lightbox.classList.remove('show'); document.body.style.overflow = ''; };
+lightbox.onclick = e => { if (e.target === lightbox) { lightbox.classList.remove('show'); document.body.style.overflow = ''; } };
+
+const perfBtn = $('perfBtn');
+function setPerf(on) { document.body.classList.toggle('perf-mode', on); perfBtn.classList.toggle('active', on); localStorage.setItem('poppy_perf', on ? '1' : '0'); }
+perfBtn.onclick = () => setPerf(!document.body.classList.contains('perf-mode'));
+setPerf(localStorage.getItem('poppy_perf') === '1');
+
+// ============ Music Controls + Autoplay Fallback ============
+const music = $('bgMusic');
+music.src = MUSIC_URL;
+music.loop = true;
+
+const musicBtn = $('musicBtn');
+const musicPanel = $('musicPanel');
+const musicVol = $('musicVolume');
+
+let targetVolume = Number(localStorage.getItem('poppy_music_vol'));
+if (!Number.isFinite(targetVolume)) targetVolume = 30;
+targetVolume = Math.max(0, Math.min(100, targetVolume)) / 100;
+musicVol.value = Math.round(targetVolume * 100);
+
+let musicPlaying = false;
+let fadeInterval = null;
+
+function fadeTo(audio, target, duration, callback) {
+  if (fadeInterval) clearInterval(fadeInterval);
+  const start = audio.volume;
+  const steps = Math.max(1, Math.ceil(duration / 40));
+  const step = (target - start) / steps;
+  let cur = start;
+  let count = 0;
+
+  fadeInterval = setInterval(() => {
+    count++;
+    cur += step;
+
+    if (count >= steps) {
+      audio.volume = Math.max(0, Math.min(1, target));
+      clearInterval(fadeInterval);
+      fadeInterval = null;
+      if (callback) callback();
+    } else {
+      audio.volume = Math.max(0, Math.min(1, cur));
+    }
+  }, 40);
+}
+
+function updateMusicUI() {
+  $('musicPlayPause').textContent = musicPlaying ? '⏸ توقف' : '▶ پخش';
+  musicBtn.classList.toggle('active', musicPlaying);
+}
+
+async function startMusic() {
+  if (musicPlaying) return true;
+
+  if (targetVolume <= 0) {
+    targetVolume = 0.3;
+    musicVol.value = 30;
+    localStorage.setItem('poppy_music_vol', '30');
+  }
+
+  music.volume = 0;
+
+  try {
+    await music.play();
+    musicPlaying = true;
+    updateMusicUI();
+    fadeTo(music, targetVolume, 1200);
+    return true;
+  } catch (err) {
+    musicPlaying = false;
+    updateMusicUI();
+    return false;
+  }
+}
+
+function stopMusic() {
+  fadeTo(music, 0, 500, () => {
+    music.pause();
+    music.volume = targetVolume;
+  });
+  musicPlaying = false;
+  updateMusicUI();
+}
+
+// Browsers may block audible autoplay. Retry automatically after the first real user gesture.
+['DOMContentLoaded','load'].forEach(evt => {
+  window.addEventListener(evt, () => setTimeout(() => {
+    if (!musicPlaying) startMusic();
+  }, 150));
+});
+
+function unlockMusicFromGesture() {
+  if (!musicPlaying) startMusic();
+  ['pointerdown','touchstart','keydown'].forEach(evt => {
+    document.removeEventListener(evt, unlockMusicFromGesture);
+  });
+}
+
+['pointerdown','touchstart','keydown'].forEach(evt => {
+  document.addEventListener(evt, unlockMusicFromGesture, { passive:true });
+});
+
+musicBtn.onclick = (e) => {
+  e.stopPropagation();
+  musicPanel.classList.toggle('show');
+};
+
+$('musicPlayPause').onclick = async () => {
+  if (musicPlaying) stopMusic();
+  else await startMusic();
+};
+
+musicVol.oninput = () => {
+  targetVolume = Math.max(0, Math.min(100, Number(musicVol.value))) / 100;
+  localStorage.setItem('poppy_music_vol', String(Math.round(targetVolume * 100)));
+
+  if (targetVolume > 0 && musicPlaying) {
+    music.volume = targetVolume;
+  }
+};
+
+music.addEventListener('play', () => {
+  musicPlaying = true;
+  updateMusicUI();
+});
+
+music.addEventListener('pause', () => {
+  musicPlaying = false;
+  updateMusicUI();
+});
+
+let lastNotifTime = 0;
+window.addEventListener('scroll', () => {
+  const ws = document.documentElement.scrollTop;
+  const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  $('progressBar').style.width = (ws / h * 100) + '%';
+  const show = ws > 400;
+  $('backTop').classList.toggle('show', show);
+  $('chatButton').classList.toggle('show', show);
+  if (!show) { $('commentModal').classList.remove('show'); }
+}, {passive:true});
+$('backTop').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0, rootMargin: '0px 0px 200px 0px' });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+$('searchBtn').onclick = () => {
+  const p = $('searchPanel');
+  p.classList.toggle('show');
+  if (p.classList.contains('show')) setTimeout(() => $('searchInput').focus(), 100);
+  else { $('searchResults').classList.remove('show'); $('searchInput').value = ''; }
+};
+$('searchInput').addEventListener('input', e => {
+  const q = normalizeText(e.target.value);
+  const results = $('searchResults');
+  if (q.length < 2) { results.classList.remove('show'); return; }
+  const matches = [];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const text = normalizeText(el.textContent || '');
+    if (text.includes(q)) {
+      const section = el.closest('article') || el.closest('.card');
+      if (!section) return;
+      if (matches.find(m => m.el === section)) return;
+      const titleEl = section.querySelector('h3, h2, .year');
+      const title = titleEl ? titleEl.textContent.trim() : 'بخش';
+      const preview = el.textContent.trim().substring(0, 80) + '...';
+      matches.push({el: section, title, preview});
+    }
+  });
+  if (!matches.length) results.innerHTML = '<div class="empty">نتیجه‌ای یافت نشد / No results</div>';
+  else {
+    results.innerHTML = matches.slice(0,8).map((m,i) => '<div class="resultItem" data-i="' + i + '"><strong>' + escapeHtml(m.title) + '</strong>' + escapeHtml(m.preview) + '</div>').join('');
+    results.querySelectorAll('.resultItem').forEach((item,i) => {
+      item.onclick = () => { matches[i].el.scrollIntoView({behavior:'smooth', block:'start'}); results.classList.remove('show'); $('searchPanel').classList.remove('show'); $('searchInput').value = ''; };
+    });
+  }
+  results.classList.add('show');
+});
+
+// ============ Articles Data ============
+const articles = {
+ 'poppy-analysis': {
+  fa: { title: 'Poppy: واقعیت‌های تأییدشده درباره‌ی عروسک مرموز', meta: 'لور رسمی • 7 دقیقه',
+   content: `<p>Poppy یکی از مهم‌ترین شخصیت‌های Poppy Playtime است؛ اما بسیاری از برداشت‌های رایج درباره‌ی او از مرز واقعیت رسمی عبور می‌کنند. در این نسخه، فقط اطلاعاتی نگه داشته شده که با روایت و معرفی رسمی سازگار است.</p><h3>یک عروسک معمولی نیست</h3><p>Poppy از موفق‌ترین محصولات اولیه‌ی Playtime Co. بود و با voice box خود امکان گفت‌وگوی مستقیم با کودک را فراهم می‌کرد. سال‌ها بعد، Player او را در محفظه‌ی شیشه‌ای پیدا می‌کند و در پایان Chapter 1 آزاد می‌کند. از همین نقطه، Poppy از یک شیء مرموز به شخصیتی فعال در مسیر داستان تبدیل می‌شود.</p><h3>هدف Poppy</h3><p>اطلاعات رسمی فعلی Poppy را موجودی می‌داند که حس شدیدی از درست و غلط در او باقی مانده، اما در عین حال برای اجرای نقشه‌ی انتقامش از Player و دیگران استفاده می‌کند. بنابراین تصویر «Poppy کاملاً معصوم» با لور رسمی سازگار نیست؛ همان‌طور که برچسب «شرور نهایی» نیز بدون اثبات کافی است.</p><h3>چرا Poppy به Player نیاز دارد؟</h3><p>Player قابلیت دسترسی به قسمت‌هایی از کارخانه را دارد که Poppy به‌تنهایی نمی‌تواند از آن‌ها عبور کند. به همین دلیل همکاری میان آن‌ها از یک نجات ساده فراتر می‌رود و به یک اتحاد موقت و هدفمند تبدیل می‌شود.</p><h3>چه چیزهایی هنوز قطعی نیست؟</h3><p>هویت کامل گذشته‌ی Poppy، همه‌ی جزئیات انگیزه‌هایش و اینکه پایان نهایی نقشه‌ی او دقیقاً چه خواهد بود، نباید با نظریه‌های اینترنتی پر شود. این نسخه عمداً نظریه‌ی همکاری مخفیانه با Prototype یا خیانت قطعی Poppy را به‌عنوان حقیقت حذف کرده است.</p><h3>جمع‌بندی</h3><p>Poppy یک شخصیت پیچیده، هدفمند و بسیار مهم است؛ نه صرفاً قربانی و نه صرفاً شرور. قطعی‌ترین نکته این است که او برای پیشبرد هدفش از Player استفاده می‌کند و برنامه‌ای بزرگ‌تر از آزادی خودش دارد.</p>` },
+  en: { title: 'Poppy: Confirmed Facts About the Mysterious Doll', meta: 'Official Lore • 7 min',
+   content: `<p>Poppy is one of the most important characters in Poppy Playtime, but many popular claims about her go beyond what the story actually confirms. This version keeps only information supported by the current lore.</p><h3>She Is Not an Ordinary Doll</h3><p>Poppy was one of Playtime Co.’s major early successes, equipped with a voice box that let children talk directly with her. Years later, the Player finds her inside a glass case and frees her at the end of Chapter 1. From that point onward, Poppy becomes an active force in the story.</p><h3>Poppy’s Goal</h3><p>Current official material describes Poppy as being guided by a strong sense of right and wrong while also making clear that she will use the Player and others to carry out her revenge plan. That means calling her completely innocent is inaccurate, but calling her the final villain is also unsupported.</p><h3>Why Does Poppy Need the Player?</h3><p>The Player can reach parts of the factory that Poppy cannot easily access alone. Their relationship therefore becomes more than a simple rescue: it is a temporary and purposeful alliance.</p><h3>What Is Still Unconfirmed?</h3><p>Poppy’s complete past, every detail of her motives, and the final outcome of her plan should not be filled with fan theories. This version removes the old claims that she is secretly working with the Prototype or that she will definitely betray the Player.</p><h3>Conclusion</h3><p>Poppy is a complex, goal-driven character who matters enormously to the larger story. The clearest confirmed point is that she is willing to use the Player to pursue a larger revenge plan.</p>` }
+ },
+ 'prototype-1006': {
+  fa: { title: 'Prototype و Experiment 1006: چه چیزهایی قطعی است؟', meta: 'لور رسمی • 8 دقیقه',
+   content: `<p>Prototype با عنوان رسمی <b>Experiment 1006</b> یکی از اصلی‌ترین رازهای کل مجموعه است. در نسخه‌های قبلی، از عدد 1006 نتیجه‌هایی گرفته شده بود که خود عدد به‌تنهایی آن‌ها را ثابت نمی‌کند. این مقاله آن خطا را اصلاح می‌کند.</p><h3>1006 یعنی چه؟</h3><p>1006 شناسه‌ی آزمایشی Prototype است. همین مقدار قطعی است. اما از روی شماره نمی‌توان گفت دقیقاً 1005 آزمایش قبلی وجود داشته یا همه‌ی آن‌ها «ناموفق» بوده‌اند؛ شماره‌گذاری لزوماً چنین تاریخچه‌ای را ثابت نمی‌کند.</p><h3>چرا Prototype خطرناک است؟</h3><p>منابع رسمی او را باهوش، حیله‌گر و بسیار ماهر در فریب توصیف می‌کنند. او فقط یک هیولای قدرتمند نیست؛ اثر او بر دیگر Experimentها و پیروانی که پیدا کرده، بخش بزرگی از تهدید اصلی سری را می‌سازد.</p><h3>رابطه‌ی Prototype با Hour of Joy</h3><p>Prototype در داستان به‌عنوان عامل اصلی Hour of Joy شناخته می‌شود؛ رخدادی که در آن موجودات زنده‌ی کارخانه علیه انسان‌ها شورش کردند. این نقطه، یکی از مهم‌ترین دلایل تبدیل‌شدن کارخانه به ویرانه‌ای پر از موجودات زنده و دشمنانه است.</p><h3>قطعات و نفوذ او</h3><p>در طول فصل‌ها، Prototype در جمع‌آوری قطعات بدن و استفاده از دیگر آزمایش‌ها نقش دارد. همین رفتار نشان می‌دهد او صرفاً به کشتن یا فرار فکر نمی‌کند و در ساختن یک ساختار قدرت درون کارخانه نقش داشته است.</p><h3>هویت واقعی Prototype</h3><p>هویت کامل Prototype همچنان یکی از رازهای داستان است. نظریه‌هایی مثل «Prototype همان Elliot Ludwig است» یا دیگر شخصیت‌های انسانی را نباید به‌عنوان حقیقت نوشت مگر اینکه خود بازی آن را صریحاً تأیید کند.</p><h3>نتیجه</h3><p>قطعی‌ترین تصویر امروز این است: Experiment 1006 یک موجود بسیار باهوش و خطرناک است که در Hour of Joy نقش محوری داشته و بر بخش بزرگی از آزمایش‌های کارخانه نفوذ گذاشته است؛ اما هنوز نباید جاهای خالی داستان را با فرضیه پر کرد.</p>` },
+  en: { title: 'The Prototype and Experiment 1006: What Is Actually Confirmed?', meta: 'Official Lore • 8 min',
+   content: `<p>The Prototype, officially designated <b>Experiment 1006</b>, is one of the central mysteries of the series. The number 1006 is only the Prototype’s experiment designation; it does not by itself establish the full history of earlier experiments.</p><h3>What Does 1006 Mean?</h3><p>1006 is the Prototype’s experiment designation. That is confirmed. The number alone does not prove that exactly 1005 earlier experiments existed or that all of them failed; numbering by itself does not provide that complete history.</p><h3>Why Is the Prototype So Dangerous?</h3><p>Official material describes him as intelligent, cunning, and highly capable of manipulation. He is not simply a strong monster: his influence over other experiments and the followers he has gained are central to the threat he represents.</p><h3>The Prototype and the Hour of Joy</h3><p>The Prototype is established as the driving force behind the Hour of Joy, when the living experiments turned against the humans inside the factory. That event is one of the main reasons Playtime Co. became the ruined and hostile place seen by the Player.</p><h3>Parts and Influence</h3><p>Across the chapters, the Prototype is associated with collecting parts from other creatures and using the experiments around him. This shows a character concerned with power and control inside the factory rather than simply escaping.</p><h3>His True Identity</h3><p>The Prototype’s full identity remains a major story mystery. Fan theories about the Prototype’s human identity should not be presented as fact unless the game itself confirms them directly.</p><h3>Conclusion</h3><p>The strongest confirmed picture is that Experiment 1006 is an extremely intelligent and dangerous creature who played the central role in the Hour of Joy and has major influence over the factory’s experiments. The unanswered gaps should remain unanswered rather than being filled with fan speculation.</p>` }
+ },
+ 'catnap-dream': {
+  fa: { title: 'CatNap و Red Smoke: آنچه بازی واقعاً تأیید می‌کند', meta: 'لور رسمی • 7 دقیقه',
+   content: `<p>CatNap یکی از شخصیت‌هایی است که بیشترین شایعه درباره‌ی توانایی‌هایش ساخته شده است. دلیل آن هم Red Smoke است؛ عنصری که در Chapter 3 به‌شدت با خواب و کابوس گره خورده است.</p><h3>CatNap چه کسی بود؟</h3><p>اطلاعات رسمی فعلی CatNap را <b>Experiment 1188</b> و همان Theodore Grambell معرفی می‌کند. Prototype در گذشته Theodore را نجات داد و همین رابطه، وفاداری عمیق CatNap را شکل داد.</p><h3>Red Smoke چه می‌کند؟</h3><p>در Chapter 3، Red Smoke با خواب، کابوس و ناتوانی Player در ارتباط است. این اثر در منطق دنیای بازی واقعی است و بخشی از تهدید CatNap را می‌سازد.</p><h3>علم واقعی وارد ماجرا نکنیم</h3><p>این آرشیو منشأ Red Smoke را به مواد یا پژوهش‌های واقعی نسبت نمی‌دهد، چون چنین منشأیی در لور رسمی تأیید نشده است. شباهت‌های مفهومی با علم واقعی ممکن است جالب باشند، اما بدون تأیید رسمی نباید آن‌ها را به‌عنوان منشأ Red Smoke معرفی کرد.</p><h3>CatNap و Prototype</h3><p>مهم‌ترین رابطه‌ی قطعی این است که CatNap به Prototype وفادار است و Playcare پس از Hour of Joy برای او به یک محل شکار و پرستش Prototype تبدیل می‌شود. این موضوع از نظریه‌ی «قدرت گرفتن CatNap به‌خاطر دود» مهم‌تر و مطمئن‌تر است.</p><h3>نتیجه</h3><p>CatNap یک Experiment انسانی‌ریشه‌دار با وفاداری شدید به Prototype است و Red Smoke یکی از سلاح‌ها و ابزارهای داستانی اصلی اوست. اما نباید برای آن منشأ علمی واقعی بسازیم.</p>` },
+  en: { title: 'CatNap and Red Smoke: What the Game Actually Confirms', meta: 'Official Lore • 7 min',
+   content: `<p>CatNap is one of the characters surrounded by the most speculation, largely because of Red Smoke, an element that becomes deeply connected to sleep and nightmares in Chapter 3.</p><h3>Who Was CatNap?</h3><p>Current official material identifies CatNap as <b>Experiment 1188</b> and Theodore Grambell. The Prototype once saved Theodore, and that relationship became the basis of CatNap’s intense loyalty.</p><h3>What Does Red Smoke Do?</h3><p>In Chapter 3, Red Smoke is associated with sleep, nightmares, and the Player’s loss of control. Its effects are part of the game’s fictional lore and one of CatNap’s defining threats.</p><h3>Do Not Turn Real Science into Canon</h3><p>The previous version connected Red Smoke to substances such as DMT and real mind-control research. That claim has been removed. Real-world similarities can be interesting, but they do not prove the origin of Red Smoke in the game.</p><h3>CatNap and the Prototype</h3><p>The strongest confirmed relationship is CatNap’s devotion to the Prototype. After the Hour of Joy, Playcare became CatNap’s hunting ground and a place of worship for the Prototype. That is firmer than theories about Red Smoke giving CatNap special powers.</p><h3>Conclusion</h3><p>CatNap is a human-rooted Experiment with an intense loyalty to the Prototype, and Red Smoke is one of his defining story tools. Its fictional effect is established; a real scientific origin is not.</p>` }
+ },
+ 'bigger-bodies': {
+  fa: { title: 'Bigger Bodies Initiative: پروژه‌ای که سقوط Playtime Co. را ساخت', meta: 'لور رسمی • 9 دقیقه',
+   content: `<p>Bigger Bodies Initiative یکی از مهم‌ترین پایه‌های Lore بازی است و برخلاف بسیاری از نظریه‌های اینترنتی، بخش قابل‌توجهی از آن دیگر یک راز نیست. The Doctor، یعنی Harley Sawyer، به‌عنوان آغازگر این پروژه معرفی شده است.</p><h3>هدف اصلی پروژه</h3><p>هدف Bigger Bodies ایجاد موجودات زنده‌ی بسیار بزرگ بود؛ موجوداتی که بتوانند نقش‌هایی را ایفا کنند که یک نیروی انسانی عادی نمی‌توانست. این پروژه Playtime Co. را وارد مسیر آزمایش روی موجودات انسانی و تبدیل افراد به Experiment کرد.</p><h3>نقش Harley Sawyer</h3><p>The Doctor همان Doctor Harley Sawyer است؛ دانشمندی بی‌رحم که سیستم آزمایش‌ها را هدایت کرد. منابع رسمی او را مبتکر Bigger Bodies و شاگرد سابق Elliot Ludwig می‌دانند. او صدها آزمایش را برای رسیدن به مسیر موسوم به <i>golden path</i> سازمان داد.</p><h3>ارتباط با Playcare</h3><p>داستان نشان می‌دهد کودکان و یتیمان Playcare بخشی از این تاریخ تاریک بودند. موجوداتی مثل CatNap، Yarnaby و دیگر Bigger Bodies با گذشته‌های انسانی یا پرونده‌های آزمایشی مشخص به ما نشان می‌دهند که این پروژه فقط درباره‌ی ساخت عروسک نبود.</p><h3>Huggy، Mommy و دیگر Experimentها</h3><p>Huggy، Kissy و Mommy هر کدام Experimentهای مشخصی هستند و وجود شماره‌ی آزمایش برای آن‌ها بخشی از ساختار رسمی دنیاست. اما ترتیب عددی به‌تنهایی اجازه نمی‌دهد تمام مراحل پروژه یا فهرست کامل موفق و ناموفق‌ها را حدس بزنیم.</p><h3>چرا پروژه خطرناک شد؟</h3><p>Playtime Co. در تلاش برای حل مشکلات داخلی، مرز اخلاقی را کنار گذاشت. نتیجه ایجاد موجوداتی بود که از نظر قدرت، احساس و هوش از یک محصول معمولی فراتر رفتند و در نهایت بخشی از کارخانه را در اختیار گرفتند.</p><h3>نتیجه</h3><p>Bigger Bodies را باید به‌عنوان یک پروژه‌ی واقعی و رسمی در جهان بازی دید، نه یک نظریه. چیزی که هنوز محل سؤال است، همه‌ی جزئیات فنی، ترتیب کامل آزمایش‌ها و برخی انگیزه‌های پشت هر Experiment است.</p>` },
+  en: { title: 'Bigger Bodies Initiative: The Project Behind Playtime Co.’s Fall', meta: 'Official Lore • 9 min',
+   content: `<p>The Bigger Bodies Initiative is one of the foundations of the game’s lore, and unlike many internet theories, a large part of it is no longer a mystery. The Doctor, Doctor Harley Sawyer, is officially identified as the originator of the project.</p><h3>The Core Goal</h3><p>The Initiative aimed to create giant living beings that could perform roles beyond a normal human workforce. This pushed Playtime Co. toward human experimentation and the transformation of people into Experiments.</p><h3>Harley Sawyer’s Role</h3><p>The Doctor is Doctor Harley Sawyer, a ruthless scientist who drove the experimental system. Official material identifies him as the originator of the Bigger Bodies Initiative and a former pupil of Elliot Ludwig. He orchestrated systemic experimentation in pursuit of his so-called <i>golden path</i>.</p><h3>The Link to Playcare</h3><p>The story establishes that children and Playcare orphans became part of this dark history. Characters such as CatNap and Yarnaby carry human identities or experiment records, showing that the Initiative was never simply about making better toys.</p><h3>Huggy, Mommy, and Other Experiments</h3><p>Huggy, Kissy, and Mommy each have official experiment designations. Those labels are part of the world-building, but the numbers alone do not let us reconstruct every stage of the Initiative or invent a complete list of successful and failed subjects.</p><h3>Why Did the Project Become Dangerous?</h3><p>Playtime Co. crossed ethical lines while trying to solve its internal problems. The result was a population of living beings whose strength, emotion, and intelligence went far beyond ordinary toys and eventually reshaped the factory itself.</p><h3>Conclusion</h3><p>Bigger Bodies should be treated as a confirmed part of the game’s world, not a fan theory. What remains open are specific technical details, the complete experiment chronology, and some individual motives.</p>` }
+ },
+ 'hour-of-joy': {
+  fa: { title: 'Hour of Joy: از سرنخ تا واقعیت داستانی', meta: 'لور رسمی • 8 دقیقه',
+   content: `<p>Hour of Joy نقطه‌ی عطف اصلی تاریخ کارخانه است. این رویداد در نهایت همان چیزی را توضیح می‌دهد که Player سال‌ها بعد با آن روبه‌رو می‌شود: کارخانه‌ای خالی از انسان اما پر از موجودات زنده و خطرناک.</p><h3>چه اتفاقی افتاد؟</h3><p>در Hour of Joy، آزمایش‌های زنده‌ی کارخانه علیه انسان‌های حاضر شورش کردند. این یک حادثه‌ی تصادفی ساده نبود؛ Prototype در روایت نقش محوری و سازمان‌دهنده‌ی این رخداد را دارد.</p><h3>چرا این رویداد این‌قدر مهم است؟</h3><p>قبل از Hour of Joy، Playtime Co. هنوز یک ساختار صنعتی فعال بود، هرچند پشت ظاهر آن آزمایش‌های غیرانسانی جریان داشت. بعد از آن، نظم شرکت عملاً از بین رفت و آزمایش‌ها کنترل بخش‌های مختلف کارخانه را در دست گرفتند.</p><h3>Prototype و پیروانش</h3><p>Prototype در مرکز این تغییر قرار دارد. پیروان او فقط دشمنان تصادفی نیستند؛ CatNap نمونه‌ی روشنی از موجودی است که وفاداری‌اش به Prototype بعد از دستکاری و آزمایش‌ها ادامه پیدا کرد.</p><h3>Poppy کجا قرار می‌گیرد؟</h3><p>Poppy نیز از بازمانده‌های داستانی این جهان است و به‌وضوح برای درک آنچه در کارخانه اتفاق افتاده اهمیت دارد. اما این نسخه از آرشیو از ادعای «Poppy و Prototype هر دو Hour of Joy را یک شروع تازه می‌دانستند» یا هر جزئیات مشابهی که متن رسمی آن را تأیید نمی‌کند، خودداری می‌کند.</p><h3>نتیجه</h3><p>Hour of Joy را می‌توان یکی از قطعی‌ترین نقاط داستان دانست: شورش بزرگ Experimentها علیه انسان‌ها، نقش محوری Prototype و آغاز وضعیت جدید کارخانه. جزئیات بعضی صحنه‌ها را باید از خود VHSها و روایت بازی برداشت، نه از نظریه‌های شبکه‌های اجتماعی.</p>` },
+  en: { title: 'Hour of Joy: From Clues to Confirmed Story', meta: 'Official Lore • 8 min',
+   content: `<p>The Hour of Joy is the defining turning point in the history of the factory. It ultimately explains why the Player can return years later to a place with no human workforce but with living and dangerous experiments everywhere.</p><h3>What Happened?</h3><p>During the Hour of Joy, the living experiments turned against the humans inside Playtime Co. It was not a simple accident; the Prototype has an established central role in organizing the event.</p><h3>Why Does It Matter?</h3><p>Before the Hour of Joy, Playtime Co. was still an operating industrial structure despite its hidden and unethical experiments. After the event, that order collapsed and the experiments took control of large parts of the factory.</p><h3>The Prototype and His Followers</h3><p>The Prototype sits at the center of this change. His followers are not random enemies; CatNap is a clear example of an Experiment whose loyalty to the Prototype survived experimentation and memory alteration.</p><h3>Where Does Poppy Fit?</h3><p>Poppy is another major surviving figure in this history and an important part of understanding what happened. This archive does not repeat the unsupported claim that Poppy and the Prototype both viewed the Hour of Joy as a shared “new beginning.”</p><h3>Conclusion</h3><p>The most secure facts are that the living experiments rebelled against the humans, the Prototype played a central role, and the event permanently changed the factory. Exact scene-by-scene details should come from the tapes and game itself, not from fan speculation.</p>` }
+ },
+ 'chapter6': {
+  fa: { title: 'Chapter 6: وضعیت رسمی و مرز بین واقعیت و حدس', meta: 'وضعیت فعلی • 6 دقیقه',
+   content: `<p>از آنجا که Chapter 5 در 18 فوریه 2026 منتشر شده و صفحه‌ی رسمی Steam در حال حاضر بسته‌ی Chapter 2 تا 5 را فهرست می‌کند، این آرشیو نباید Chapter 6 را مثل یک داستان منتشرشده معرفی کند. بنابراین به‌جای پیش‌بینی ساختگی، وضعیت رسمی را ثبت می‌کنیم.</p><h3>آخرین فصل منتشرشده چیست؟</h3><p>Chapter 5 با نام <b>Broken Things</b> آخرین Chapter منتشرشده در منابع رسمی بررسی‌شده است. معرفی رسمی آن بازیکن را به اعماق قلمرو Prototype و رازهای قدیمی‌تر کارخانه می‌برد.</p><h3>بعد از Chapter 5 چه چیزهایی قطعی است؟</h3><p>The Doctor، Prototype، Lily، Doey، Giblet و دیگر شخصیت‌های معرفی‌شده در فصل‌های اخیر بخشی از روایت فعلی هستند. همچنین رابطه‌ی میان Bigger Bodies، Playcare و Hour of Joy دیگر صرفاً یک نظریه نیست و در خود داستان ریشه دارد.</p><h3>چه چیزهایی را نباید ادعا کنیم؟</h3><p>هویت‌های فاش‌نشده، پایان قطعی سری، زمان انتشار Chapter 6 و هر نظریه‌ای درباره‌ی «مواجهه‌ی نهایی» نباید بدون اعلام رسمی به‌عنوان حقیقت نوشته شود.</p><h3>چرا این بخش را نگه داشته‌ایم؟</h3><p>این مقاله برای آن است که آرشیو در برابر شایعات آینده مقاوم باشد. هر زمان اطلاعات رسمی تازه‌ای منتشر شود، می‌توان همین قسمت را به‌روزرسانی کرد؛ اما تا آن زمان، ناشناخته‌ها را ناشناخته نگه می‌داریم.</p>` },
+  en: { title: 'Chapter 6: Official Status and the Line Between Lore and Guesswork', meta: 'Current Status • 6 min',
+   content: `<p>Because Chapter 5 released on February 18, 2026 and the current official Steam listing presents Chapters 2–5 as the released DLC package, this archive should not describe Chapter 6 as an already released story chapter. Instead, this article records what is currently established.</p><h3>What Is the Latest Released Chapter?</h3><p>Chapter 5, <b>Broken Things</b>, is the latest released chapter in the official sources checked for this archive. Its official introduction takes the Player deeper into the Prototype’s domain and the factory’s older secrets.</p><h3>What Is Confirmed After Chapter 5?</h3><p>The Doctor, the Prototype, Lily, Doey, Giblet, and the newer cast are part of the current story. The connections between Bigger Bodies, Playcare, and the Hour of Joy are no longer merely fan speculation; they are built into the game’s established lore.</p><h3>What Should We Not Claim?</h3><p>Undisclosed identities, the definitive end of the series, an unannounced Chapter 6 release date, and a supposed final confrontation should not be written as facts without an official announcement.</p><h3>Why Keep This Section?</h3><p>This article keeps the archive resistant to future rumors. When official information changes, this section can be updated; until then, the unknown should remain unknown.</p>` }
+ },
+ 'vhs-secrets': {
+  fa: { title: 'VHSها: چگونه از سرنخ واقعی داستان را بخوانیم؟', meta: 'تحلیل لور • 7 دقیقه',
+   content: `<p>VHSها یکی از مهم‌ترین ابزارهای روایت در Poppy Playtime هستند. آن‌ها قرار نیست فقط یک وسیله‌ی تزئینی باشند؛ بخش زیادی از تاریخ Playtime Co. از طریق همین نوارها منتقل می‌شود.</p><h3>چرا VHS مهم است؟</h3><p>نوارها می‌توانند آموزش‌های کارخانه، معرفی محصولات، اطلاعات کارکنان، آزمایش‌ها و اتفاقات گذشته را نشان دهند. چون این اطلاعات در قالب تبلیغ یا آموزش ارائه می‌شوند، بعضی از آن‌ها عمداً ناقص یا گمراه‌کننده‌اند؛ اما هنوز سرنخ‌های مهمی درباره‌ی جهان بازی می‌دهند.</p><h3>Chapter 1 تا Chapter 3</h3><p>در فصل‌های اول و سوم، VHSها به Player کمک می‌کنند تا از تاریخ کارخانه و Playcare سر دربیاورد. نوارها را باید در کنار محیط، اسناد و وقایع بازی خواند؛ یک جمله‌ی جداشده از زمینه می‌تواند به‌راحتی به نظریه‌ای اشتباه تبدیل شود.</p><h3>ادعای پیام‌های زیرمتنی</h3><p>این آرشیو برای VHSها پیام پنهان مشخصی تعیین نمی‌کند مگر اینکه خود بازی یا منبع رسمی آن را پشتیبانی کند. از اینجا به بعد، فقط پیام‌هایی ثبت می‌شوند که در خود محتوای بازی یا منابع رسمی قابل پشتیبانی باشند.</p><h3>VHS و تاریخ آزمایش‌ها</h3><p>VHSها در کنار پرونده‌ها و جزئیات Playcare به نشان‌دادن رابطه‌ی کودکان، آزمایش‌ها و Bigger Bodies کمک می‌کنند. با این حال، یک نوار منفرد نباید برای ساختن تقویم کامل Experimentها استفاده شود مگر اینکه خود بازی آن را تأیید کند.</p><h3>جمع‌بندی</h3><p>بهترین راه خواندن VHSها این است که آن‌ها را بخشی از یک پرونده‌ی بزرگ‌تر بدانیم: نوار + محیط + سند + رویداد. این روش هم Lore را دقیق‌تر می‌کند و هم جلوی تبدیل شایعات طرفداران به «حقیقت» را می‌گیرد.</p>` },
+  en: { title: 'VHS Tapes: How to Read the Story Without Inventing Evidence', meta: 'Lore Analysis • 7 min',
+   content: `<p>VHS tapes are one of Poppy Playtime’s most important storytelling tools. They are not merely decorative objects; much of Playtime Co.’s history is delivered through them.</p><h3>Why Do VHS Tapes Matter?</h3><p>The tapes can show factory training, product advertisements, employee information, experiments, and fragments of past events. Because some are presented as corporate media, not every line should be treated as a neutral narrator, but the tapes remain vital evidence for understanding the world.</p><h3>Chapters 1 Through 3</h3><p>Across the early chapters, VHS tapes help the Player reconstruct the factory’s history and the role of Playcare. They should be read together with the environment, documents, and events rather than as isolated quotes.</p><h3>Unsupported Subliminal Claims</h3><p>This archive does not assign specific hidden messages to VHS tapes unless the game or official material clearly supports them. Future entries should only record messages that can be directly grounded in the game or official material.</p><h3>VHS and the Experiments</h3><p>The tapes, together with Playcare records and environmental clues, help establish the connection between children, experiments, and the Bigger Bodies Initiative. A single tape should not be used to invent a complete Experiment chronology unless the game itself confirms it.</p><h3>Conclusion</h3><p>The best way to read the VHS tapes is as part of a larger case: tape + environment + document + event. That approach keeps the lore accurate and prevents fan rumors from being mistaken for canon.</p>` }
+ }
+};
+
+let currentArticleKey = null;
+function openArticle(key) {
+  const art = articles[key];
+  if (!art) return;
+  currentArticleKey = key;
+  const lang = currentLang || 'fa';
+  const data = art[lang] || art.fa;
+  $('articleTitle').textContent = data.title;
+  $('articleMeta').textContent = data.meta;
+  $('articleContent').innerHTML = data.content;
+  $('articleModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeArticleModal() {
+  $('articleModal').classList.remove('show');
+  document.body.style.overflow = '';
+  currentArticleKey = null;
+}
+document.querySelectorAll('.articleCard').forEach(card => { card.onclick = () => openArticle(card.dataset.article); });
+$('closeArticle').onclick = closeArticleModal;
+$('articleModal').onclick = e => { if (e.target === $('articleModal')) closeArticleModal(); };
+
+// ============ Translations ============
+const translations = {
+ fa: {
+  kicker:"PLAYTIME CO. // CLASSIFIED ARCHIVE",hero_title:"POPPY<br>PLAYTIME",
+  hero_desc:"پرونده‌ی کارخانه را باز کن؛ داستان فصل‌ها، شخصیت‌ها، رازها، مسیر انتشار و Project: Playtime را در یک آرشیو تعاملی و قرمز کشف کن.",
+  open_archive:"ورود به آرشیو",archive_title:"آرشیو POPPY PLAYTIME",
+  archive_desc:"یک بخش را انتخاب کن؛ هر کارت یک پرونده‌ی جداگانه را باز می‌کند.",
+  nav_story:"داستان",nav_story_sub:"Chapter 1–5",nav_char:"شخصیت",nav_char_sub:"پرونده شخصیت‌ها",
+  nav_mystery:"رازها",nav_mystery_sub:"اطلاعات تأییدشده و سرنخ",nav_release:"منابع انتشار",nav_release_sub:"تاریخ و پلتفرم",
+  nav_about:"توضیحات",nav_about_sub:"جهان بازی",nav_project:"پروژه پلی‌تایم",nav_project_sub:"PROJECT: PLAYTIME",
+  nav_news:"مقالات",nav_news_sub:"تحلیل و اطلاعات تأییدشده",
+  char_title:"پرونده‌ی شخصیت‌ها",char_desc:"روی هر دسته کلیک کن تا فیلتر بشه.",
+  smiling_title:"Smiling Critters — گروه اصلی",smiling_desc:"گروه اصلی Smiling Critters شامل هشت شخصیت است: CatNap، DogDay، Bobby BearHug، Bubba Bubbaphant، CraftyCorn، PickyPiggy، Hoppy Hopscotch و KickinChicken. در کنار نسخه‌های تبلیغاتی، Bigger Bodies نسخه‌های زنده و خطرناک‌تری از برخی اعضا را وارد داستان کرده است.",
+  nightmare_title:"Nightmare Critters — گروه کامل",nightmare_desc:"Nightmare Critters مجموعه‌ای از شخصیت‌های ترسناک مرتبط با فضای Chapter 4 است: Baba Chops، Icky Licky، Allister Gator، Rabie Baby، Simon Smoke، Poe، Touille و Maggie Mako. این بخش از نسبت‌دادن گذشته‌ی انسانی یا Experimentهای ساختگی به اعضا خودداری می‌کند.",
+  wrongside_title:"Wrongside Outimals — عروسک‌های Chapter 5",wrongside_desc:"Wrongside Outimals گروهی از عروسک‌های مرتبط با Chapter 5 هستند که با زیپ، دوخت و طراحی‌های وارونه شناخته می‌شوند. در این نسخه برای اعضای گروه داستان اضافه‌ای که تأیید نشده باشد ساخته نشده است.",
+  theory_tag:"اطلاعات تأییدشده",
+  char_huggy:"Huggy Wuggy نماد آبی Playtime Co. و Experiment 1170 است. او در سال 1984 به‌عنوان یک اسباب‌بازی محبوب عرضه شد و در داستان نخستین مانع بزرگ مسیر بازیکن در کارخانه است. اطلاعات رسمی او را باهوش، بسیار نیرومند و گوشت‌خوار توصیف می‌کند.",
+  char_huggy_theory:"وضعیت رسمی: Huggy آزمایش 1170 است و یکی از موفقیت‌های اصلی Bigger Bodies محسوب می‌شود. ادعای «اولین آزمایش موفق» حذف شده، چون شماره و ترتیب Experimentها چنین نتیجه‌ای را ثابت نمی‌کند.",
+  char_poppy:"Poppy یکی از مهم‌ترین شخصیت‌های سری و یک عروسک انقلابی مجهز به voice box است. اطلاعات رسمی فعلی او را موجودی با حس درست و غلط و دارای برنامه‌ای جدی برای انتقام معرفی می‌کند؛ او بازیکن را برای پیشبرد نقشه‌ی خود به کار می‌گیرد.",
+  char_poppy_theory:"وضعیت رسمی: Poppy فقط یک قربانی منفعل نیست؛ اطلاعات رسمی او می‌گوید برای اجرای نقشه‌ی انتقامش از Player و دیگران استفاده می‌کند. با این حال، هویت کامل و همه‌ی انگیزه‌های او هنوز باید از خود داستان استخراج شوند.",
+  char_kissy:"Kissy Missy، Experiment 1172، همتای صورتی Huggy است. او از نظر داستانی فقط یک دشمن ساده نیست و در اطلاعات رسمی به‌عنوان نزدیک‌ترین متحد Poppy معرفی می‌شود. بخش مهمی از چیزی که او را متمایز می‌کند، حفظ بخش زیادی از ویژگی‌های انسانی گذشته‌اش است.",
+  char_kissy_theory:"وضعیت رسمی: Kissy متحد Poppy است و نسبت به Huggy کپی ساده‌ای نیست. اطلاعات رسمی می‌گوید او هنوز با دختر انسانی‌ای که زمانی بوده پیوند حافظه و احساسی دارد؛ بنابراین جمله‌ی «او نگهبان است» به‌عنوان نظریه حذف شده است.",
+  char_mommy:"Mommy Long Legs، Experiment 1222، نخستین عضو مجموعه‌ی اسباب‌بازی‌های خانوادگی با پلاستیک کشسان اختصاصی Playtime است. او مدتی مراقبت از یتیمان Playcare را بر عهده داشت و پس از Hour of Joy، در اثر تنهایی، خشم و از دست دادن هدف خود، Game Station را به قلمروی خود تبدیل کرد.",
+  char_mommy_theory:"وضعیت رسمی: Mommy به‌عنوان Experiment 1222 شناخته می‌شود و دلیل رفتار خشن او در لور رسمی با رهاشدگی و از دست دادن هدفش پس از Hour of Joy پیوند دارد. نظریه‌ی «خاطرات انسانی علت اصلی خشونت او بود» حذف شده است.",
+  char_catnap:"CatNap، Experiment 1188، همان Theodore Grambell است و از چهره‌های اصلی Playcare به‌شمار می‌آید. Prototype در گذشته او را نجات داد و CatNap پس از تغییرات آزمایشی همچنان به او باور داشت؛ بعد از Hour of Joy، Playcare را به محل شکار و پرستش Prototype تبدیل کرد.",
+  char_catnap_theory:"اطلاعات تأییدشده: CatNap با Experiment 1188 و Theodore Grambell مرتبط است، Prototype او را نجات داد و او به Prototype وفادار ماند؛ Red Smoke نیز بخش مهمی از توانایی و تهدید او در Chapter 3 است.",
+  char_dogday:"DogDay رهبر Smiling Critters و یک متحد Poppy در برابر Prototype است. اطلاعات رسمی او را آفتابی، قوی و مصمم معرفی می‌کند و توضیح می‌دهد که او و دیگر Bigger Bodyهای Smiling Critters کوشیدند در برابر پیروان Prototype مقاومت کنند.",
+  char_dogday_theory:"وضعیت رسمی: DogDay در صف مخالفان Prototype قرار دارد و با Poppy هم‌پیمان است. به‌جای نظریه‌ی «هنوز انسانیت خود را حفظ کرده»، همین رابطه‌ی تأییدشده با Poppy و مقاومت در برابر Prototype ثبت شده است.",
+  char_delight:"Miss Delight یکی از اسباب‌بازی‌های معلم Schoolhouse است که برای آموزش برنامه‌ی مورد تأیید Playcare و اجرای قوانین ساخته شده بود. در وضعیت فعلی داستان، او تحت ساختار Prototype به نگهبان خشن مدرسه تبدیل شده است.",
+  char_delight_theory:"اطلاعات تأییدشده: Miss Delight یک عروسک معلم در Schoolhouse است و در ساختار تحت نفوذ Prototype به تهدید تبدیل می‌شود؛ دربارهٔ سازوکار دقیق کنترل او نباید بیش از لور رسمی ادعا کرد.",
+  char_proto:"Prototype یا Experiment 1006 یکی از مرکزی‌ترین شخصیت‌های سری است. منابع رسمی او را باهوش، حیله‌گر و مورد احترام پیروانش معرفی می‌کنند و نشان می‌دهند که حضور او تقریباً در تمام مسیر بازیکن اثرگذار است. جزئیات کامل منشأ او هنوز بخشی از معمای داستان است.",
+  char_proto_theory:"اطلاعات تأییدشده: 1006 شناسهٔ رسمی Experiment Prototype است؛ خود شماره به‌تنهایی تعداد یا موفقیت آزمایش‌های قبلی را ثابت نمی‌کند.",
+  char_doey:"Doey the Doughman، Experiment 1322، یکی از متحدان اصلی بازیکن در Chapter 4 است. او در گذشته یک اسباب‌بازی تجاری موفق بود و در قالب Bigger Body، ذهنی چندبخشی دارد که باعث کشمکش دائمی میان سه بخش شخصیتی او می‌شود.",
+  char_doey_theory:"وضعیت رسمی: Doey آزمایش 1322 است و یکی از رهبران اسباب‌بازی‌های متحد Poppy در Shelf محسوب می‌شود. نظریه‌ی «نمونه‌ی ابتدایی و اسباب‌بازی ردشده» حذف شده چون با تاریخچه‌ی رسمی او سازگار نیست.",
+  char_yarnaby:"Yarnaby، Experiment 1166، یک اسباب‌بازی شیر است که به‌عنوان یکی از نخستین موفقیت‌های Bigger Bodies شناخته می‌شود. The Doctor احساسات او را دستکاری کرد و او را سال‌ها منزوی نگه داشت تا وفاداری‌اش فقط متوجه Sawyer باشد؛ بعدتر Yarnaby به شکارچی شخصی Doctor تبدیل شد.",
+  char_yarnaby_theory:"وضعیت رسمی: Yarnaby «کاملاً از نخ» ساخته نشده است؛ او یک Bigger Body بر پایه‌ی اسباب‌بازی شیر است و Experiment 1166 دارد. اطلاعات رسمی رابطه‌ی او با The Doctor را تأیید می‌کند و نظریه‌ی قبلی درباره‌ی «تلاش اولیه با مواد ساده» حذف شده است.",
+  char_doctor:"The Doctor نامی است که برای Doctor Harley Sawyer استفاده می‌شود. او مبتکر Bigger Bodies Initiative و شاگرد سابق Elliot Ludwig بود. منابع رسمی فعلی او را دانشمندی بی‌رحم توصیف می‌کنند که صدها آزمایش را سازمان داد و در نهایت ذهن خودش نیز در یک ساختار سیم‌ها و پایانه‌ها گرفتار شد.",
+  char_doctor_theory:"وضعیت رسمی: The Doctor همان Harley Sawyer است. بنابراین نظریه‌ی «احتمالاً یک دانشمند انسانی بوده که در آزمایش گرفتار شده» با واقعیت رسمی جایگزین شده است.",
+  char_lily:"Lily Lovebraids، Experiment 1468، عروسک Playtime Co. برای دهه‌ی 1980 بود که شخصیت اجتماعی و خلاقی داشت. لور رسمی فعلی می‌گوید Lily به یاد نمی‌آورد زمانی غیر از یک اسباب‌بازی بوده باشد و نمی‌داند چرا The Prototype او را برای ماه‌ها در Lullaby Room زندانی کرده است.",
+  char_lily_theory:"وضعیت رسمی: Lily قربانی یک وضعیت مشخص و تأییدشده در Lullaby Room است و Experiment 1468 دارد. ادعای «احتمالاً یکی از قربانیان اصلی و کلید Bigger Bodies» حذف شده و اطلاعات رسمی جای آن را گرفته است.",
+  char_boxxy:"Boxy Boo یکی از شناخته‌شده‌ترین اسباب‌بازی‌های جعبه‌ای Playtime است؛ سر، دست‌ها و پاهای فنری او با طراحی یک جعبه‌ی بازشونده ترکیب شده‌اند. اطلاعات رسمی او را شخصیتی بازیگوش و غافلگیرکننده معرفی می‌کند.",
+  char_boxxy_theory:"وضعیت رسمی: Boxy Boo یک اسباب‌بازی و شخصیت رسمی Playtime است، اما ادعای «محصول تجاری شکست‌خورده که بعداً زنده شد» در منابع رسمی تأیید نشده و حذف شده است.",
+  char_giblet:"Giblet یکی از شخصیت‌های جدیدتر مرتبط با Chapter 5 است و در محتوای رسمی Mob Entertainment و مطالب مربوط به این فصل حضور دارد. برای او در این نسخه هیچ گذشته‌ی انسانی یا آزمایش مشخصی که منبع رسمی تأیید نکرده باشد ساخته نشده است.",
+  char_giblet_theory:"وضعیت رسمی: Giblet شخصیت رسمی Chapter 5 است؛ با این حال، منشأ دقیق و نقش کامل او را فقط تا جایی ثبت کرده‌ایم که محتوای رسمی اجازه می‌دهد. نظریه‌ی «اسباب‌بازی سرگرم‌کننده که به هیولا تبدیل شده» حذف شده است.",
+  ws_blanky:"Blanky Blankz یکی از Wrongside Outimals است؛ این عروسک با طراحی پارچه‌ای، زیپ و دوخت شناخته می‌شود. در این آرشیو هیچ داستان انسانی یا Experiment تأییدنشده‌ای به او نسبت داده نمی‌شود.",
+  ws_bubby:"Bubby Chumz از مجموعه‌ی Wrongside Outimals مرتبط با Chapter 5 است. این بخش فقط ظاهر و جایگاه گروهی او را ثبت می‌کند و درباره‌ی منشأ آزمایشگاهی او حدس نمی‌زند.",
+  ws_goober:"Goober Gutz نیز یکی از Wrongside Outimals است. ظاهر او با جزئیات دوخت و دهان بسته شناخته می‌شود و این آرشیو از ساختن داستانی درباره‌ی گذشته‌ی او بدون تأیید رسمی خودداری می‌کند.",
+  mystery_title:"رازها و معماهای بزرگ",
+  mystery_1_title:"Bigger Bodies Initiative",
+  mystery_1:"Bigger Bodies Initiative نام پروژه‌ای است که Doctor Harley Sawyer برای ایجاد موجودات بزرگ و زنده در خدمت Playtime Co. پیش برد. این ابتکار به آزمایش روی انسان‌ها و یتیمان Playcare گره خورده و یکی از عوامل اصلی سقوط اخلاقی و عملی شرکت است.",
+  mystery_2_title:"Prototype / Experiment 1006",
+  mystery_2:"Prototype یا Experiment 1006 یکی از مرکزی‌ترین رازهای داستان است. او با هوش بسیار بالا، توانایی اثرگذاری بر دیگر Experimentها و نقش تعیین‌کننده‌اش در Hour of Joy شناخته می‌شود؛ با این حال، جزئیات کامل منشأ و هدف نهایی او همچنان بخشی از معمای اصلی سری است.",
+  mystery_3_title:"Hour of Joy",
+  mystery_3:"Hour of Joy رویدادی تعیین‌کننده در تاریخ کارخانه است که طی آن Experimentهای زنده علیه انسان‌های حاضر شورش کردند. نقش Prototype در این رویداد در روایت تأیید شده و همین رخداد مسیر تاریخ کارخانه را برای همیشه تغییر داد.",
+  mystery_4_title:"آزمایش‌های انسانی و کودکان",
+  mystery_4:"در لور رسمی، ارتباط Bigger Bodies با انسان‌ها و کودکان Playcare روشن است. Experimentهایی مثل CatNap و Yarnaby فقط اسباب‌بازی‌های معمولی نیستند و داستان به هویت‌های انسانی و سرگذشت یتیمان پیوند می‌خورد.",
+  mystery_5_title:"Red Smoke",
+  mystery_5:"Red Smoke یک عنصر داستانی مهم در Chapter 3 است که با CatNap، خواب و کابوس‌ها ارتباط دارد. این نسخه منشأ Red Smoke را به مواد یا پژوهش‌های واقعی نسبت نمی‌دهد، چون چنین منشأیی در لور رسمی تأیید نشده است.",
+  mystery_6_title:"سرنخ‌های محیطی",
+  mystery_6:"VHSها، اسناد، پوسترها، ضبط‌های صوتی و جزئیات محیطی از ابزارهای اصلی روایت غیرمستقیم Poppy Playtime هستند و اطلاعات مهمی درباره‌ی Playtime Co.، Experimentها، Playcare و Hour of Joy منتقل می‌کنند.",
+  release_title:"منابع انتشار و تاریخ‌ها",release_desc:"تاریخ‌های اصلی زیر از صفحات رسمی بازی، Steam و سایت رسمی Mob Entertainment گردآوری شده‌اند.",
+  release_1:"بازی پایه Poppy Playtime در Steam در 12 اکتبر 2021 منتشر شد و Chapter 1 را شامل می‌شود.",
+  release_2:"Chapter 2 در 5 مه 2022 منتشر شد.",release_3:"Chapter 3 در 30 ژانویه 2024 منتشر شد.",
+  release_4:"Chapter 4 در 30 ژانویه 2025 منتشر شد.",release_5:"Chapter 5: Broken Things در 18 فوریه 2026 منتشر شد.",
+  release_6:"PROJECT: PLAYTIME در 12 دسامبر 2022 به‌صورت Early Access روی Steam منتشر شد.",
+  about_title:"توضیحات کامل درباره‌ی Poppy Playtime",
+  about_1:"<b>سازنده:</b> Mob Entertainment؛ این شرکت پیش‌تر با نام EnchantedMob شناخته می‌شد.",
+  about_2:"<b>سبک:</b> ماجراجویی ترسناک، معمایی، اول‌شخص، بقا و روایت‌محور.",
+  about_3:"<b>محیط:</b> کارخانه‌ی عظیم و متروکه‌ی Playtime Co. به همراه بخش‌های زیرزمینی آن، از جمله Playcare.",
+  about_4:"<b>گیم‌پلی:</b> اکتشاف، حل معما، تعامل با محیط و فرار از موجودات. GrabPack ابزار اصلی برای انتقال برق، کشیدن اشیا و تعامل از فاصله است.",
+  about_5:"<b>ساختار انتشار:</b> بازی پایه رایگان است و فصل‌های بعدی به‌صورت محتوای جداگانه منتشر شده‌اند؛ Steam فعلاً Chapter 2 تا 5 را به‌عنوان DLC فهرست می‌کند.",
+  about_6:"<b>روایت:</b> داستان از ناپدیدشدن کارکنان Playtime Co. آغاز می‌شود و با گذر فصل‌ها به Experimentها، Playcare، Bigger Bodies، Hour of Joy و Prototype می‌رسد.",
+  about_7:"<b>نکته‌ی دقت:</b> این آرشیو بین لور تأییدشده و حدس طرفداران تفاوت می‌گذارد و برای جاهای نامشخص، پاسخ ساختگی ارائه نمی‌کند.",
+  project_title:"PROJECT: PLAYTIME",
+  project_p1:"PROJECT: PLAYTIME یک بازی ترسناک چندنفره از Mob Entertainment است که در 12 دسامبر 2022 به‌صورت Early Access روی Steam منتشر شد.",
+  project_p2:"در ساختار اصلی، شش بازیکن در نقش Survivors برای ساخت اسباب‌بازی تلاش می‌کنند و بازیکن هفتم در نقش Monster قرار می‌گیرد و باید جلوی آن‌ها را بگیرد.",
+  project_p3:"<b>ویژگی‌ها:</b> همکاری آنلاین، نقش‌های Survivor و Monster، نقشه‌های کارخانه، پازل، توانایی‌ها، Perkها و شخصی‌سازی ظاهری.",
+  project_p4:"<b>نیازمندی فعلی Steam:</b> حداقل Windows 10، پردازنده Intel Core i5، رم 8GB، Nvidia GTX 1050 یا Radeon RX 580 و 20GB فضا؛ سیستم پیشنهادی 12GB RAM و RTX 2060 Super یا RX 5700 XT است.",
+  project_quote:"PROJECT: PLAYTIME از نظر ساختار با فصل‌های تک‌نفره متفاوت است، اما در جهان Playtime Co. و Bigger Bodies قرار دارد.",
+  news_title:"مقالات و تحلیل‌های عمیق",
+  news_desc:"مقالات این بخش فقط بر پایه‌ی لور رسمی، اطلاعات تأییدشده و تحلیل محتاطانه نوشته شده‌اند. نظریه‌ای که اثبات نشده باشد به‌عنوان حقیقت ارائه نمی‌شود.",
+  read_more:"← ادامه مطلب",
+  a1_title:"Poppy: واقعیت‌های تأییدشده درباره‌ی عروسک مرموز",a1_desc:"Poppy فقط یک عروسک محبوس در شیشه نیست؛ لور رسمی فعلی به هدف و نقش فعال او در داستان اشاره می‌کند...",
+  a2_title:"Prototype و Experiment 1006: چه چیزهایی قطعی است؟",a2_desc:"1006 شناسه‌ی رسمی Prototype است، اما این عدد به‌تنهایی تعداد یا سرنوشت تمام آزمایش‌های قبلی را ثابت نمی‌کند...",
+  a3_title:"CatNap و Red Smoke: آنچه بازی واقعاً تأیید می‌کند",a3_desc:"Red Smoke عنصر مهم Chapter 3 است، اما منشأ علمی واقعی برای آن در لور رسمی تأیید نشده است...",
+  a4_title:"Bigger Bodies Initiative: پروژه‌ای که سقوط Playtime Co. را ساخت",a4_desc:"از Harley Sawyer تا آزمایش‌های مرتبط با Playcare؛ این مقاله مرز میان واقعیت رسمی و حدس را روشن می‌کند...",
+  a5_title:"Hour of Joy: از سرنخ تا واقعیت داستانی",a5_desc:"Hour of Joy نقطه‌ی عطف اصلی کارخانه و یکی از قطعی‌ترین رویدادهای داستان است...",
+  a6_title:"Chapter 6: وضعیت رسمی و مرز بین واقعیت و حدس",a6_desc:"به‌جای پیش‌بینی ساختگی، این مقاله وضعیت رسمی پس از Chapter 5 را ثبت می‌کند...",
+  a7_title:"VHSها: چگونه از سرنخ واقعی داستان را بخوانیم؟",a7_desc:"نوارها منبع مهم Lore هستند؛ این مقاله ادعاهای اثبات‌نشده درباره‌ی پیام‌های مخفی را کنار می‌گذارد...",
+  footer_title:"ساخته شده توسط کانال <b>Poppy Playtime HV</b>",
+  footer_desc:"Poppy Playtime Archive<br>یک تجربه‌ی اطلاعاتی تعاملی برای طرفداران",
+  coming_soon:"<span>📢</span>به زودی مقالات جدیدی در این وب‌سایت قرار می‌گیرد، همراه ما باشید.",
+  ch1_title:"Chapter 1 — A Tight Squeeze",ch2_title:"Chapter 2 — Fly in a Web",ch3_title:"Chapter 3 — Deep Sleep",
+  ch4_title:"Chapter 4 — Safe Haven",ch5_title:"Chapter 5 — Broken Things",
+  ch1_p1:"داستان در کارخانه‌ی متروکه‌ی Playtime Co. آغاز می‌شود؛ جایی که کارکنان آن سال‌ها پیش ناپدید شده‌اند. بازیکن، یکی از کارکنان سابق، پس از دریافت نامه‌ای ناشناس به کارخانه برمی‌گردد و با GrabPack درها، مدارهای برق و اشیای دور از دسترس را کنترل می‌کند. در همان ابتدا روشن می‌شود که کارخانه فقط یک ساختمان متروکه نیست و اسباب‌بازی‌های زنده و پروژه‌های محرمانه هنوز در اعماق آن حضور دارند.",
+  ch1_p2:"بازیکن در طول کارخانه نوارهای VHS، اسناد و سرنخ‌های محیطی پیدا می‌کند. Poppy داخل یک محفظه‌ی شیشه‌ای نگهداری شده و در پایان فصل آزاد می‌شود، در حالی که Huggy Wuggy از یک نماد تبلیغاتی به نخستین تهدید بزرگ سفر بازیکن تبدیل می‌شود. پایان Chapter 1 مسیر را به بخش‌های پایین‌تر کارخانه باز می‌کند و زمینه‌ی اتفاقات Chapter 2 را می‌سازد.",
+  ch2_p1:"پس از وقایع Chapter 1، مسیر بازیکن به Game Station می‌رسد؛ مجموعه‌ای عظیم از بازی‌ها و بخش‌های آزمایشی که زیر ظاهر کودکانه‌اش، محیطی بسیار خطرناک قرار دارد. بازیکن در این بخش هم باید معماها را حل کند و هم از دام‌های طراحی‌شده برای آزمایش‌ها جان سالم به در ببرد.",
+  ch2_p2:"Mommy Long Legs، Experiment 1222، پس از سال‌ها مراقبت از یتیمان Playcare و از دست دادن هدف خود، کنترل Game Station را در دست گرفته است. بازیکن مجبور می‌شود چند بازی را پشت سر بگذارد و هم‌زمان از دام‌های Mommy فرار کند. در پایان، Mommy از بین می‌رود و دست او توسط Prototype برداشته می‌شود؛ صحنه‌ای که حضور Prototype را مستقیم‌تر از قبل وارد داستان می‌کند.",
+  ch3_p1:"Chapter 3 بازیکن را به Playcare می‌برد؛ مجموعه‌ای بزرگ زیر کارخانه که برای نگهداری کودکان طراحی شده بود. در این بخش، بازیکن با Smiling Critters و به‌ویژه CatNap روبه‌رو می‌شود و درمی‌یابد که فضای کودکانه‌ی Playcare با تاریخچه‌ی تاریک آزمایش‌ها و رفتارهای خشن موجودات آن تضاد شدیدی دارد.",
+  ch3_p2:"CatNap، با نام انسانی Theodore Grambell و عنوان آزمایشی Experiment 1188، در Playcare شکارچی اصلی است و دود قرمز او نقش مهمی در خواب و کابوس فصل دارد. DogDay و دیگر Bigger Bodyهای Smiling Critters در برابر پیروان Prototype مقاومت کرده‌اند. Chapter 3 همچنین اطلاعات مهمی درباره‌ی آزمایش روی کودکان، Playcare و نفوذ Prototype در کارخانه آشکار می‌کند.",
+  ch4_p1:"Chapter 4 بازیکن را به یکی از عمیق‌ترین بخش‌های کارخانه، از جمله زندان و مناطق نگهداری آزمایش‌ها می‌برد. این بخش نشان می‌دهد که Playtime Co. فقط یک کارخانه‌ی تولید اسباب‌بازی نبوده و زیرساختی بزرگ برای نگهداری، آزمایش و کنترل Bigger Bodies در زیر آن ساخته شده است.",
+  ch4_p2:"بازیکن در این فصل با Doey the Doughman، Yarnaby و The Doctor روبه‌رو می‌شود و همراه Poppy و Kissy به سمت Safe Haven حرکت می‌کند. Yarnaby، Experiment 1166، یکی از نخستین موفقیت‌های Bigger Bodies Initiative است و The Doctor از او به‌عنوان شکارچی وفادار خود استفاده کرده است. در ادامه، Safe Haven و نقشه‌ی Poppy برای نابودی کارخانه به محور وقایع تبدیل می‌شوند.",
+  ch5_p1:"Chapter 5 با عنوان <b>Broken Things</b> ادامه‌ی مستقیم ماجرا در اعماق کارخانه است. معرفی رسمی Mob Entertainment این فصل را روی رویارویی با «گرداننده‌ی پشت پرده» اتفاقات وحشتناک Playtime Co. متمرکز می‌کند و بازیکن را وارد قلمرو Prototype و رازهای قدیمی‌تر کارخانه می‌کند.</b> ادامه‌ی مستقیم ماجرا در اعماق کارخانه است. معرفی رسمی Mob Entertainment این فصل را روی رویارویی با «گرداننده‌ی پشت پرده» اتفاقات وحشتناک Playtime Co. متمرکز می‌کند و بازیکن را وارد قلمرو Prototype و رازهای قدیمی‌تر کارخانه می‌کند.",
+  ch5_p2:"Chapter 5 اطلاعات مهمی درباره‌ی The Doctor، Prototype و ساکنان اعماق کارخانه ارائه می‌کند. اطلاعات رسمی فعلی The Doctor را دکتر Harley Sawyer معرفی می‌کند: مبتکر Bigger Bodies Initiative و دانشمندی که در نهایت خودش نیز قربانی پروژه‌ای شد که ایجاد کرده بود. Chapter 5 همچنین نقش Lily Lovebraids، Doey، Giblet و Huggy را در ادامه‌ی داستان پررنگ‌تر می‌کند. هرجا پاسخ داستان هنوز مشخص نیست، این نسخه آن را به‌عنوان راز باز باقی می‌گذارد و حدس طرفداران را جای واقعیت نمی‌نشاند.",
+  ch1_quote:"هسته‌ی فصل: کارخانه‌ی متروکه، بازگشت بازیکن، GrabPack، Poppy، Huggy Wuggy و نخستین آشکارشدن اسباب‌بازی‌های زنده.",
+  ch2_quote:"هسته‌ی فصل: Game Station، Mommy Long Legs، بازی‌های آزمایشی، گسترش GrabPack و آشکارتر شدن حضور Prototype.",
+  ch3_quote:"هسته‌ی فصل: Playcare، CatNap، Theodore Grambell، Red Smoke، Smiling Critters، DogDay و اطلاعات بیشتر درباره‌ی Bigger Bodies Initiative.",
+  ch4_quote:"هسته‌ی فصل: زندان زیر کارخانه، Doey، Yarnaby، The Doctor، Safe Haven و آشکارتر شدن ساختار Bigger Bodies Initiative.",
+  ch5_quote:"تاریخ انتشار رسمی Chapter 5 در Steam: 18 فوریه 2026 — توسعه‌دهنده و ناشر: Mob Entertainment."
+ },
+ en: {
+  kicker:"PLAYTIME CO. // CLASSIFIED ARCHIVE",hero_title:"POPPY<br>PLAYTIME",
+  hero_desc:"Open the factory archive: chapters, characters, mysteries, release history and PROJECT: PLAYTIME in one interactive red dossier.",
+  open_archive:"OPEN ARCHIVE",archive_title:"POPPY PLAYTIME ARCHIVE",
+  archive_desc:"Select a section; each card opens a separate case file.",
+  nav_story:"Story",nav_story_sub:"Chapter 1–5",nav_char:"Characters",nav_char_sub:"Character files",
+  nav_mystery:"Mysteries",nav_mystery_sub:"Theories & clues",nav_release:"Releases",nav_release_sub:"Dates & platforms",
+  nav_about:"About",nav_about_sub:"Game world",nav_project:"Project Playtime",nav_project_sub:"PROJECT: PLAYTIME",
+  nav_news:"Articles",nav_news_sub:"Analysis & theories",
+  char_title:"Character Files",char_desc:"Click any filter to sort.",
+  smiling_title:"Smiling Critters — Main Group",smiling_desc:"The main Smiling Critters group contains eight characters: CatNap, DogDay, Bobby BearHug, Bubba Bubbaphant, CraftyCorn, PickyPiggy, Hoppy Hopscotch, and KickinChicken. Alongside their toy versions, the Bigger Bodies story introduces larger and dangerous living versions of some members.",
+  nightmare_title:"Nightmare Critters — Full Group",nightmare_desc:"Nightmare Critters is a group of horror-themed characters associated with the Chapter 4 era: Baba Chops, Icky Licky, Allister Gator, Rabie Baby, Simon Smoke, Poe, Touille, and Maggie Mako. This archive does not invent human histories or experiment numbers for them.",
+  wrongside_title:"Wrongside Outimals — Chapter 5 Dolls",wrongside_desc:"Wrongside Outimals is a group of dolls associated with Chapter 5, recognized by zippers, stitching, and inside-out designs. No unsupported backstory is added here.",
+  theory_tag:"Confirmed Lore",
+  char_huggy:"Huggy Wuggy is Playtime Co.'s blue mascot and Experiment 1170. He was released as a popular toy in 1984 and becomes the first major obstacle on the Player's path through the factory. Official material describes him as intelligent, relentless, carnivorous, and incredibly strong.",
+  char_huggy_theory:"Confirmed status: Huggy is Experiment 1170 and a major Bigger Bodies success. The old claim that he was the first successful experiment has been removed because the experiment numbering does not prove that.",
+  char_poppy:"Poppy is one of the series' central characters and a revolutionary Playtime doll equipped with a voice box. Current official material describes her as guided by a strong sense of right and wrong, while also making clear that she will use the Player and others to carry out her revenge plan.",
+  char_poppy_theory:"Confirmed status: Poppy is not portrayed as a passive victim. Official material says she uses the Player and others to enact her revenge plan. The full extent of her motives remains part of the story.",
+  char_kissy:"Kissy Missy, Experiment 1172, is Huggy's pink counterpart. Official material identifies her as Poppy's strongest ally and emphasizes that she is not simply a copy of Huggy. She retains much of what made her human before the experiment.",
+  char_kissy_theory:"Confirmed status: Kissy is an ally of Poppy, and official material links her to the human girl she once was. The earlier guardian-role theory has been removed.",
+  char_mommy:"Mommy Long Legs, Experiment 1222, was the first in a family line of toys using Playtime's elastic plastic. She was once a caretaker for Playcare orphans who passed through the Game Station. After the Hour of Joy she was left without purpose, isolated and angry, and took control of the Game Station.",
+  char_mommy_theory:"Confirmed status: Mommy is Experiment 1222, and official lore connects her violent decline to abandonment and loss of purpose after the Hour of Joy. The old human-memory theory has been removed.",
+  char_catnap:"CatNap, Experiment 1188, is Theodore Grambell and one of Playcare’s central threats. The Prototype once saved Theodore, and even after experimentation altered his mind and memory, CatNap remained devoted to him. After the Hour of Joy, Playcare became CatNap’s hunting ground and a place of worship for the Prototype.",
+  char_catnap_theory:"Confirmed status: CatNap’s loyalty to the Prototype and his use of Red Smoke are established in the lore. Claims that he was the weakest Critter or that Red Smoke gave him mind-control powers have been removed.",
+  char_dogday:"DogDay is the leader of the Smiling Critters and an ally of Poppy in her conflict with the Prototype. Official material describes him as sunny, strong, and determined, and states that he and other Bigger Body Smiling Critters tried to fight the Prototype’s loyalists.",
+  char_dogday_theory:"Confirmed status: DogDay is part of the resistance against the Prototype and is aligned with Poppy. The unsupported claim that he simply retains his humanity has been removed.",
+  char_delight:"Miss Delight is a teacher toy created for the Playcare-approved curriculum and Schoolhouse rules. In the current story she enforces a much harsher version of those rules under the Prototype’s structure.",
+  char_delight_theory:"Confirmed status: Miss Delight serves the Prototype and enforces the Schoolhouse rules. The unsupported claim of direct mind control has been removed.",
+  char_proto:"The Prototype, or Experiment 1006, is one of the series’ central figures. Official material describes him as intelligent, cunning, and respected by those loyal to him. His influence reaches across the factory and many other experiments, while parts of his full origin remain intentionally mysterious.",
+  char_proto_theory:"Confirmed status: 1006 is the Prototype’s official experiment designation. The number alone does not establish the number or outcome of earlier experiments.",
+  char_doey:"Doey the Doughman, Experiment 1322, is one of the Player’s major allies in Chapter 4. He was originally a successful commercial toy and, as a Bigger Body, has a mind split into three parts that struggle for dominance.",
+  char_doey_theory:"Confirmed status: Doey is Experiment 1322 and a leader among Poppy’s allied toys in the Shelf. The earlier claim that he was a failed early laboratory toy has been removed.",
+  char_yarnaby:"Yarnaby, Experiment 1166, is a lion toy and one of the earliest successes of the Bigger Bodies Initiative. The Doctor manipulated Yarnaby’s emotional capacity and isolated him for years so that his loyalty would be focused on Sawyer. After the Hour of Joy, Yarnaby became the Doctor’s personal hunter.",
+  char_yarnaby_theory:"Confirmed status: Yarnaby is not “made entirely of yarn.” He is a Bigger Body based on a lion toy, designated Experiment 1166. The unsupported early-material theory has been removed.",
+  char_doctor:"The Doctor is Doctor Harley Sawyer, the originator of the Bigger Bodies Initiative and a former pupil of Elliot Ludwig. Official material describes him as ruthless and amoral: he orchestrated systemic experimentation and ultimately became trapped inside a structure of wires and terminals, becoming a prisoner of the project he created.",
+  char_doctor_theory:"Confirmed status: The Doctor is Harley Sawyer. The former theory that he was merely a human scientist who became trapped in an experiment has been replaced with the established identity.",
+  char_lily:"Lily Lovebraids, Experiment 1468, was Playtime Co.’s doll for the modern age of the 1980s. Official material says Lily no longer remembers being anything other than a toy and does not remember why the Prototype locked her in a Lullaby Room for months.",
+  char_lily_theory:"Confirmed status: Lily is Experiment 1468 and her imprisonment in the Lullaby Room is official lore. The unsupported claim that she was probably a key Bigger Bodies victim has been removed.",
+  char_boxxy:"Boxy Boo is an official Playtime box toy with springy limbs, marble-like eyes, and a cubical head that opens like a ring box. Official material presents him as playful and surprising by design.",
+  char_boxxy_theory:"Confirmed status: Boxy Boo is an official Playtime character, but the claim that he was a failed commercial product that later became alive is not established in official material and has been removed.",
+  char_giblet:"Giblet is one of the newer characters associated with Chapter 5 and official Mob Entertainment material. This archive deliberately avoids inventing a human identity, experiment number, or backstory that has not been firmly established.",
+  char_giblet_theory:"Confirmed status: Giblet is an official Chapter 5 character. The former theory that he was created as a children’s entertainment toy and later became one of the factory’s scariest residents has been removed.",
+  ws_blanky:"Blanky Blankz is one of the Wrongside Outimals associated with Chapter 5. The design uses a fabric-doll look with a zipper and stitched details; this archive adds no unsupported human history or experiment origin.",
+  ws_bubby:"Bubby Chumz is part of the Wrongside Outimals group associated with Chapter 5. This entry records only the group placement and design rather than inventing an unconfirmed experiment history.",
+  ws_goober:"Goober Gutz is another Wrongside Outimal. His design is recognizable by its stitched details and closed-mouth look, and this archive avoids inventing a past for him without firm official support.",
+  mystery_title:"Major Mysteries and Puzzles",
+  mystery_1_title:"Bigger Bodies Initiative",
+  mystery_1:"The Bigger Bodies Initiative was the major Playtime Co. project led by Doctor Harley Sawyer to create giant living beings based on toy bodies. Its story is tied to human experimentation, Playcare orphans, and the chain of Experiment subjects that ultimately helped bring about the company’s collapse.",
+  mystery_2_title:"Prototype / Experiment 1006",
+  mystery_2:"The Prototype, Experiment 1006, is one of the story’s central mysteries. He is associated with extraordinary intelligence, influence over other experiments, and the Hour of Joy. Some details about his complete origin and end goal remain part of the series’ unanswered questions.",
+  mystery_3_title:"Hour of Joy",
+  mystery_3:"The Hour of Joy is a catastrophic event in which the living experiments turned against the humans inside Playtime Co. The Prototype’s role in the event is established in the story, and the event permanently changed the factory and the relationship between its human and toy inhabitants.",
+  mystery_4_title:"Human and Children Experiments",
+  mystery_4:"Official lore establishes that Bigger Bodies was connected to humans and children from Playcare. Experiments such as CatNap and Yarnaby are tied to human identities and histories, making the treatment of children and orphans one of the darkest confirmed parts of Playtime Co.’s story.",
+  mystery_5_title:"Red Smoke",
+  mystery_5:"Red Smoke is a major Chapter 3 story element associated with CatNap, sleep, and nightmares. This archive no longer compares it to real drugs or real-world mind-control research because those explanations are not confirmed by the game’s official lore.",
+  mystery_6_title:"Environmental Clues",
+  mystery_6:"VHS tapes, audio recordings, documents, posters, and environmental details are core storytelling tools in Poppy Playtime. They provide important information about Playtime Co., the experiments, Playcare, the Hour of Joy, the Prototype, and the Doctor.",
+  release_title:"Release Sources and Dates",release_desc:"The main dates below are compiled from official game pages, Steam, and Mob Entertainment material.",
+  release_1:"The base Poppy Playtime game was released on Steam on October 12, 2021, including Chapter 1.",
+  release_2:"Chapter 2 was released on May 5, 2022.",release_3:"Chapter 3 was released on January 30, 2024.",
+  release_4:"Chapter 4 was released on January 30, 2025.",release_5:"Chapter 5: Broken Things was released on February 18, 2026.",
+  release_6:"PROJECT: PLAYTIME entered Early Access on Steam on December 12, 2022.",
+  about_title:"Full Description of Poppy Playtime",
+  about_1:"<b>Developer:</b> Mob Entertainment, formerly known as EnchantedMob.",
+  about_2:"<b>Genre:</b> First-person horror, puzzle, survival, adventure, and story-driven exploration.",
+  about_3:"<b>Setting:</b> The vast abandoned Playtime Co. factory and its underground areas, including Playcare.",
+  about_4:"<b>Gameplay:</b> Exploration, puzzle solving, environmental interaction, and escaping living toys. The GrabPack is the main tool for power transfer, grabbing objects, and interacting from a distance.",
+  about_5:"<b>Release structure:</b> The base game is free, while later chapters are released as separate content; Steam currently lists Chapters 2–5 as DLC.",
+  about_6:"<b>Narrative:</b> The story starts with the disappearance of Playtime Co. staff and expands into Experiments, Playcare, the Bigger Bodies Initiative, the Hour of Joy, and the Prototype.",
+  about_7:"<b>Accuracy note:</b> This archive separates confirmed lore from fan speculation and does not invent answers for unresolved mysteries.",
+  project_title:"PROJECT: PLAYTIME",
+  project_p1:"PROJECT: PLAYTIME is a multiplayer horror game by Mob Entertainment that entered Early Access on Steam on December 12, 2022.",
+  project_p2:"In its main structure, six players act as Survivors trying to build a large toy while a seventh player takes the Monster role and hunts them.",
+  project_p3:"<b>Features:</b> Online co-op, Survivor and Monster roles, factory maps, puzzles, abilities, Perks, and cosmetic customization.",
+  project_p4:"<b>Current Steam requirements:</b> Minimum Windows 10, Intel Core i5, 8GB RAM, Nvidia GTX 1050 or Radeon RX 580, and 20GB storage; recommended 12GB RAM and RTX 2060 Super or RX 5700 XT.",
+  project_quote:"PROJECT: PLAYTIME differs structurally from the single-player chapters but takes place in the Playtime Co. and Bigger Bodies universe.",
+  news_title:"Articles & Deep Analysis",
+  news_desc:"These articles use official lore, confirmed character information, and cautious analysis. Unsupported theories are not presented as facts.",
+  read_more:"→ Read more",
+  a1_title:"Poppy: Confirmed Facts About the Mysterious Doll",a1_desc:"Poppy is more than a doll trapped in a glass case; current official lore gives her an active role and a clear revenge agenda...",
+  a2_title:"The Prototype and Experiment 1006: What Is Actually Confirmed?",a2_desc:"1006 is the Prototype’s official designation, but the number alone does not prove the number or fate of every earlier experiment...",
+  a3_title:"CatNap and Red Smoke: What the Game Actually Confirms",a3_desc:"Red Smoke is central to Chapter 3, but a real-world scientific origin is not confirmed by the official lore...",
+  a4_title:"Bigger Bodies Initiative: The Project Behind Playtime Co.’s Fall",a4_desc:"From Harley Sawyer to Playcare experimentation, this article separates established lore from speculation...",
+  a5_title:"Hour of Joy: From Clues to Confirmed Story",a5_desc:"The Hour of Joy is the factory’s defining turning point and one of the strongest confirmed events in the story...",
+  a6_title:"Chapter 6: Official Status and the Line Between Lore and Guesswork",a6_desc:"Instead of inventing predictions, this article records the official status after Chapter 5...",
+  a7_title:"VHS Tapes: How to Read the Story Without Inventing Evidence",a7_desc:"VHS tapes are a major lore source; this article removes unsupported claims about secret messages...",
+  footer_title:"Made by <b>Poppy Playtime HV</b>",
+  footer_desc:"Poppy Playtime Archive<br>An interactive information experience for fans",
+  coming_soon:"<span>📢</span>New articles will be published on this website soon. Stay with us.",
+  ch1_title:"Chapter 1 — A Tight Squeeze",ch2_title:"Chapter 2 — Fly in a Web",ch3_title:"Chapter 3 — Deep Sleep",
+  ch4_title:"Chapter 4 — Safe Haven",ch5_title:"Chapter 5 — Broken Things",
+  ch1_p1:"The story begins in the abandoned Playtime Co. factory, where the staff disappeared years ago. The Player, a former employee, returns after receiving an anonymous letter and uses the GrabPack to operate doors, electrical circuits, and objects from a distance. It quickly becomes clear that the factory is not merely abandoned: living toys and hidden projects remain deep inside.",
+  ch1_p2:"The Player finds VHS tapes, documents, and environmental clues throughout the factory. Poppy is kept inside a glass case and is released at the end of the chapter, while Huggy Wuggy turns from a corporate mascot into the first major threat. The ending opens the route deeper into the factory and sets up Chapter 2.",
+  ch2_p1:"After Chapter 1, the Player reaches the Game Station, a huge collection of games and experimental areas hidden beneath the factory’s childish presentation. The Player must solve puzzles while surviving traps designed around the experiments.",
+  ch2_p2:"Mommy Long Legs, Experiment 1222, once cared for Playcare orphans who passed through the Game Station. After the Hour of Joy she became isolated and without purpose, and she took control of the Game Station. The chapter ends with Mommy defeated and the Prototype taking her hand.",
+  ch3_p1:"Chapter 3 takes the Player into Playcare, a huge complex beneath the factory that was built for children. The Player encounters the Smiling Critters, especially CatNap, and discovers how strongly the cheerful setting contrasts with the history of experimentation and violence.",
+  ch3_p2:"CatNap, Theodore Grambell and Experiment 1188, becomes the main hunter in Playcare, using Red Smoke as a defining threat connected to sleep and nightmares. DogDay and other Bigger Body Smiling Critters resisted the Prototype’s loyalists. Chapter 3 also expands the story of Playcare, children, and the Prototype.",
+  ch4_p1:"Chapter 4 moves the Player into some of the factory’s deepest areas, including the prison and containment zones. It makes clear that Playtime Co. was more than a toy factory and had major underground infrastructure for holding and experimenting on Bigger Bodies.",
+  ch4_p2:"The Player meets Doey the Doughman, Yarnaby, and The Doctor while moving toward Safe Haven with Poppy and Kissy. Yarnaby, Experiment 1166, is one of the earliest Bigger Bodies successes, and The Doctor uses him as a loyal hunter. Safe Haven and Poppy’s plan to destroy the factory become central to the chapter.",
+  ch5_p1:"Chapter 5, <b>Broken Things</b>, continues directly into the deepest areas of the factory. Mob Entertainment’s official description focuses on confronting the puppetmaster behind the horrors of Playtime Co. and taking the Player deeper into the Prototype’s domain.",
+  ch5_p2:"Chapter 5 adds important information about The Doctor, the Prototype, and the inhabitants of the deeper factory. Current official material identifies The Doctor as Doctor Harley Sawyer, the originator of the Bigger Bodies Initiative who was ultimately made a prisoner of his own project. The chapter also expands the roles of Lily Lovebraids, Doey, Giblet, and Huggy. Where the story remains unresolved, this archive leaves it unresolved instead of filling the gap with fan speculation.",
+  ch1_quote:"Core of the chapter: the abandoned factory, the Player’s return, the GrabPack, Poppy, Huggy Wuggy, and the first major evidence of living toys.",
+  ch2_quote:"Core of the chapter: the Game Station, Mommy Long Legs, experimental games, expanded GrabPack abilities, and the Prototype becoming more direct.",
+  ch3_quote:"Core of the chapter: Playcare, CatNap, Theodore Grambell, Red Smoke, the Smiling Critters, DogDay, and deeper Bigger Bodies lore.",
+  ch4_quote:"Core of the chapter: the underground prison, Doey, Yarnaby, The Doctor, Safe Haven, and the clearer structure of the Bigger Bodies Initiative.",
+  ch5_quote:"Official Chapter 5 Steam release date: February 18, 2026 — Developer and publisher: Mob Entertainment."
+ }
+};
+let currentLang = localStorage.getItem('poppy_lang') || 'fa';
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('poppy_lang', lang);
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (translations[lang][key]) el.innerHTML = translations[lang][key];
+  });
+  $('lang').textContent = lang === 'fa' ? 'ENGLISH' : 'فارسی';
+  document.querySelectorAll('.filterBtn').forEach(btn => {
+    const f = btn.dataset.filter;
+    const labels = lang === 'fa' ? {all:'همه',main:'اصلی',smiling:'Smiling',nightmare:'Nightmare',wrongside:'Wrongside'} : {all:'All',main:'Main',smiling:'Smiling',nightmare:'Nightmare',wrongside:'Wrongside'};
+    btn.textContent = labels[f] || f;
+  });
+  if (currentArticleKey) openArticle(currentArticleKey);
+}
+$('lang').onclick = () => setLanguage(currentLang === 'fa' ? 'en' : 'fa');
+
+function setTheme(theme) { document.body.classList.toggle('light-mode', theme === 'light'); $('themeToggle').textContent = theme === 'dark' ? '🌙' : '☀️'; localStorage.setItem('poppy_theme', theme); }
+$('themeToggle').onclick = () => setTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
+setTheme(localStorage.getItem('poppy_theme') || 'dark');
+
+const c = $('bg'), x = c.getContext('2d'); let W, H, pts = [];
+function resize(){ W = c.width = innerWidth * devicePixelRatio; H = c.height = innerHeight * devicePixelRatio; pts = Array.from({length:58}, () => ({x:Math.random()*W, y:Math.random()*H, r:(2+Math.random()*16)*devicePixelRatio, v:.12+Math.random()*.42, a:Math.random()*6.28, s:Math.random()*.7})); }
+function draw(){ if(document.body.classList.contains('perf-mode')){requestAnimationFrame(draw);return;} x.clearRect(0,0,W,H); for(const p of pts){ p.y -= p.v * devicePixelRatio; p.x += Math.sin(p.a += .006) * p.s; if(p.y < -50) p.y = H + 50; x.beginPath(); x.arc(p.x,p.y,p.r,0,Math.PI*2); x.fillStyle='rgba(255,35,78,.045)'; x.fill(); x.strokeStyle='rgba(255,90,120,.10)'; x.stroke(); } requestAnimationFrame(draw); }
+addEventListener('resize', resize); resize(); draw();
+
+let userHasComment = false, userCommentId = null;
+function getEditCount(){ return parseInt(localStorage.getItem('poppy_edits_' + getUserID()) || '0', 10); }
+function setEditCount(n){ localStorage.setItem('poppy_edits_' + getUserID(), String(n)); }
+function updateEditLimit(){
+  const used = getEditCount(); const left = Math.max(0, MAX_EDITS - used);
+  $('editLimit').textContent = currentLang === 'fa' ? `شما ${left} بار دیگر می‌توانید ویرایش کنید (حداکثر ${MAX_EDITS} بار)` : `You can edit ${left} more time(s) (max ${MAX_EDITS})`;
+  $('editBtn').disabled = (left === 0);
+}
+$('chatToggleBtn').onclick = () => {
+  const m = $('commentModal');
+  const open = !m.classList.contains('show');
+  if (open) { m.classList.add('show'); loadComments(); setTimeout(() => $('commentList').scrollTop = $('commentList').scrollHeight, 200); }
+  else m.classList.remove('show');
+};
+$('closeComments').onclick = () => $('commentModal').classList.remove('show');
+
+async function checkUserComment(){
+  const userId = getUserID();
+  try {
+    const res = await fetch(API_BASE + '/api/comments/check/' + userId);
+    const data = await res.json();
+    if (data.success && data.hasComment) {
+      userHasComment = true; userCommentId = data.comment.id;
+      $('commentForm').style.display = 'none';
+      $('myCommentBox').classList.add('show');
+      $('myCommentText').textContent = data.comment.comment;
+      $('userName').value = data.comment.name;
+      updateEditLimit();
+    } else {
+      userHasComment = false; userCommentId = null;
+      $('commentForm').style.display = 'block';
+      $('myCommentBox').classList.remove('show');
+      $('editForm').classList.remove('show');
+    }
+  } catch(e) { console.error(e); }
+}
+async function loadComments(){
+  try {
+    await checkUserComment();
+    const res = await fetch(API_BASE + '/api/comments');
+    const data = await res.json();
+    const list = $('commentList');
+    if (!data.success || !data.comments.length) {
+      list.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:13px;padding:20px 0;">هنوز نظری ثبت نشده است. اولین نفر باش!</p>';
+      return;
+    }
+    list.innerHTML = data.comments.map(cm => {
+      const isMine = String(cm.id) === String(userCommentId);
+      return '<div class="commentItem' + (isMine ? ' is-mine' : '') + '"><div class="meta"><strong>' + (isMine ? '<span class="mine-badge">شما</span>' : '') + escapeHtml(cm.name) + '</strong><small>' + new Date(cm.created_at).toLocaleDateString('fa-IR') + '</small></div><p>' + escapeHtml(cm.comment) + '</p></div>';
+    }).join('');
+  } catch(e) { $('commentList').innerHTML = '<p style="text-align:center;color:var(--muted);font-size:13px;">خطا در بارگذاری.</p>'; }
+}
+$('submitComment').onclick = async () => {
+  const name = $('userName').value.trim();
+  const comment = $('userComment').value.trim();
+  const userId = getUserID();
+  if (!name || !comment) { showToast('لطفاً نام و نظر خود را وارد کنید.', 'error'); return; }
+  try {
+    const res = await fetch(API_BASE + '/api/comments', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, comment, userId }) });
+    const data = await res.json();
+    if (!data.success) { showToast(data.error, 'error'); return; }
+    $('userComment').value = '';
+    await loadComments();
+    showToast('✅ نظر شما با موفقیت ثبت شد.', 'success');
+  } catch(e) { showToast('خطا در ارتباط با سرور.', 'error'); }
+};
+$('editBtn').onclick = () => {
+  if (getEditCount() >= MAX_EDITS) { showToast('به حداکثر تعداد ویرایش رسیده‌اید.', 'error'); return; }
+  $('editForm').classList.add('show');
+  $('editComment').value = $('myCommentText').textContent;
+  setTimeout(() => $('editComment').focus(), 100);
+};
+$('cancelEdit').onclick = () => $('editForm').classList.remove('show');
+$('saveEdit').onclick = async () => {
+  if (getEditCount() >= MAX_EDITS) { showToast('به حداکثر تعداد ویرایش رسیده‌اید.', 'error'); $('editForm').classList.remove('show'); return; }
+  const newComment = $('editComment').value.trim();
+  const userId = getUserID();
+  if (!newComment) { showToast('متن نظر نمی‌تواند خالی باشد.', 'error'); return; }
+  try {
+    const res = await fetch(API_BASE + '/api/comments/' + userCommentId, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ comment: newComment, userId }) });
+    const data = await res.json();
+    if (!data.success) { showToast(data.error, 'error'); return; }
+    setEditCount(getEditCount() + 1);
+    $('editForm').classList.remove('show');
+    await loadComments();
+    showToast('✅ نظر شما ویرایش شد. (' + (MAX_EDITS - getEditCount()) + ' بار باقی‌مانده)', 'success');
+  } catch(e) { showToast('خطا در ارتباط با سرور.', 'error'); }
+};
+$('deleteBtn').onclick = async () => {
+  if (!userCommentId) return;
+  const confirmed = await customConfirm(currentLang === 'fa' ? 'آیا مطمئنی می‌خوای نظرت رو پاک کنی؟' : 'Are you sure you want to delete your comment?');
+  if (!confirmed) return;
+  const userId = getUserID();
+  try {
+    const res = await fetch(API_BASE + '/api/comments/' + userCommentId, { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ userId }) });
+    const data = await res.json();
+    if (!data.success) { showToast(data.error, 'error'); return; }
+    setEditCount(0);
+    userHasComment = false; userCommentId = null;
+    await loadComments();
+    showToast('✅ نظر شما حذف شد. می‌توانید نظر جدید ثبت کنید.', 'success');
+  } catch(e) { showToast('خطا در ارتباط با سرور.', 'error'); }
+};
+
+// ============ Random Top Announcement ============
+function showAnnouncement() {
+  const box = $('toastBox');
+  if (!box) return;
+
+  const t = document.createElement('div');
+  t.className = 'toast announcementToast';
+  t.innerHTML = '📢 ساخته شده توسط کانال روبیکا: <b>Poppy Playtime HV</b>';
+  box.appendChild(t);
+
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateY(-35px) scale(.96)';
+    t.style.transition = 'opacity .45s ease, transform .45s ease';
+    setTimeout(() => t.remove(), 500);
+  }, 4300);
+}
+
+const announcementDelay = 1800 + Math.floor(Math.random() * 5200);
+setTimeout(showAnnouncement, announcementDelay);
+
+setLanguage(currentLang);
+</script>
+</body>
+</html>
