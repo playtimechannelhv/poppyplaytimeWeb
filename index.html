@@ -2048,14 +2048,25 @@ function handleAuthExpired(){
   }catch(e){}
   try{ location.reload(); }catch(e){}
 }
-(async function validateSavedAuth(){
+async function confirmAuthSession(){
+  const t = getPoppyAuthToken();
+  if(!t) return false;
   try{
-    const t = getPoppyAuthToken();
-    if(!t) return;
     const res = await fetch(AUTH_ME_API,{headers:{Authorization:'Bearer '+t},cache:'no-store'});
-    if(res.status===401) handleAuthExpired();
+    if(res.ok) return true;
+    if(res.status===401 || res.status===403) return false;
+    return null;
+  }catch(e){
+    return null;
+  }
+}
+
+async function validateSavedAuth(){
+  try{
+    const state = await confirmAuthSession();
+    if(state === false) handleAuthExpired();
   }catch(e){}
-})();
+}
 const $ = id => document.getElementById(id);
 const MAX_EDITS = 3;
 const storageGet = (key, fallback = null) => { try { const v = localStorage.getItem(key); return v === null ? fallback : v; } catch { return fallback; } };
@@ -2074,6 +2085,7 @@ const authHeaders = () => {
   if (t) h.Authorization = 'Bearer ' + t;
   return h;
 };
+validateSavedAuth();
 const MUSIC_URL = 'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/The%20Hour%20of%20Joy.m4a';
 function showToast(msg, type) {
   const box = $('toastBox');
@@ -2959,7 +2971,13 @@ async function checkUserComment(){
   try {
     const fingerprint = getFingerprint();
     const res = await fetch(API_BASE + '/api/comments/check?fp=' + encodeURIComponent(fingerprint), { headers: authHeaders(), cache: 'no-store' });
-    if (res.status === 401) { handleAuthExpired(); return; }
+    if (res.status === 401) {
+      const authState = await confirmAuthSession();
+      if (authState === false) handleAuthExpired();
+      else if (authState === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
+      else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
+      return;
+    }
     const data = await res.json();
 
     // چک بن کاربر
@@ -3070,7 +3088,13 @@ $('submitComment').onclick = async () => {
 
   try {
     const res = await fetch(API_BASE + '/api/comments', { method:'POST', headers:authJsonHeaders(), body: JSON.stringify({ name, comment, fingerprint: getFingerprint() }) });
-    if (res.status === 401) { handleAuthExpired(); return; }
+    if (res.status === 401) {
+      const authState = await confirmAuthSession();
+      if (authState === false) handleAuthExpired();
+      else if (authState === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
+      else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
+      return;
+    }
     const data = await res.json();
     if (!data.success) {
       // FIX: حالت‌های update_mode و server_offline پیام اختصاصی سرور رو نشون بدن
@@ -3311,7 +3335,13 @@ function updateAiBadge(remaining, limit, fromServer) {
 async function fetchAiStatus() {
   try {
     const res = await fetch(AI_CHAT_STATUS, { headers: authHeaders(), cache: 'no-store' });
-    if (res.status === 401) { handleAuthExpired(); return; }
+    if (res.status === 401) {
+      const authState = await confirmAuthSession();
+      if (authState === false) handleAuthExpired();
+      else if (authState === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
+      else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
+      return;
+    }
     const data = await res.json();
     if (data.success) updateAiBadge(data.remaining, data.limit, true);
   } catch (e) { console.log('status fetch failed'); }
@@ -3434,7 +3464,14 @@ async function sendAiMessage() {
         history: sendHistory.slice(0, -1)
       })
     });
-    if (res.status === 401) { hideAiTyping(); handleAuthExpired(); return; }
+    if (res.status === 401) {
+      hideAiTyping();
+      const authState = await confirmAuthSession();
+      if (authState === false) handleAuthExpired();
+      else if (authState === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
+      else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
+      return;
+    }
     const data = await res.json();
     hideAiTyping();
 
@@ -3565,7 +3602,13 @@ async function checkAiSystemStatus() {
   try {
     if (window.PoppyAuth && !PoppyAuth.logged) return;
     const res = await fetch(AI_CHAT_STATUS, { headers: authHeaders(), cache: 'no-store' });
-    if (res.status === 401) { handleAuthExpired(); return; }
+    if (res.status === 401) {
+      const authState = await confirmAuthSession();
+      if (authState === false) handleAuthExpired();
+      else if (authState === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
+      else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
+      return;
+    }
     const data = await res.json();
     if (!data.success) return;
 
