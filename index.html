@@ -1456,7 +1456,7 @@ function skip(){S.started=true;hideGate();}
 function init(){
   gate=$('authGate');box=$('agBox');errBox=$('agErr');
   if(!gate)return;
-  $('agLogin').onclick=function(){run(this,doLogin,function(f){hideGate();});};
+  $('agLogin').onclick=function(){run(this,doLogin,function(f){setLogged(f.user);hideGate();});};
   $('agReg').onclick=function(){run(this,doRegister,function(f){showDone(f,T('✅ حساب ساخته شد!','✅ Account created!'));});};
   $('agGuest').onclick=function(){setGuest();hideGate();};
   $('agRecLink').onclick=function(){view('recovery');setTimeout(function(){try{$('agCodeIn').focus();}catch(e){}},50);};
