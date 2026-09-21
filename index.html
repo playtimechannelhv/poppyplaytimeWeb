@@ -3563,7 +3563,9 @@ let aiStatusTimer = null;
 
 async function checkAiSystemStatus() {
   try {
-    const res = await fetch(AI_CHAT_STATUS + '?userId=' + encodeURIComponent(getUserID()));
+    if (window.PoppyAuth && !PoppyAuth.logged) return;
+    const res = await fetch(AI_CHAT_STATUS, { headers: authHeaders(), cache: 'no-store' });
+    if (res.status === 401) { handleAuthExpired(); return; }
     const data = await res.json();
     if (!data.success) return;
 
