@@ -1095,8 +1095,406 @@ body.modal-open{position:static!important;height:auto!important;width:auto!impor
 
 </style>
 <script>try{if(/(?:^|; )poppy_site_block=/.test(document.cookie)||localStorage.getItem("poppy_site_block"))document.documentElement.classList.add("blk-pending")}catch(e){}</script>
+<script>try{if(localStorage.getItem("poppy_auth_token")||sessionStorage.getItem("poppy_guest")==="1")document.documentElement.classList.add("authg-skip")}catch(e){}</script>
+<style id="auth-style">
+/* ===== Poppy Auth Gate ===== */
+html.authg-skip #authGate{display:none!important}
+html.authg-open,html.authg-open body{overflow:hidden!important}
+@keyframes agIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+@keyframes agSpin{to{transform:rotate(360deg)}}
+@keyframes agShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes agPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,75,110,.6)}50%{box-shadow:0 0 0 10px rgba(255,75,110,0)}}
+.authGate,.authLock{font-family:Vazirmatn,Inter,Arial,sans-serif;direction:rtl;color:#fff;-webkit-tap-highlight-color:transparent}
+.authGate{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto;overscroll-behavior:contain;
+  background:radial-gradient(circle at 15% 8%,rgba(255,23,77,.30),transparent 42%),radial-gradient(circle at 92% 92%,rgba(255,75,110,.18),transparent 46%),linear-gradient(160deg,#0b0409,#050205 60%,#0a0308)}
+.authGate.gone{display:none}
+.authGate .agSpinBig{display:none;width:42px;height:42px;border:3px solid rgba(255,60,100,.15);border-top-color:var(--red,#ff174d);border-radius:50%;animation:agSpin 1s linear infinite}
+.authGate.loading .agSpinBig{display:block}
+.authGate.loading .agBox{display:none}
+.agBox{width:100%;max-width:380px;margin:auto;text-align:center;animation:agIn .5s cubic-bezier(.22,1,.36,1);position:relative}
+.agClose{position:absolute;top:-46px;inset-inline-start:0;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,75,110,.4);background:rgba(255,23,77,.12);color:#fff;font-size:15px}
+.agClose[hidden]{display:none}
+.agLogo{font-family:Oswald,Vazirmatn,sans-serif;font-weight:900;font-size:34px;letter-spacing:3px;line-height:1.1;text-shadow:0 0 28px rgba(255,23,77,.55)}
+.agLogo span{background:linear-gradient(90deg,var(--red,#ff174d),var(--red2,#ff4b6e));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.agSub{margin:10px 0 26px;font-size:15px;color:#e8d3da;font-weight:700}
+.agView[hidden]{display:none}
+.agBtn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:54px;margin-bottom:12px;border-radius:16px;border:1px solid rgba(255,75,110,.38);background:rgba(255,255,255,.04);color:#fff;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;transition:transform .15s,background .2s,opacity .2s}
+.agBtn:active{transform:scale(.97)}
+.agBtn.primary{background:linear-gradient(135deg,var(--red,#ff174d),var(--red2,#ff4b6e));border-color:transparent;box-shadow:0 10px 30px rgba(255,23,77,.32)}
+.agBtn.ghost{color:#d8c6cc;font-weight:700}
+.agBtn.pulse{animation:agPulse 1.2s ease 3}
+.agBtn.shake{animation:agShake .45s}
+.authGate.busy .agBtn,.authGate.busy .agLink{pointer-events:none;opacity:.55}
+.authGate.busy .agBtn.loading{opacity:1}
+.agSp{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:agSpin .8s linear infinite}
+.agBtn.loading .agSp{display:inline-block}
+.agLink{background:none;border:0;color:#ff8aa3;font-family:inherit;font-size:13px;padding:10px;margin-top:2px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.agErr{display:none;margin-top:14px;padding:11px 13px;border-radius:12px;background:rgba(255,40,60,.12);border:1px solid rgba(255,70,90,.5);color:#ffb3bd;font-size:13px;line-height:1.8}
+.agErr.show{display:block;animation:agShake .45s}
+.agIn{width:100%;height:52px;border-radius:14px;border:1px solid rgba(255,75,110,.4);background:rgba(0,0,0,.35);color:#fff;text-align:center;font-family:'Courier New',monospace;font-size:14px;letter-spacing:1px;direction:ltr;margin-bottom:12px;outline:none}
+.agIn:focus{border-color:var(--red2,#ff4b6e);box-shadow:0 0 0 3px rgba(255,75,110,.2)}
+.agLbl{font-size:12.5px;color:#c4aeb5;margin-bottom:8px;text-align:start}
+.agDoneT{font-size:20px;font-weight:900;margin-bottom:6px}
+.agId{display:inline-block;padding:6px 16px;border-radius:999px;background:rgba(37,217,145,.12);border:1px solid rgba(37,217,145,.5);color:#7cf0b9;font-weight:900;font-family:'Courier New',monospace;letter-spacing:1px;margin:6px 0 16px;direction:ltr}
+.agCode{border:2px dashed #f4b52e;border-radius:16px;background:rgba(244,181,46,.09);padding:14px 12px;margin-bottom:12px}
+.agCode .agLbl{color:#f4b52e;text-align:center;margin-bottom:6px;font-weight:700}
+.agCode b{display:block;direction:ltr;font-family:'Courier New',monospace;font-size:14.5px;letter-spacing:.6px;word-break:break-all;color:#fff;margin-bottom:10px;user-select:all}
+.agCode button{padding:8px 18px;border-radius:10px;border:1px solid #f4b52e;background:rgba(244,181,46,.15);color:#ffd76b;font-family:inherit;font-weight:800;font-size:13px}
+.agWarn{font-size:12.5px;color:#ffd76b;line-height:1.9;margin-bottom:16px}
+/* lock card */
+.authLock{position:fixed;inset:0;z-index:2147482900;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.authLock.show{display:flex}
+.agCard{width:100%;max-width:340px;text-align:center;padding:24px 20px 18px;border-radius:22px;background:linear-gradient(145deg,rgba(38,10,20,.97),rgba(10,4,8,.98));border:1px solid rgba(255,75,110,.4);box-shadow:0 20px 70px #000c,0 0 40px rgba(255,23,77,.18);animation:agIn .35s cubic-bezier(.22,1,.36,1)}
+.agCard h3{margin:0 0 8px;font-size:19px;font-weight:900}
+.agCard p{margin:0 0 18px;font-size:13.5px;line-height:1.9;color:#d8c6cc}
+.agRow{display:flex;gap:10px}
+.agRow .agBtn{margin-bottom:10px;min-height:48px;font-size:14px}
+.agSmall{background:none;border:0;color:#c4aeb5;font-family:inherit;font-size:12.5px;padding:8px;cursor:pointer}
+/* header button */
+.topbar .actions>#authBtn{width:auto!important;max-width:none!important;min-width:82px!important;padding:0 12px!important;font-size:12px!important;white-space:nowrap}
+#authBtn.on{cursor:default;border-color:rgba(37,217,145,.55)!important;background:rgba(37,217,145,.08)!important}
+body.tb-medium .topbar .actions>button#authBtn[id]{min-width:72px!important;font-size:11px!important}
+body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-size:10px!important;padding:0 8px!important}
+
+</style>
 </head>
 <body>
+<div class="authGate loading" id="authGate" role="dialog" aria-modal="true">
+ <div class="agSpinBig"></div>
+ <div class="agBox" id="agBox">
+  <button type="button" class="agClose" id="agClose" aria-label="Close" hidden>✕</button>
+  <div class="agLogo">POPPY <span>PLAYTIME</span></div>
+  <div class="agSub"><span class="gx" data-fa="🔐 ورود به آرشیو" data-en="🔐 Enter the Archive">🔐 ورود به آرشیو</span></div>
+  <div class="agView" data-view="main">
+   <button type="button" class="agBtn primary" id="agLogin"><i class="agSp"></i><span class="gx" data-fa="🔐 ورود با اثر انگشت" data-en="🔐 Sign in with fingerprint">🔐 ورود با اثر انگشت</span></button>
+   <button type="button" class="agBtn" id="agReg"><i class="agSp"></i><span class="gx" data-fa="✨ ساخت حساب جدید" data-en="✨ Create new account">✨ ساخت حساب جدید</span></button>
+   <button type="button" class="agBtn ghost" id="agGuest"><span class="gx" data-fa="👤 ورود مهمان" data-en="👤 Continue as guest">👤 ورود مهمان</span></button>
+   <button type="button" class="agLink" id="agRecLink"><span class="gx" data-fa="🔑 ورود با کد بازیابی" data-en="🔑 Sign in with recovery code">🔑 ورود با کد بازیابی</span></button>
+  </div>
+  <div class="agView" data-view="recovery" hidden>
+   <div class="agLbl"><span class="gx" data-fa="کد بازیابی خودت رو وارد کن:" data-en="Enter your recovery code:">کد بازیابی خودت رو وارد کن:</span></div>
+   <input class="agIn" id="agCodeIn" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="29" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX">
+   <button type="button" class="agBtn primary" id="agRecGo"><i class="agSp"></i><span class="gx" data-fa="🔑 ورود" data-en="🔑 Sign in">🔑 ورود</span></button>
+   <button type="button" class="agLink" id="agRecBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
+  </div>
+  <div class="agView" data-view="done" hidden>
+   <div class="agDoneT" id="agDoneT"></div>
+   <div class="agLbl" style="text-align:center"><span class="gx" data-fa="شناسه‌ی تو:" data-en="Your ID:">شناسه‌ی تو:</span></div>
+   <div class="agId" id="agId"></div>
+   <div class="agCode" id="agCodeBox">
+    <div class="agLbl"><span class="gx" data-fa="🔑 کد بازیابی" data-en="🔑 Recovery code">🔑 کد بازیابی</span></div>
+    <b id="agCodeTxt"></b>
+    <button type="button" id="agCopy"><span class="gx" data-fa="📋 کپی" data-en="📋 Copy">📋 کپی</span></button>
+   </div>
+   <div class="agWarn" id="agWarn"><span class="gx" data-fa="⚠️ این کد رو جای امن ذخیره کن. اگه گم شد، با پشتیبانی تماس بگیر" data-en="⚠️ Keep this code somewhere safe. If you lose it, contact support">⚠️ این کد رو جای امن ذخیره کن. اگه گم شد، با پشتیبانی تماس بگیر</span></div>
+   <button type="button" class="agBtn" id="agAddDevice"><span class="gx" data-fa="➕ افزودن دستگاه جدید" data-en="➕ Add this device">➕ افزودن دستگاه جدید</span></button>
+   <button type="button" class="agBtn primary" id="agDoneGo"><span class="gx" data-fa="✅ ذخیره کردم، ورود به سایت" data-en="✅ Saved it, enter the site">✅ ذخیره کردم، ورود به سایت</span></button>
+  </div>
+  <div class="agErr" id="agErr" role="alert"></div>
+ </div>
+</div>
+<div class="authLock" id="authLock">
+ <div class="agCard">
+  <h3><span class="gx" data-fa="🔒 این بخش قفله" data-en="🔒 This section is locked">🔒 این بخش قفله</span></h3>
+  <p><span class="gx" data-fa="برای استفاده از این قابلیت، اول حسابت رو کامل کن" data-en="To use this feature, please complete your account first">برای استفاده از این قابلیت، اول حسابت رو کامل کن</span></p>
+  <div class="agRow">
+   <button type="button" class="agBtn primary" id="agLockLogin"><span class="gx" data-fa="🔐 ورود" data-en="🔐 Sign in">🔐 ورود</span></button>
+   <button type="button" class="agBtn" id="agLockReg"><span class="gx" data-fa="✨ ثبت‌نام" data-en="✨ Sign up">✨ ثبت‌نام</span></button>
+  </div>
+  <button type="button" class="agSmall" id="agLockGuest"><span class="gx" data-fa="👤 ادامه با مهمان" data-en="👤 Continue as guest">👤 ادامه با مهمان</span></button>
+ </div>
+</div>
+<script id="auth-script">
+/* ===== Poppy Auth: Gate + topbar badge + guest locks (WebAuthn) ===== */
+(function(){
+'use strict';
+var API='https://poppy-auth-api.hosseinasgari898989.workers.dev';
+var D=document,W=window,R=D.documentElement;
+var KT='poppy_auth_token',KD='poppy_auth_display',KC='poppy_cred_ids',KG='poppy_guest';
+function $(id){return D.getElementById(id);}
+function qsa(s,r){return Array.prototype.slice.call((r||D).querySelectorAll(s));}
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
+function ssGet(k){try{return sessionStorage.getItem(k);}catch(e){return null;}}
+function ssSet(k,v){try{sessionStorage.setItem(k,v);}catch(e){}}
+function lang(){try{return currentLang==='en'?'en':'fa';}catch(e){return 'fa';}}
+function T(fa,en){return lang()==='en'?en:fa;}
+
+var S={logged:false,display:'',started:false,busy:false,hasCode:false,forced:true};
+var gate,box,errBox;
+
+/* ---------- texts ---------- */
+function refreshTexts(){
+  var en=lang()==='en';
+  qsa('#authGate .gx,#authLock .gx').forEach(function(e){var t=en?e.dataset.en:e.dataset.fa;if(t&&e.textContent!==t)e.textContent=t;});
+  var pl=$('agCodeIn');if(pl)pl.dir='ltr';
+  R.setAttribute('data-authlang',en?'en':'fa');
+  [gate,$('authLock')].forEach(function(e){if(e)e.style.direction=en?'ltr':'rtl';});
+  updateBtn();
+}
+function wrapLang(){
+  var f=W.setLanguage;
+  if(typeof f==='function'&&!f.__auth){var g=function(l){var r=f.apply(this,arguments);refreshTexts();return r;};g.__auth=1;W.setLanguage=g;}
+}
+var ERRS={
+  credential_already_registered:['این اثر انگشت قبلاً ثبت شده. اگه صاحبش تو هستی، با کد بازیابی وارد شو','This fingerprint is already registered. If it is yours, sign in with your recovery code'],
+  invalid_recovery_code:['کد بازیابی درست نیست','The recovery code is not valid'],
+  not_verified:['تأیید اثر انگشت انجام نشد','Fingerprint verification failed'],
+  origin_not_allowed:['این آدرس اجازه‌ی استفاده از اثر انگشت رو نداره','This address is not allowed to use fingerprint login'],
+  registration_closed:['ثبت‌نام حساب جدید بسته است. با حساب موجود وارد شو و دستگاه جدید را اضافه کن','New account registration is closed. Sign in to your existing account and add a device'],
+  rate_limited:['تعداد تلاش‌ها زیاد است. چند دقیقه بعد دوباره امتحان کن','Too many attempts. Please try again later'],
+  not_logged_in:['ابتدا وارد حساب شو','Please sign in first']
+};
+function errMsg(j){
+  if(j&&j.error&&ERRS[j.error]&&lang()==='en')return ERRS[j.error][1];
+  if(j&&j.message)return j.message;
+  if(j&&j.error&&ERRS[j.error])return ERRS[j.error][0];
+  return T('خطایی رخ داد. دوباره تلاش کن','Something went wrong. Please try again');
+}
+function explain(e){
+  if(!e)return errMsg(null);
+  var n=e.name;
+  if(n==='NotAllowedError')return T('عملیات لغو شد، زمانش تمام شد یا اثر انگشتی برای این دستگاه پیدا نشد. اگه حساب داری با کد بازیابی وارد شو','Cancelled, timed out, or no fingerprint found on this device. If you have an account, use your recovery code');
+  if(n==='InvalidStateError')return errMsg({error:'credential_already_registered'});
+  if(n==='SecurityError')return errMsg({error:'origin_not_allowed'});
+  if(n==='NotSupportedError')return T('این دستگاه از اثر انگشت پشتیبانی نمی‌کنه','This device does not support fingerprint login');
+  if(e instanceof TypeError||n==='AbortError')return T('اتصال به سرور برقرار نشد. اینترنتت رو چک کن','Could not reach the server. Check your connection');
+  return errMsg(e);
+}
+
+/* ---------- network ---------- */
+function api(method,path,body,token){
+  var h={'Content-Type':'application/json'};if(token)h.Authorization='Bearer '+token;
+  var ctl=('AbortController' in W)?new AbortController():null,to=setTimeout(function(){if(ctl)ctl.abort();},15000);
+  return fetch(API+path,{method:method,headers:h,body:body?JSON.stringify(body):undefined,signal:ctl?ctl.signal:undefined}).then(function(r){
+    clearTimeout(to);
+    return r.json().catch(function(){return {success:false,error:'bad_response'};}).then(function(j){j._status=r.status;return j;});
+  },function(e){clearTimeout(to);throw e;});
+}
+
+/* ---------- WebAuthn helpers ---------- */
+function buf(s){s=String(s).replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer;}
+function b64(x){var u=new Uint8Array(x),s='';for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function toCreate(o){
+  o=JSON.parse(JSON.stringify(o));
+  o.challenge=buf(o.challenge);o.user.id=buf(o.user.id);
+  (o.excludeCredentials||[]).forEach(function(c){c.id=buf(c.id);});
+  return o;
+}
+function toGet(o){
+  o=JSON.parse(JSON.stringify(o));
+  o.challenge=buf(o.challenge);
+  if(o.allowCredentials&&o.allowCredentials.length)o.allowCredentials.forEach(function(c){c.id=buf(c.id);});
+  else delete o.allowCredentials;      /* some phones reject an empty allowCredentials list */
+  return o;
+}
+function serReg(c){
+  var r=c.response,out={id:c.id,rawId:b64(c.rawId),type:c.type,clientExtensionResults:c.getClientExtensionResults?c.getClientExtensionResults():{},
+    authenticatorAttachment:c.authenticatorAttachment||undefined,
+    response:{clientDataJSON:b64(r.clientDataJSON),attestationObject:b64(r.attestationObject),transports:r.getTransports?r.getTransports():[]}};
+  try{
+    if(r.getAuthenticatorData)out.response.authenticatorData=b64(r.getAuthenticatorData());
+    if(r.getPublicKey){var pk=r.getPublicKey();if(pk)out.response.publicKey=b64(pk);}
+    if(r.getPublicKeyAlgorithm)out.response.publicKeyAlgorithm=r.getPublicKeyAlgorithm();
+  }catch(e){}
+  return out;
+}
+function serAuth(c){
+  var r=c.response;
+  return {id:c.id,rawId:b64(c.rawId),type:c.type,clientExtensionResults:c.getClientExtensionResults?c.getClientExtensionResults():{},
+    authenticatorAttachment:c.authenticatorAttachment||undefined,
+    response:{clientDataJSON:b64(r.clientDataJSON),authenticatorData:b64(r.authenticatorData),signature:b64(r.signature),userHandle:r.userHandle?b64(r.userHandle):undefined}};
+}
+function needWA(){
+  if(!W.PublicKeyCredential||!navigator.credentials||!W.isSecureContext)
+    throw {error:'unsupported',message:T('مرورگر یا دستگاهت از اثر انگشت پشتیبانی نمی‌کنه. با کد بازیابی وارد شو','Your browser/device does not support fingerprint login. Use your recovery code')};
+}
+function credIds(){try{var a=JSON.parse(lsGet(KC)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
+function addCredId(id){var a=credIds();if(id&&a.indexOf(id)<0){a.push(id);lsSet(KC,JSON.stringify(a));}}
+function fmtId(d){d=String(d||'');return d.charAt(0)==='#'?d:'#'+d;}
+
+/* ---------- session ---------- */
+function saveSession(f){
+  if(f.token)lsSet(KT,f.token);
+  var u=f.user||{};S.display=u.displayId||u.id||S.display;
+  lsSet(KD,S.display);
+}
+function setLogged(u){
+  S.logged=true;S.display=(u&&(u.displayId||u.id))||lsGet(KD)||'';
+  lsSet(KD,S.display);
+  try{sessionStorage.removeItem(KG);}catch(e){}
+  updateBtn();
+  try{D.dispatchEvent(new CustomEvent('poppy-auth',{detail:{logged:true,display:S.display}}));}catch(e){}
+}
+function setGuest(){S.logged=false;ssSet(KG,'1');updateBtn();}
+function updateBtn(){
+  var b=$('authBtn');if(!b)return;
+  if(S.logged){b.textContent=fmtId(S.display)+' 🟢';b.classList.add('on');b.title='';}
+  else{b.textContent=T('👤 ورود','👤 Login');b.classList.remove('on');}
+}
+
+/* ---------- gate view ---------- */
+function view(n){qsa('.agView',gate).forEach(function(v){v.hidden=v.dataset.view!==n;});$('agClose').hidden=S.forced||n==='done';clearErr();}
+function clearErr(){if(errBox){errBox.classList.remove('show');errBox.textContent='';}}
+function showErr(m){errBox.textContent=m;errBox.classList.remove('show');void errBox.offsetWidth;errBox.classList.add('show');}
+function showGate(forced,hint){
+  R.classList.remove('authg-skip');
+  gate.classList.remove('gone','loading');
+  R.classList.add('authg-open');
+  S.forced=!!forced;
+  view('main');refreshTexts();
+  box.style.animation='none';void box.offsetWidth;box.style.animation='';
+  if(hint){var b=$(hint);if(b){b.classList.remove('pulse');void b.offsetWidth;b.classList.add('pulse');}}
+}
+function hideGate(){gate.classList.add('gone');gate.classList.remove('loading');R.classList.remove('authg-open');}
+function busy(btn,on){S.busy=on;gate.classList.toggle('busy',on);if(btn)btn.classList.toggle('loading',on);}
+function run(btn,fn,done){
+  if(S.busy)return;busy(btn,true);clearErr();
+  var p;try{p=Promise.resolve(fn());}catch(e){p=Promise.reject(e);}
+  p.then(function(r){busy(btn,false);done(r);},function(e){
+    busy(btn,false);showErr(explain(e));
+    btn.classList.remove('shake');void btn.offsetWidth;btn.classList.add('shake');setTimeout(function(){btn.classList.remove('shake');},500);
+  });
+}
+function showDone(f,title){
+  setLogged(f.user);S.hasCode=!!f.recoveryCode;
+  $('agDoneT').textContent=title;$('agId').textContent=fmtId(S.display);
+  $('agCodeBox').style.display=S.hasCode?'':'none';$('agWarn').style.display=S.hasCode?'':'none';
+  $('agCodeTxt').textContent=f.recoveryCode||'';
+  view('done');refreshTexts();
+}
+
+/* ---------- flows ---------- */
+function doRegister(){
+  needWA();
+  return api('POST','/api/auth/register/begin',{}).then(function(b){
+    if(!b.success)throw b;
+    return navigator.credentials.create({publicKey:toCreate(b.options)}).then(function(c){
+      if(!c)throw {error:'not_verified'};
+      return api('POST','/api/auth/register/finish',{challengeId:b.challengeId,credential:serReg(c)}).then(function(f){
+        if(!f.success)throw f;
+        saveSession(f);addCredId(c.id);return f;
+      });
+    });
+  });
+}
+function doLogin(){
+  needWA();
+  return api('POST','/api/auth/login/begin',{credentialIds:credIds()}).then(function(b){
+    if(!b.success)throw b;
+    return navigator.credentials.get({publicKey:toGet(b.options)}).then(function(c){
+      if(!c)throw {error:'not_verified'};
+      return api('POST','/api/auth/login/finish',{challengeId:b.challengeId,credential:serAuth(c)}).then(function(f){
+        if(!f.success)throw f;
+        saveSession(f);addCredId(c.id);return f;
+      });
+    });
+  });
+}
+function doRecovery(){
+  var code=($('agCodeIn').value||'').trim();
+  if(code.replace(/-/g,'').length<10)throw {error:'invalid_recovery_code'};
+  return api('POST','/api/auth/recovery/login',{code:code}).then(function(f){if(!f.success)throw f;saveSession(f);return f;});
+}
+function doAddCredential(){
+  needWA();
+  var token=lsGet(KT);
+  if(!token)throw {error:'not_logged_in'};
+  return api('POST','/api/auth/credential/add/begin',{},token).then(function(b){
+    if(!b.success)throw b;
+    return navigator.credentials.create({publicKey:toCreate(b.options)}).then(function(c){
+      if(!c)throw {error:'not_verified'};
+      return api('POST','/api/auth/credential/add/finish',{
+        challengeId:b.challengeId,
+        credential:serReg(c)
+      },token).then(function(f){
+        if(!f.success)throw f;
+        addCredId(c.id);
+        return f;
+      });
+    });
+  });
+}
+function fmtCode(v){
+  v=String(v).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,25);
+  return v.replace(/(.{5})(?=.)/g,'$1-');
+}
+function copyText(txt,btn){
+  var lbl=btn.querySelector('.gx');
+  var ok=function(){lbl.textContent=T('✅ کپی شد','✅ Copied');setTimeout(function(){lbl.textContent=T('📋 کپی','📋 Copy');},1800);};
+  var fb=function(){var ta=D.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;top:0;opacity:0';D.body.appendChild(ta);ta.select();try{D.execCommand('copy');ok();}catch(e){}ta.remove();};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,fb);else fb();
+}
+
+/* ---------- guest lock card ---------- */
+function showLock(){refreshTexts();$('authLock').classList.add('show');}
+function hideLock(){$('authLock').classList.remove('show');}
+
+/* ---------- start (called by the site-status check, after it says "all good") ---------- */
+function afterNoAuth(){
+  if(ssGet(KG)==='1'){setGuest();hideGate();}
+  else showGate(true);
+}
+function start(){
+  if(S.started)return;S.started=true;
+  wrapLang();refreshTexts();
+  var token=lsGet(KT);
+  if(!token){afterNoAuth();return;}
+  api('GET','/api/auth/me',null,token).then(function(j){
+    if(j&&j.success&&j.user){setLogged(j.user);hideGate();return;}
+    if(j&&(j._status===401||j._status===403||(j._status<500&&j.success===false))){lsDel(KT);lsDel(KD);afterNoAuth();return;}
+    keepSaved();
+  },keepSaved);
+  function keepSaved(){                       /* server unreachable: keep the saved session instead of locking people out */
+    var d=lsGet(KD);
+    if(d){setLogged({displayId:d});hideGate();}else afterNoAuth();
+  }
+}
+function skip(){S.started=true;hideGate();}
+
+function init(){
+  gate=$('authGate');box=$('agBox');errBox=$('agErr');
+  if(!gate)return;
+  $('agLogin').onclick=function(){run(this,doLogin,function(f){hideGate();});};
+  $('agReg').onclick=function(){run(this,doRegister,function(f){showDone(f,T('✅ حساب ساخته شد!','✅ Account created!'));});};
+  $('agGuest').onclick=function(){setGuest();hideGate();};
+  $('agRecLink').onclick=function(){view('recovery');setTimeout(function(){try{$('agCodeIn').focus();}catch(e){}},50);};
+  $('agRecBack').onclick=function(){view('main');};
+  $('agRecGo').onclick=function(){run(this,doRecovery,function(f){showDone(f,T('✅ وارد شدی!','✅ Signed in!'));});};
+  $('agAddDevice').onclick=function(){
+    run(this,doAddCredential,function(){
+      $('agDoneT').textContent=T('✅ دستگاه جدید اضافه شد!','✅ New device added!');
+      $('agCodeBox').style.display='none';
+      $('agWarn').style.display='none';
+    });
+  };
+  $('agCodeIn').addEventListener('input',function(){var v=fmtCode(this.value);if(this.value!==v)this.value=v;});
+  $('agCodeIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('agRecGo').click();});
+  $('agCopy').onclick=function(){copyText($('agCodeTxt').textContent,this);};
+  $('agDoneGo').onclick=function(){hideGate();};
+  $('agClose').onclick=function(){hideGate();};
+  $('agLockLogin').onclick=function(){hideLock();showGate(false,'agLogin');};
+  $('agLockReg').onclick=function(){hideLock();showGate(false,'agReg');};
+  $('agLockGuest').onclick=hideLock;
+  $('authLock').addEventListener('click',function(e){if(e.target===this)hideLock();});
+  D.addEventListener('keydown',function(e){if(e.key==='Escape'){hideLock();if(!$('agClose').hidden&&!gate.classList.contains('gone'))hideGate();}});
+  D.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('#authBtn'):null;if(b&&!S.logged)showGate(false);});
+  if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',updateBtn);
+  /* guests: comments / AI / ticket buttons open the lock card instead */
+  D.addEventListener('click',function(e){
+    if(S.logged)return;
+    var t=e.target&&e.target.closest?e.target.closest('#chatToggleBtn,#aiChatToggleBtn,#openSupportTicketBtn'):null;
+    if(!t)return;
+    e.preventDefault();e.stopImmediatePropagation();showLock();
+  },true);
+  updateBtn();
+}
+init();
+W.PoppyAuth={start:start,skip:skip,openGate:function(){showGate(false);},get logged(){return S.logged;}};
+})();
+
+</script>
 <div class="initStatusGate" id="initStatusGate"><div class="gateSpinner"></div></div>
 <script>document.documentElement.classList.add('init-gate-active');document.body.classList.add('init-gate-active');</script>
 <div id="progressBar"></div>
@@ -1111,6 +1509,7 @@ body.modal-open{position:static!important;height:auto!important;width:auto!impor
   <button class="searchBtn hidden" id="searchBtn" aria-label="Search" data-licon="search" data-lsize="top">🔍</button>
   <button class="musicBtn" id="musicBtn" title="Music" data-licon="music" data-lsize="top">🎵</button>
   <button class="perfBtn" id="perfBtn" title="Performance" data-licon="lightning" data-lsize="top">⚡</button>
+  <button class="lang" id="authBtn" type="button">👤 ورود</button>
   <button class="lang" id="lang">ENGLISH</button>
   <button class="themeBtn" id="themeToggle" data-licon="darkmode" data-lsize="switch" data-lalways="1" data-lmode="switch">🌙</button>
    <button class="themePaletteBtn" id="themePaletteBtn" aria-label="Theme palette" title="Themes" data-licon="palette" data-lsize="top">🎨</button>
@@ -1640,11 +2039,41 @@ body.modal-open{position:static!important;height:auto!important;width:auto!impor
 
 <script>
 const API_BASE = 'https://poppy-comments-api.hosseinasgari898989.workers.dev';
+const AUTH_ME_API = 'https://poppy-auth-api.hosseinasgari898989.workers.dev/api/auth/me';
+function handleAuthExpired(){
+  try{
+    localStorage.removeItem('poppy_auth_token');
+    localStorage.removeItem('poppy_auth_display');
+    document.documentElement.classList.remove('authg-skip');
+  }catch(e){}
+  try{ location.reload(); }catch(e){}
+}
+(async function validateSavedAuth(){
+  try{
+    const t = getPoppyAuthToken();
+    if(!t) return;
+    const res = await fetch(AUTH_ME_API,{headers:{Authorization:'Bearer '+t},cache:'no-store'});
+    if(res.status===401) handleAuthExpired();
+  }catch(e){}
+})();
 const $ = id => document.getElementById(id);
 const MAX_EDITS = 3;
 const storageGet = (key, fallback = null) => { try { const v = localStorage.getItem(key); return v === null ? fallback : v; } catch { return fallback; } };
 const storageSet = (key, value) => { try { localStorage.setItem(key, value); } catch {} };
 const storageRemove = key => { try { localStorage.removeItem(key); } catch {} };
+const getPoppyAuthToken = () => storageGet('poppy_auth_token', '');
+const authJsonHeaders = () => {
+  const h = { 'Content-Type': 'application/json' };
+  const t = getPoppyAuthToken();
+  if (t) h.Authorization = 'Bearer ' + t;
+  return h;
+};
+const authHeaders = () => {
+  const h = {};
+  const t = getPoppyAuthToken();
+  if (t) h.Authorization = 'Bearer ' + t;
+  return h;
+};
 const MUSIC_URL = 'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/The%20Hour%20of%20Joy.m4a';
 function showToast(msg, type) {
   const box = $('toastBox');
@@ -1957,7 +2386,7 @@ function fadeTo(audio, target, duration, callback) {
 }
 
 function updateMusicUI() {
-  $('musicPlayPause').textContent = (currentLang==='en') ? (musicPlaying ? '⏸ Pause' : '▶ Play') : (musicPlaying ? '⏸ توقف' : '▶ پخش');
+  if ($('musicPlayPause')) $('musicPlayPause').textContent = (currentLang==='en') ? (musicPlaying ? '⏸ Pause' : '▶ Play') : (musicPlaying ? '⏸ توقف' : '▶ پخش');
   musicBtn.classList.toggle('active', musicPlaying);
 }
 
@@ -2529,7 +2958,8 @@ async function checkUserComment(){
   const userId = getUserID();
   try {
     const fingerprint = getFingerprint();
-    const res = await fetch(API_BASE + '/api/comments/check/' + userId + '?fp=' + encodeURIComponent(fingerprint));
+    const res = await fetch(API_BASE + '/api/comments/check?fp=' + encodeURIComponent(fingerprint), { headers: authHeaders(), cache: 'no-store' });
+    if (res.status === 401) { handleAuthExpired(); return; }
     const data = await res.json();
 
     // چک بن کاربر
@@ -2639,7 +3069,8 @@ $('submitComment').onclick = async () => {
   }
 
   try {
-    const res = await fetch(API_BASE + '/api/comments', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, comment, userId, fingerprint: getFingerprint() }) });
+    const res = await fetch(API_BASE + '/api/comments', { method:'POST', headers:authJsonHeaders(), body: JSON.stringify({ name, comment, fingerprint: getFingerprint() }) });
+    if (res.status === 401) { handleAuthExpired(); return; }
     const data = await res.json();
     if (!data.success) {
       // FIX: حالت‌های update_mode و server_offline پیام اختصاصی سرور رو نشون بدن
@@ -2672,7 +3103,7 @@ $('saveEdit').onclick = async () => {
   const userId = getUserID();
   if (!newComment) { showToast('متن نظر نمی‌تواند خالی باشد.', 'error'); return; }
   try {
-    const res = await fetch(API_BASE + '/api/comments/' + userCommentId, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ comment: newComment, userId, fingerprint: getFingerprint() }) });
+    const res = await fetch(API_BASE + '/api/comments/' + userCommentId, { method:'PUT', headers:authJsonHeaders(), body: JSON.stringify({ comment: newComment, fingerprint: getFingerprint() }) });
     const data = await res.json();
     if (!data.success) { showToast(data.error, 'error'); return; }
     setEditCount(getEditCount() + 1);
@@ -2687,7 +3118,7 @@ $('deleteBtn').onclick = async () => {
   if (!confirmed) return;
   const userId = getUserID();
   try {
-    const res = await fetch(API_BASE + '/api/comments/' + userCommentId, { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ userId, fingerprint: getFingerprint() }) });
+    const res = await fetch(API_BASE + '/api/comments/' + userCommentId, { method:'DELETE', headers:authJsonHeaders(), body: JSON.stringify({ fingerprint: getFingerprint() }) });
     const data = await res.json();
     if (!data.success) { showToast(data.error, 'error'); return; }
     setEditCount(0);
@@ -2735,12 +3166,18 @@ const AI_ERROR_MESSAGES = {
     ai_error: '⚠️ پاپی موقتاً نتونست جواب بده. لطفاً دوباره امتحان کن.',
     rate_limit: '⏳ یکم سریع پیام فرستادی! چند لحظه صبر کن و دوباره امتحان کن.',
     invalid_input: '❌ این پیام قابل پردازش نبود. لطفاً به شکل دیگه‌ای بنویسش.',
+    unauthorized: '🔐 برای استفاده از این بخش باید وارد حسابت شوی.',
+    ai_disabled: '🌙 هوش مصنوعی فعلاً در دسترس نیست. لطفاً چند دقیقه بعد دوباره امتحان کن.',
+    server_error: '⚠️ سرور هوش مصنوعی موقتاً خطا داده. لطفاً دوباره امتحان کن.',
+    quota_unavailable: '⚠️ بررسی سهمیه موقتاً در دسترس نیست. دوباره امتحان کن.',
     default: '⚠️ مشکلی پیش اومد. لطفاً دوباره امتحان کن.'
   },
   en: {
     ai_error: "⚠️ Poppy couldn't answer that just now. Please try again.",
     rate_limit: '⏳ Sending a bit fast — wait a moment and try again.',
     invalid_input: "❌ That message couldn't be processed. Try rephrasing it.",
+    unauthorized: '🔐 Please sign in to use this feature.',
+    quota_unavailable: '⚠️ Quota service is temporarily unavailable. Please try again.',
     default: '⚠️ Something went wrong. Please try again.'
   }
 };
@@ -2873,7 +3310,8 @@ function updateAiBadge(remaining, limit, fromServer) {
 
 async function fetchAiStatus() {
   try {
-    const res = await fetch(AI_CHAT_STATUS + '?userId=' + encodeURIComponent(getUserID()));
+    const res = await fetch(AI_CHAT_STATUS, { headers: authHeaders(), cache: 'no-store' });
+    if (res.status === 401) { handleAuthExpired(); return; }
     const data = await res.json();
     if (data.success) updateAiBadge(data.remaining, data.limit, true);
   } catch (e) { console.log('status fetch failed'); }
@@ -2990,14 +3428,13 @@ async function sendAiMessage() {
     const sendHistory = newHistory.slice(-AI_MAX_SEND);
     const res = await fetch(AI_CHAT_API, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authJsonHeaders(),
       body: JSON.stringify({
         message: raw,
-        history: sendHistory.slice(0, -1),
-        userId: getUserID(),
-        fingerprint: getFingerprint()
+        history: sendHistory.slice(0, -1)
       })
     });
+    if (res.status === 401) { hideAiTyping(); handleAuthExpired(); return; }
     const data = await res.json();
     hideAiTyping();
 
@@ -3016,7 +3453,7 @@ async function sendAiMessage() {
       } else {
         const errDiv = document.createElement('div');
         errDiv.className = 'aiMsg error';
-        errDiv.textContent = getAiErrorMessage(data.error);
+        errDiv.textContent = data.message || getAiErrorMessage(data.error);
         $('aiChatMessages').appendChild(errDiv);
       }
       $('aiChatMessages').scrollTop = $('aiChatMessages').scrollHeight;
@@ -3800,7 +4237,7 @@ updateFloatingUI();
     try {
       const userId = getUserID();
       const fingerprint = getFingerprint();
-      const res = await fetch(API_BASE + '/api/comments/check/' + userId + '?fp=' + encodeURIComponent(fingerprint), {cache: 'no-store'});
+      const res = await fetch(API_BASE + '/api/comments/check/' + encodeURIComponent(userId) + '?fp=' + encodeURIComponent(fingerprint), {headers: authHeaders(), cache: 'no-store'});
       const data = await res.json();
       if (data && data.banned === true && (data.ban_type === 'site' || data.ban_type === 'all')) {
         saveBlock('banned', data);
@@ -3828,6 +4265,10 @@ updateFloatingUI();
     if (bn === 'ok' && st === 'ok' && stored) { clearBlock(); hideStatusOverlay(); }   // server reachable + all fine -> release
     unpend();
     hideInitGate();
+    try {
+      const banned = bn === 'banned' || (stored && stored.kind === 'banned' && bn !== 'ok');
+      if (window.PoppyAuth) { if (banned) PoppyAuth.skip(); else PoppyAuth.start(); }
+    } catch (e) {}
   }
 
   const early = loadBlock();
@@ -3850,7 +4291,7 @@ updateFloatingUI();
     return;
   }
 
-  setTimeout(function(){ unpend(); hideInitGate(); }, 8000); // safety net so a slow/broken status check never traps users forever
+  setTimeout(function(){ unpend(); hideInitGate(); try { if (window.PoppyAuth) PoppyAuth.start(); } catch (e) {} }, 12000); // safety net so a slow/broken status check never traps users forever
   runSiteStatusChecks();
 })();
 
@@ -3932,8 +4373,8 @@ updateFloatingUI();
     try {
       const res = await fetch(API_BASE + '/api/reports', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, userName, type, subject, message, fingerprint: getFingerprint() })
+        headers: authJsonHeaders(),
+        body: JSON.stringify({ type, subject, message, fingerprint: getFingerprint() })
       });
       const data = await res.json();
       if (!data.success) {
@@ -3961,8 +4402,7 @@ updateFloatingUI();
   async function loadMyTickets() {
     const fa = currentLang === 'fa';
     try {
-      const userId = getUserID();
-      const res = await fetch(API_BASE + '/api/reports/by-user/' + userId);
+      const res = await fetch(API_BASE + '/api/reports/by-user', { headers: authHeaders(), cache: 'no-store' });
       const data = await res.json();
       if (!data.success || !data.reports || !data.reports.length) {
         myTicketsList.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:13px;padding:16px 0;">' + (fa ? 'هنوز تیکتی نفرستادی' : "You haven't sent any tickets yet") + '</p>';
