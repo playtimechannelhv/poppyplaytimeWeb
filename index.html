@@ -3018,8 +3018,12 @@ function draw(){ if(document.body.classList.contains('perf-mode')){requestAnimat
 addEventListener('resize', resize); resize(); draw();
 
 let userHasComment = false, userCommentId = null;
-function getEditCount(){ return parseInt(storageGet('poppy_edits_' + getUserID()) || '0', 10); }
-function setEditCount(n){ storageSet('poppy_edits_' + getUserID(), String(n)); }
+let serverEditCount = 0;
+function getEditCount(){ return Math.max(0, Math.min(MAX_EDITS, Number(serverEditCount) || 0)); }
+function setEditCount(n){
+  serverEditCount = Math.max(0, Math.min(MAX_EDITS, Number(n) || 0));
+  updateEditLimit();
+}
 function updateEditLimit(){
   const used = getEditCount(); const left = Math.max(0, MAX_EDITS - used);
   $('editLimit').textContent = currentLang === 'fa' ? `شما ${left} بار دیگر می‌توانید ویرایش کنید (حداکثر ${MAX_EDITS} بار)` : `You can edit ${left} more time(s) (max ${MAX_EDITS})`;
@@ -3083,6 +3087,10 @@ async function checkUserComment(){
     }
 
     // رفتار عادی
+    serverEditCount = data.success && data.hasComment ? Number(data.editCount || data.comment?.edit_count || 0) : 0;
+    try { storageRemove('poppy_edits_' + getUserID()); } catch(e) {}
+    updateEditLimit();
+
     if (data.success && data.hasComment) {
       userHasComment = true; userCommentId = data.comment.id;
       $('commentForm').style.display = 'none';
@@ -3193,16 +3201,24 @@ $('cancelEdit').onclick = () => $('editForm').classList.remove('show');
 $('saveEdit').onclick = async () => {
   if (getEditCount() >= MAX_EDITS) { showToast('به حداکثر تعداد ویرایش رسیده‌اید.', 'error'); $('editForm').classList.remove('show'); return; }
   const newComment = $('editComment').value.trim();
-  const userId = getUserID();
   if (!newComment) { showToast('متن نظر نمی‌تواند خالی باشد.', 'error'); return; }
   try {
     const res = await fetch(API_BASE + '/api/comments/' + userCommentId, { method:'PUT', headers:authJsonHeaders(), body: JSON.stringify({ comment: newComment, fingerprint: getFingerprint() }) });
     const data = await res.json();
-    if (!data.success) { showToast(data.error, 'error'); return; }
-    setEditCount(getEditCount() + 1);
+    if (!data.success) {
+      if (data.error === 'edit_limit_reached') {
+        serverEditCount = MAX_EDITS;
+        updateEditLimit();
+        $('editForm').classList.remove('show');
+      }
+      showToast(data.message || data.error, 'error');
+      return;
+    }
+    serverEditCount = Number(data.editCount || getEditCount() + 1);
+    updateEditLimit();
     $('editForm').classList.remove('show');
     await loadComments();
-    showToast('✅ نظر شما ویرایش شد. (' + (MAX_EDITS - getEditCount()) + ' بار باقی‌مانده)', 'success');
+    showToast('✅ نظر شما ویرایش شد. (' + Math.max(0, MAX_EDITS - serverEditCount) + ' بار باقی‌مانده)', 'success');
   } catch(e) { showToast('خطا در ارتباط با سرور.', 'error'); }
 };
 $('deleteBtn').onclick = async () => {
@@ -3213,8 +3229,9 @@ $('deleteBtn').onclick = async () => {
   try {
     const res = await fetch(API_BASE + '/api/comments/' + userCommentId, { method:'DELETE', headers:authJsonHeaders(), body: JSON.stringify({ fingerprint: getFingerprint() }) });
     const data = await res.json();
-    if (!data.success) { showToast(data.error, 'error'); return; }
-    setEditCount(0);
+    if (!data.success) { showToast(data.message || data.error, 'error'); return; }
+    serverEditCount = 0;
+    updateEditLimit();
     userHasComment = false; userCommentId = null;
     await loadComments();
     showToast('✅ نظر شما حذف شد. می‌توانید نظر جدید ثبت کنید.', 'success');
