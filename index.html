@@ -1441,14 +1441,42 @@ function start(){
   wrapLang();refreshTexts();
   var token=lsGet(KT);
   if(!token){afterNoAuth();return;}
+
   api('GET','/api/auth/me',null,token).then(function(j){
-    if(j&&j.success&&j.user){setLogged(j.user);hideGate();return;}
-    if(j&&(j._status===401||j._status===403||(j._status<500&&j.success===false))){lsDel(KT);lsDel(KD);afterNoAuth();return;}
+    if(lsGet(KT) !== token) return;
+
+    if(j&&j.success&&j.user){
+      setLogged(j.user);
+      hideGate();
+      return;
+    }
+
+    if(j&&(j._status===401||j._status===403||(j._status<500&&j.success===false))){
+      if(lsGet(KT)===token){
+        lsDel(KT);
+        lsDel(KD);
+      }
+      afterNoAuth();
+      return;
+    }
+
     keepSaved();
-  },keepSaved);
-  function keepSaved(){                       /* server unreachable: keep the saved session instead of locking people out */
-    var d=lsGet(KD);
-    if(d){setLogged({displayId:d});hideGate();}else afterNoAuth();
+  },function(){
+    if(lsGet(KT) !== token) return;
+    keepSaved();
+  });
+
+  function keepSaved(){
+    S.logged=false;
+    updateBtn();
+    showGate(false);
+
+    setTimeout(function(){
+      if(lsGet(KT) === token){
+        S.started=false;
+        start();
+      }
+    },4000);
   }
 }
 function skip(){S.started=true;hideGate();}
@@ -1491,7 +1519,15 @@ function init(){
   updateBtn();
 }
 init();
-W.PoppyAuth={start:start,skip:skip,openGate:function(){showGate(false);},get logged(){return S.logged;}};
+function forceLogout(){
+  S.logged=false;
+  S.started=true;
+  S.busy=false;
+  updateBtn();
+  try{hideLock();}catch(e){}
+  showGate(true);
+}
+W.PoppyAuth={start:start,skip:skip,openGate:function(){showGate(false);},forceLogout:forceLogout,get logged(){return S.logged;}};
 })();
 
 </script>
@@ -2040,31 +2076,64 @@ W.PoppyAuth={start:start,skip:skip,openGate:function(){showGate(false);},get log
 <script>
 const API_BASE = 'https://poppy-comments-api.hosseinasgari898989.workers.dev';
 const AUTH_ME_API = 'https://poppy-auth-api.hosseinasgari898989.workers.dev/api/auth/me';
-function handleAuthExpired(){
+let _authCheckPromise = null;
+let _authCheckToken = null;
+
+async function confirmAuthSession(){
+  const t = getPoppyAuthToken();
+  if(!t) return { state:false, checkedToken:null };
+
+  if(_authCheckPromise && _authCheckToken === t){
+    const state = await _authCheckPromise;
+    return { state, checkedToken:t };
+  }
+
+  _authCheckToken = t;
+  _authCheckPromise = (async function(){
+    try{
+      const res = await fetch(AUTH_ME_API,{headers:{Authorization:'Bearer '+t},cache:'no-store'});
+      if(res.ok) return true;
+      if(res.status===401 || res.status===403) return false;
+      return null;
+    }catch(e){
+      return null;
+    }finally{
+      setTimeout(function(){
+        if(_authCheckToken === t){
+          _authCheckPromise = null;
+          _authCheckToken = null;
+        }
+      },1500);
+    }
+  })();
+
+  const state = await _authCheckPromise;
+  return { state, checkedToken:t };
+}
+
+function handleAuthExpired(checkedToken){
+  const current = getPoppyAuthToken();
+  if(checkedToken && current !== checkedToken) return;
+
   try{
     localStorage.removeItem('poppy_auth_token');
     localStorage.removeItem('poppy_auth_display');
     document.documentElement.classList.remove('authg-skip');
   }catch(e){}
-  try{ location.reload(); }catch(e){}
-}
-async function confirmAuthSession(){
-  const t = getPoppyAuthToken();
-  if(!t) return false;
+
   try{
-    const res = await fetch(AUTH_ME_API,{headers:{Authorization:'Bearer '+t},cache:'no-store'});
-    if(res.ok) return true;
-    if(res.status===401 || res.status===403) return false;
-    return null;
-  }catch(e){
-    return null;
-  }
+    if(window.PoppyAuth && typeof PoppyAuth.forceLogout === 'function'){
+      PoppyAuth.forceLogout();
+    }else if(window.PoppyAuth){
+      PoppyAuth.openGate();
+    }
+  }catch(e){}
 }
 
 async function validateSavedAuth(){
   try{
-    const state = await confirmAuthSession();
-    if(state === false) handleAuthExpired();
+    const result = await confirmAuthSession();
+    if(result.state === false) handleAuthExpired(result.checkedToken);
   }catch(e){}
 }
 const $ = id => document.getElementById(id);
@@ -2972,9 +3041,9 @@ async function checkUserComment(){
     const fingerprint = getFingerprint();
     const res = await fetch(API_BASE + '/api/comments/check?fp=' + encodeURIComponent(fingerprint), { headers: authHeaders(), cache: 'no-store' });
     if (res.status === 401) {
-      const authState = await confirmAuthSession();
-      if (authState === false) handleAuthExpired();
-      else if (authState === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
+      const authResult = await confirmAuthSession();
+      if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
+      else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
       else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
       return;
     }
@@ -3089,9 +3158,9 @@ $('submitComment').onclick = async () => {
   try {
     const res = await fetch(API_BASE + '/api/comments', { method:'POST', headers:authJsonHeaders(), body: JSON.stringify({ name, comment, fingerprint: getFingerprint() }) });
     if (res.status === 401) {
-      const authState = await confirmAuthSession();
-      if (authState === false) handleAuthExpired();
-      else if (authState === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
+      const authResult = await confirmAuthSession();
+      if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
+      else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
       else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
       return;
     }
@@ -3336,9 +3405,9 @@ async function fetchAiStatus() {
   try {
     const res = await fetch(AI_CHAT_STATUS, { headers: authHeaders(), cache: 'no-store' });
     if (res.status === 401) {
-      const authState = await confirmAuthSession();
-      if (authState === false) handleAuthExpired();
-      else if (authState === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
+      const authResult = await confirmAuthSession();
+      if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
+      else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
       else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
       return;
     }
@@ -3466,9 +3535,9 @@ async function sendAiMessage() {
     });
     if (res.status === 401) {
       hideAiTyping();
-      const authState = await confirmAuthSession();
-      if (authState === false) handleAuthExpired();
-      else if (authState === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
+      const authResult = await confirmAuthSession();
+      if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
+      else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
       else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
       return;
     }
@@ -3603,9 +3672,9 @@ async function checkAiSystemStatus() {
     if (window.PoppyAuth && !PoppyAuth.logged) return;
     const res = await fetch(AI_CHAT_STATUS, { headers: authHeaders(), cache: 'no-store' });
     if (res.status === 401) {
-      const authState = await confirmAuthSession();
-      if (authState === false) handleAuthExpired();
-      else if (authState === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
+      const authResult = await confirmAuthSession();
+      if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
+      else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
       else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
       return;
     }
