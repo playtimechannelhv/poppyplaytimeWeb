@@ -3044,7 +3044,7 @@ async function checkUserComment(){
       const authResult = await confirmAuthSession();
       if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
       else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
-      else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
+      else { const bridgeStatus = res.headers.get('X-Auth-Upstream-Status'); showToast('⚠️ نشست معتبر است؛ سرویس مقصد احراز هویت را نپذیرفت.' + (bridgeStatus ? ' [Auth upstream: ' + bridgeStatus + ']' : ''), 'error'); }
       return;
     }
     const data = await res.json();
@@ -3161,7 +3161,7 @@ $('submitComment').onclick = async () => {
       const authResult = await confirmAuthSession();
       if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
       else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
-      else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
+      else { const bridgeStatus = res.headers.get('X-Auth-Upstream-Status'); showToast('⚠️ نشست معتبر است؛ سرویس مقصد احراز هویت را نپذیرفت.' + (bridgeStatus ? ' [Auth upstream: ' + bridgeStatus + ']' : ''), 'error'); }
       return;
     }
     const data = await res.json();
@@ -3408,7 +3408,7 @@ async function fetchAiStatus() {
       const authResult = await confirmAuthSession();
       if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
       else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
-      else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
+      else { const bridgeStatus = res.headers.get('X-Auth-Upstream-Status'); showToast('⚠️ نشست معتبر است؛ سرویس مقصد احراز هویت را نپذیرفت.' + (bridgeStatus ? ' [Auth upstream: ' + bridgeStatus + ']' : ''), 'error'); }
       return;
     }
     const data = await res.json();
@@ -3538,7 +3538,7 @@ async function sendAiMessage() {
       const authResult = await confirmAuthSession();
       if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
       else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
-      else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
+      else { const bridgeStatus = res.headers.get('X-Auth-Upstream-Status'); showToast('⚠️ نشست معتبر است؛ سرویس مقصد احراز هویت را نپذیرفت.' + (bridgeStatus ? ' [Auth upstream: ' + bridgeStatus + ']' : ''), 'error'); }
       return;
     }
     const data = await res.json();
@@ -3675,7 +3675,7 @@ async function checkAiSystemStatus() {
       const authResult = await confirmAuthSession();
       if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
       else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
-      else showToast('⚠️ نشست شما معتبر است؛ سرویس مقصد فعلاً احراز هویت را نپذیرفت.','error');
+      else { const bridgeStatus = res.headers.get('X-Auth-Upstream-Status'); showToast('⚠️ نشست معتبر است؛ سرویس مقصد احراز هویت را نپذیرفت.' + (bridgeStatus ? ' [Auth upstream: ' + bridgeStatus + ']' : ''), 'error'); }
       return;
     }
     const data = await res.json();
