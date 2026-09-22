@@ -1184,6 +1184,10 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
    <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="🟢 انتخاب حساب Google" data-en="🟢 Choose your Google Account">🟢 انتخاب حساب Google</span></div>
    <p class="agGoogleNote"><span class="gx" data-fa="برای جلوگیری از ساخت چند حساب با یک Google Account، حساب Google تو به حساب Poppy وصل می‌شود." data-en="To prevent duplicate Poppy accounts, your Google Account will be linked to your Poppy account.">برای جلوگیری از ساخت چند حساب با یک Google Account، حساب Google تو به حساب Poppy وصل می‌شود.</span></p>
    <div class="agGoogleWrap"><div id="agGoogleBtn" class="agGoogleBtnWrap"></div></div>
+   <div id="agGooglePasskeyStep" hidden>
+    <p class="agGoogleNote"><span class="gx" data-fa="✅ حساب Google تأیید شد. حالا روی دکمه زیر بزن تا اثر انگشت/قفل صفحه دستگاه برای ساخت حساب باز شود." data-en="✅ Google is verified. Now tap the button below to use your fingerprint/device lock to finish creating the account.">✅ حساب Google تأیید شد. حالا روی دکمه زیر بزن تا اثر انگشت/قفل صفحه دستگاه برای ساخت حساب باز شود.</span></p>
+    <button type="button" class="agBtn primary" id="agGooglePasskeyBtn"><i class="agSp"></i><span class="gx" data-fa="🔐 ادامه و فعال‌سازی ورود دستگاه" data-en="🔐 Continue and enable device sign-in">🔐 ادامه و فعال‌سازی ورود دستگاه</span></button>
+   </div>
    <button type="button" class="agLink" id="agGoogleBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
   </div>
   <div class="agView" data-view="recovery" hidden>
@@ -1237,7 +1241,7 @@ function lang(){try{return currentLang==='en'?'en':'fa';}catch(e){return 'fa';}}
 function T(fa,en){return lang()==='en'?en:fa;}
 
 var S={logged:false,display:'',started:false,busy:false,hasCode:false,forced:true};
-var gate,box,errBox,googleReady=false,googleClientId='',googleAction='register';
+var gate,box,errBox,googleReady=false,googleClientId='',googleAction='register',pendingGoogleRegistration=null;
 
 /* ---------- texts ---------- */
 function refreshTexts(){
@@ -1398,8 +1402,24 @@ function loadGoogleScript(){
 function handleGoogleCredential(resp){
   if(!resp||!resp.credential){showErr(T('از Google اطلاعات لازم دریافت نشد. دوباره انتخاب کن','Google did not return a credential. Please try again'));return;}
   busy(null,true);clearErr();
-  var p=googleAction==='link'?linkGoogleWithCredential(resp.credential):doRegisterWithGoogle(resp.credential);
-  p.then(function(f){busy(null,false);if(googleAction==='link'){refreshAccountStatus();showErr(T('✅ Google با موفقیت به حساب وصل شد','✅ Google was linked successfully'));return;}showDone(f,T('✅ حساب ساخته شد!','✅ Account created!'));},function(e){busy(null,false);showErr(explain(e));});
+  var p=googleAction==='link'?linkGoogleWithCredential(resp.credential):prepareGoogleRegistration(resp.credential);
+  p.then(function(f){
+    busy(null,false);
+    if(googleAction==='link'){
+      refreshAccountStatus();
+      showErr(T('✅ Google با موفقیت به حساب وصل شد','✅ Google was linked successfully'));
+      return;
+    }
+    var host=$('agGoogleBtn');
+    if(host)host.style.display='none';
+    var step=$('agGooglePasskeyStep');
+    if(step)step.hidden=false;
+    var msg=$('agErr');
+    if(msg){
+      msg.classList.remove('show');
+      msg.textContent='';
+    }
+  },function(e){busy(null,false);showErr(explain(e));});
 }
 function ensureGoogleClient(){
   if(googleReady)return;
@@ -1438,22 +1458,32 @@ function linkGoogleWithCredential(googleIdToken){
 }
 
 /* ---------- flows ---------- */
-function doRegisterWithGoogle(googleIdToken){
+function prepareGoogleRegistration(googleIdToken){
   if(!googleIdToken)throw {error:'invalid_google_credential'};
-  needWA();
   return api('POST','/api/auth/register/begin',{googleIdToken:googleIdToken}).then(function(b){
     if(!b.success)throw b;
-    return navigator.credentials.create({publicKey:toCreate(b.options)}).then(function(c){
-      if(!c)throw {error:'not_verified'};
-      return api('POST','/api/auth/register/finish',{
-        challengeId:b.challengeId,
-        credential:serReg(c)
-      }).then(function(f){
-        if(!f.success)throw f;
-        saveSession(f);
-        addCredId(c.id);
-        return f;
-      });
+    pendingGoogleRegistration={
+      challengeId:b.challengeId,
+      options:b.options
+    };
+    return b;
+  });
+}
+function completeGoogleRegistration(){
+  needWA();
+  var pending=pendingGoogleRegistration;
+  if(!pending||!pending.options||!pending.challengeId)throw {error:'google_registration_not_ready'};
+  pendingGoogleRegistration=null;
+  return navigator.credentials.create({publicKey:toCreate(pending.options)}).then(function(c){
+    if(!c)throw {error:'not_verified'};
+    return api('POST','/api/auth/register/finish',{
+      challengeId:pending.challengeId,
+      credential:serReg(c)
+    }).then(function(f){
+      if(!f.success)throw f;
+      saveSession(f);
+      addCredId(c.id);
+      return f;
     });
   });
 }
@@ -1565,7 +1595,17 @@ function init(){
   if(!gate)return;
   $('agLogin').onclick=function(){run(this,doLogin,function(f){setLogged(f.user);hideGate();});};
   $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(explain(e));});};
-  $('agGoogleBack').onclick=function(){view('main');};
+  $('agGoogleBack').onclick=function(){
+    pendingGoogleRegistration=null;
+    var host=$('agGoogleBtn');if(host)host.style.display='';
+    var step=$('agGooglePasskeyStep');if(step)step.hidden=true;
+    view('main');
+  };
+  $('agGooglePasskeyBtn').onclick=function(){
+    run(this,completeGoogleRegistration,function(f){
+      showDone(f,T('✅ حساب ساخته شد!','✅ Account created!'));
+    });
+  };
   $('agAccountClose').onclick=function(){hideGate();};
   $('agGuest').onclick=function(){setGuest();hideGate();};
   $('agRecLink').onclick=function(){view('recovery');setTimeout(function(){try{$('agCodeIn').focus();}catch(e){}},50);};
