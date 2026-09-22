@@ -2602,9 +2602,12 @@ async function validateSavedAuth(){
 }
 const $ = id => document.getElementById(id);
 const MAX_EDITS = 3;
+const D1_SETTING_KEYS = new Set(['poppy_music_vol','poppy_perf','poppy_lang','poppy_theme','poppy_theme_color']);
+const D1_SETTINGS_API = 'https://poppy-auth-api.hosseinasgari898989.workers.dev/api/auth/settings';
+let syncingD1Settings = false;
+let d1SettingsSyncQueued = false;
+
 const storageGet = (key, fallback = null) => { try { const v = localStorage.getItem(key); return v === null ? fallback : v; } catch { return fallback; } };
-const storageSet = (key, value) => { try { localStorage.setItem(key, value); } catch {} };
-const storageRemove = key => { try { localStorage.removeItem(key); } catch {} };
 const getPoppyAuthToken = () => storageGet('poppy_auth_token', '');
 const authJsonHeaders = () => {
   const h = { 'Content-Type': 'application/json' };
@@ -2618,6 +2621,21 @@ const authHeaders = () => {
   if (t) h.Authorization = 'Bearer ' + t;
   return h;
 };
+
+const syncD1Setting = (key, value) => {
+  if (syncingD1Settings || !D1_SETTING_KEYS.has(key) || !getPoppyAuthToken()) return;
+  d1SettingsSyncQueued = true;
+  const body = JSON.stringify({ key, value: String(value) });
+  fetch(D1_SETTINGS_API, { method: 'PUT', headers: authJsonHeaders(), body })
+    .catch(() => {})
+    .finally(() => { d1SettingsSyncQueued = false; });
+};
+
+const storageSet = (key, value) => {
+  try { localStorage.setItem(key, value); } catch {}
+  syncD1Setting(key, value);
+};
+const storageRemove = key => { try { localStorage.removeItem(key); } catch {} };
 validateSavedAuth();
 const MUSIC_URL = 'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/The%20Hour%20of%20Joy.m4a';
 function showToast(msg, type) {
@@ -4289,6 +4307,48 @@ document.querySelectorAll('.themeChoice').forEach(btn => {
 });
 applyColorTheme(storageGet(COLOR_THEME_KEY) || 'classic');
 updateThemePanelLanguage();
+
+async function loadD1UserSettings() {
+  const token = getPoppyAuthToken();
+  if (!token) return;
+  try {
+    const r = await fetch(D1_SETTINGS_API, { method: 'GET', headers: authHeaders() });
+    const j = await r.json().catch(() => null);
+    if (!r.ok || !j || !j.success || !j.settings) return;
+
+    syncingD1Settings = true;
+    Object.keys(j.settings).forEach(key => {
+      if (D1_SETTING_KEYS.has(key)) {
+        try { localStorage.setItem(key, String(j.settings[key])); } catch {}
+      }
+    });
+    syncingD1Settings = false;
+
+    if (j.settings.poppy_lang === 'fa' || j.settings.poppy_lang === 'en') setLanguage(j.settings.poppy_lang);
+    if (j.settings.poppy_theme === 'light' || j.settings.poppy_theme === 'dark') setTheme(j.settings.poppy_theme);
+    if (j.settings.poppy_perf === '0' || j.settings.poppy_perf === '1') setPerf(j.settings.poppy_perf === '1');
+
+    if (typeof j.settings.poppy_music_vol !== 'undefined' && typeof musicVol !== 'undefined') {
+      const n = Math.max(0, Math.min(100, Number(j.settings.poppy_music_vol)));
+      if (Number.isFinite(n)) {
+        targetVolume = n / 100;
+        musicVol.value = Math.round(n);
+        if (typeof music !== 'undefined' && !musicPlaying) music.volume = targetVolume;
+      }
+    }
+
+    if (typeof j.settings.poppy_theme_color === 'string' && COLOR_THEMES.includes(j.settings.poppy_theme_color)) {
+      applyColorTheme(j.settings.poppy_theme_color);
+    }
+  } catch (_) {
+    syncingD1Settings = false;
+  }
+}
+
+document.addEventListener('poppy-auth', e => {
+  if (e && e.detail && e.detail.logged) setTimeout(loadD1UserSettings, 0);
+});
+if (window.PoppyAuth && PoppyAuth.logged) setTimeout(loadD1UserSettings, 0);
 
 const AI_CLIENT_LIMIT_KEY = 'poppy_ai_daily_limit_state';
 const AI_CLIENT_LIMIT_MSG = 'aiDailyLimitMessageFinal';
