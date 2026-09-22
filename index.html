@@ -1541,6 +1541,7 @@ function updateBtn(){
 
 /* ---------- gate view ---------- */
 function view(n){
+  if(gate)gate.classList.remove('loading');
   qsa('.agView',gate).forEach(function(v){v.hidden=v.dataset.view!==n;});
   var center=n==='recoveryCenter';
   qsa('.agBrandLine,.agLogo,.agSub,.agSecurityPill,.agSettings',gate).forEach(function(v){v.style.display=center?'none':'';});
