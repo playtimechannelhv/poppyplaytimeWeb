@@ -1154,6 +1154,42 @@ html.authg-open,html.authg-open body{overflow:hidden!important}
 /* header button */
 .topbar .actions>#authBtn{width:auto!important;max-width:none!important;min-width:82px!important;padding:0 12px!important;font-size:12px!important;white-space:nowrap}
 #authBtn.on{cursor:default;border-color:rgba(37,217,145,.55)!important;background:rgba(37,217,145,.08)!important}
+.agBrandLine{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto 8px;color:#8ef0c0;font-size:11px;font-weight:800;letter-spacing:.4px}
+.agBrandDot{width:7px;height:7px;border-radius:50%;background:#55e7a3;box-shadow:0 0 12px #55e7a3}
+.agSub{margin:8px 0 22px}
+.agCardShell{padding:22px 18px 16px;border:1px solid rgba(255,75,110,.18);border-radius:26px;background:linear-gradient(155deg,rgba(255,255,255,.045),rgba(255,255,255,.018) 55%,rgba(255,23,77,.035));box-shadow:0 28px 90px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.05);backdrop-filter:blur(10px)}
+.agTopHint{font-size:11.5px;line-height:1.9;color:#a98e97;margin:0 0 14px}
+.agBtn.secondary{background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,23,77,.045));border-color:rgba(255,75,110,.22)}
+.agBtn.secondary:hover{background:linear-gradient(145deg,rgba(255,75,110,.12),rgba(255,255,255,.055));transform:translateY(-1px)}
+.agBtn.primary:hover{transform:translateY(-1px);box-shadow:0 14px 38px rgba(255,23,77,.42)}
+.agDivider{display:flex;align-items:center;gap:8px;color:#866d76;font-size:10px;margin:10px 0 4px}
+.agDivider:before,.agDivider:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(255,75,110,.22))}
+.agDivider:after{background:linear-gradient(90deg,rgba(255,75,110,.22),transparent)}
+.agErr{display:none;margin-top:15px;padding:14px 14px 13px;border-radius:16px;background:linear-gradient(145deg,rgba(110,12,27,.28),rgba(255,23,77,.08));border:1px solid rgba(255,91,116,.42);color:#ffd9df;font-size:13px;line-height:1.8;text-align:right}
+.agErr.show{display:block;animation:agShake .45s}
+.agErrHead{display:flex;align-items:flex-start;gap:10px}
+.agErrIcon{width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex:0 0 34px;border-radius:11px;background:rgba(255,75,110,.12);border:1px solid rgba(255,75,110,.25);font-size:18px}
+.agErrTitle{font-size:13.5px;font-weight:900;color:#fff;margin-bottom:3px}
+.agErrDetail{font-size:12px;color:#e5c9cf;line-height:1.9}
+.agErrHint{font-size:11px;color:#ff98ad;margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.06)}
+.agSuccess{margin-top:15px;padding:15px;border-radius:16px;background:linear-gradient(145deg,rgba(14,91,61,.22),rgba(50,220,150,.06));border:1px solid rgba(83,234,171,.34);text-align:center}
+.agSuccessIcon{font-size:34px;filter:drop-shadow(0 0 14px rgba(83,234,171,.35))}
+.agSuccessTitle{font-size:19px;font-weight:900;color:#f7fffb;margin:4px 0 5px}
+.agSuccessDetail{font-size:12px;color:#bfe9d7;line-height:1.9}
+.agSettings{margin-top:16px;padding:12px;border:1px solid rgba(255,75,110,.16);border-radius:18px;background:rgba(255,255,255,.025);text-align:right}
+.agSettingsTitle{font-size:11px;font-weight:900;color:#ff9db0;margin-bottom:8px}
+.agSettingsRow{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.agLangBtn,.agMusicOpt{border:1px solid rgba(255,75,110,.18);background:rgba(255,255,255,.035);color:#d8c6cc;border-radius:11px;padding:8px 10px;font-family:inherit;font-size:11px;cursor:pointer;transition:.2s}
+.agLangBtn:hover,.agMusicOpt:hover{background:rgba(255,75,110,.1);color:#fff}
+.agLangBtn.active,.agMusicOpt.active{background:linear-gradient(135deg,rgba(255,23,77,.9),rgba(255,75,110,.82));border-color:transparent;color:#fff}
+.agMusicGroup{display:flex;gap:6px;flex-wrap:wrap}
+.agVolumeWrap{display:flex;align-items:center;gap:7px;margin-top:9px;color:#9d858e;font-size:10px}
+.agVolumeWrap input{width:100%;accent-color:#ff315d}
+.agPrefsNote{font-size:10px;color:#76616a;margin-top:7px;line-height:1.7}
+.agGoogleWrap{margin:12px 0 10px}
+.agGoogleBtnWrap{min-height:48px}
+@media(max-width:480px){.agBox{max-width:390px}.agCardShell{padding:19px 14px 14px}.agLogo{font-size:31px}.agBtn{min-height:52px}.agSettings{padding:10px}}
+
 body.tb-medium .topbar .actions>button#authBtn[id]{min-width:72px!important;font-size:11px!important}
 body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-size:10px!important;padding:0 8px!important}
 
@@ -1164,13 +1200,16 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
  <div class="agSpinBig"></div>
  <div class="agBox" id="agBox">
   <button type="button" class="agClose" id="agClose" aria-label="Close" hidden>✕</button>
+  <div class="agCardShell">
+  <div class="agBrandLine"><span class="agBrandDot"></span><span class="gx" data-fa="PLAYTIME CHANNEL • حساب کاربری" data-en="PLAYTIME CHANNEL • Account">PLAYTIME CHANNEL • حساب کاربری</span></div>
   <div class="agLogo">POPPY <span>PLAYTIME</span></div>
-  <div class="agSub"><span class="gx" data-fa="🔐 ورود به آرشیو" data-en="🔐 Enter the Archive">🔐 ورود به آرشیو</span></div>
+  <div class="agSub"><span class="gx" data-fa="🔐 ورود امن به آرشیو" data-en="🔐 Secure access to the Archive">🔐 ورود امن به آرشیو</span></div>
   <div class="agView" data-view="main">
    <button type="button" class="agBtn primary" id="agGoogleLogin"><i class="agSp"></i><span class="gx" data-fa="🔵 ورود با Google" data-en="🔵 Sign in with Google">🔵 ورود با Google</span></button>
    <button type="button" class="agBtn" id="agLogin"><i class="agSp"></i><span class="gx" data-fa="🔐 ورود با دستگاه" data-en="🔐 Sign in with device">🔐 ورود با دستگاه</span></button>
    <button type="button" class="agBtn" id="agReg"><i class="agSp"></i><span class="gx" data-fa="✨ ساخت حساب جدید با Google" data-en="✨ Create new account with Google">✨ ساخت حساب جدید با Google</span></button>
    <button type="button" class="agBtn ghost" id="agGuest"><span class="gx" data-fa="👤 ورود مهمان" data-en="👤 Continue as guest">👤 ورود مهمان</span></button>
+   <div class="agDivider"><span class="gx" data-fa="بازیابی حساب" data-en="Account recovery">بازیابی حساب</span></div>
    <button type="button" class="agLink" id="agRecLink"><span class="gx" data-fa="🔑 ورود با کد بازیابی" data-en="🔑 Sign in with recovery code">🔑 ورود با کد بازیابی</span></button>
   </div>
   <div class="agView" data-view="account" hidden>
@@ -1189,12 +1228,8 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
   </div>
   <div class="agView" data-view="googleRegister" hidden>
    <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="🟢 انتخاب حساب Google" data-en="🟢 Choose your Google Account">🟢 انتخاب حساب Google</span></div>
-   <p class="agGoogleNote"><span class="gx" data-fa="برای جلوگیری از ساخت چند حساب با یک Google Account، حساب Google تو به حساب Poppy وصل می‌شود." data-en="To prevent duplicate Poppy accounts, your Google Account will be linked to your Poppy account.">برای جلوگیری از ساخت چند حساب با یک Google Account، حساب Google تو به حساب Poppy وصل می‌شود.</span></p>
+   <p class="agGoogleNote"><span class="gx" data-fa="هر Google Account فقط به یک حساب Playtime Channel متصل می‌شود. این کار جلوی ساخت حساب تکراری را می‌گیرد." data-en="Each Google Account can be linked to one Playtime Channel account. This prevents duplicate accounts.">هر Google Account فقط به یک حساب Playtime Channel متصل می‌شود. این کار جلوی ساخت حساب تکراری را می‌گیرد.</span></p>
    <div class="agGoogleWrap"><div id="agGoogleBtn" class="agGoogleBtnWrap"></div></div>
-   <div id="agGooglePasskeyStep" hidden>
-    <p class="agGoogleNote"><span class="gx" data-fa="✅ حساب Google تأیید شد. حالا روی دکمه زیر بزن تا اثر انگشت/قفل صفحه دستگاه برای ساخت حساب باز شود." data-en="✅ Google is verified. Now tap the button below to use your fingerprint/device lock to finish creating the account.">✅ حساب Google تأیید شد. حالا روی دکمه زیر بزن تا اثر انگشت/قفل صفحه دستگاه برای ساخت حساب باز شود.</span></p>
-    <button type="button" class="agBtn primary" id="agGooglePasskeyBtn"><i class="agSp"></i><span class="gx" data-fa="🔐 ادامه و فعال‌سازی ورود دستگاه" data-en="🔐 Continue and enable device sign-in">🔐 ادامه و فعال‌سازی ورود دستگاه</span></button>
-   </div>
    <button type="button" class="agLink" id="agGoogleBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
   </div>
   <div class="agView" data-view="recovery" hidden>
@@ -1204,7 +1239,11 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
    <button type="button" class="agLink" id="agRecBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
   </div>
   <div class="agView" data-view="done" hidden>
-   <div class="agDoneT" id="agDoneT"></div>
+   <div class="agSuccess">
+    <div class="agSuccessIcon" id="agSuccessIcon">✅</div>
+    <div class="agSuccessTitle" id="agDoneT"></div>
+    <div class="agSuccessDetail" id="agDoneDesc"></div>
+   </div>
    <div class="agLbl" style="text-align:center"><span class="gx" data-fa="شناسه‌ی تو:" data-en="Your ID:">شناسه‌ی تو:</span></div>
    <div class="agId" id="agId"></div>
    <div class="agCode" id="agCodeBox">
@@ -1216,7 +1255,38 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
    <button type="button" class="agBtn" id="agAddDevice"><span class="gx" data-fa="➕ افزودن دستگاه جدید" data-en="➕ Add this device">➕ افزودن دستگاه جدید</span></button>
    <button type="button" class="agBtn primary" id="agDoneGo"><span class="gx" data-fa="✅ ذخیره کردم، ورود به سایت" data-en="✅ Saved it, enter the site">✅ ذخیره کردم، ورود به سایت</span></button>
   </div>
-  <div class="agErr" id="agErr" role="alert"></div>
+  <div class="agErr" id="agErr" role="alert">
+   <div class="agErrHead">
+    <div class="agErrIcon" id="agErrIcon">⚠️</div>
+    <div>
+      <div class="agErrTitle" id="agErrTitle">خطا در احراز هویت</div>
+      <div class="agErrDetail" id="agErrDetail"></div>
+    </div>
+   </div>
+   <div class="agErrHint" id="agErrHint"></div>
+  </div>
+  <div class="agSettings">
+   <div class="agSettingsTitle"><span class="gx" data-fa="⚙️ تنظیمات ورود" data-en="⚙️ Sign-in settings">⚙️ تنظیمات ورود</span></div>
+   <div class="agSettingsRow">
+     <div>
+       <div class="agPrefsNote" style="margin:0 0 6px"><span class="gx" data-fa="زبان" data-en="Language">زبان</span></div>
+       <div class="agSettingsRow">
+        <button type="button" class="agLangBtn" id="agLangFa">🇮🇷 فارسی</button>
+        <button type="button" class="agLangBtn" id="agLangEn">🇬🇧 English</button>
+       </div>
+     </div>
+     <div style="flex:1;min-width:180px">
+       <div class="agPrefsNote" style="margin:0 0 6px"><span class="gx" data-fa="موسیقی احراز هویت" data-en="Auth music">موسیقی احراز هویت</span></div>
+       <div class="agMusicGroup">
+        <button type="button" class="agMusicOpt" data-music="off">🔇 <span class="gx" data-fa="خاموش" data-en="Off">خاموش</span></button>
+        <button type="button" class="agMusicOpt" data-music="hour">🎀 <span class="gx" data-fa="ساعت شادی" data-en="Hour of Joy">ساعت شادی</span></button>
+        <button type="button" class="agMusicOpt" data-music="pulse">🫀 <span class="gx" data-fa="پالس تاریک" data-en="Dark Pulse">پالس تاریک</span></button>
+       </div>
+       <div class="agVolumeWrap"><span>🔊</span><input id="agMusicVol" type="range" min="0" max="100" value="28"></div>
+     </div>
+   </div>
+   <div class="agPrefsNote"><span class="gx" data-fa="تنظیمات این بخش روی همین دستگاه ذخیره می‌شود." data-en="These settings are saved on this device.">تنظیمات این بخش روی همین دستگاه ذخیره می‌شود.</span></div>
+  </div>
  </div>
 </div>
 <div class="authLock" id="authLock">
@@ -1279,6 +1349,19 @@ var ERRS={
   platform_authenticator_unavailable:['احراز هویت دستگاه در دسترس نیست. قفل صفحه و اثر انگشت را فعال کن و دوباره امتحان کن','A platform authenticator is not available. Set up a screen lock/fingerprint and try again'],
   google_account_not_linked:['این Google Account هنوز به حساب Poppy وصل نشده. برای اولین ورود، با روش ورود قبلی وارد شو و Google را از بخش حساب من وصل کن.','This Google Account is not linked to a Poppy account yet. Sign in with your existing method first, then link Google from My Account']
 };
+function errorMeta(e){
+  var code=e&&e.error?String(e.error):'';
+  var map={
+    google_account_exists:{icon:'🗿',titleFa:'این Google Account قبلاً استفاده شده',titleEn:'This Google Account is already in use',hintFa:'هر Google Account فقط می‌تواند به یک حساب Playtime Channel متصل باشد. برای ادامه، با همان حساب وارد شو.',hintEn:'Each Google Account can be linked to one Playtime Channel account. Sign in with the same Google Account to continue.'},
+    google_account_not_linked:{icon:'🔎',titleFa:'این حساب Google هنوز متصل نیست',titleEn:'This Google Account is not linked yet',hintFa:'برای ورود، ابتدا با روش قبلی وارد حساب شو و از «حساب من» اتصال Google را انجام بده.',hintEn:'Sign in with your existing method first, then link Google from My Account.'},
+    invalid_google_credential:{icon:'🛡️',titleFa:'تأیید Google کامل نشد',titleEn:'Google verification failed',hintFa:'حساب Google را دوباره انتخاب کن و مطمئن شو همان حسابی را انتخاب می‌کنی که می‌خواهی برای Playtime Channel استفاده شود.',hintEn:'Choose the Google Account again and make sure it is the account you want to use for Playtime Channel.'},
+    google_not_configured:{icon:'🛠️',titleFa:'ورود Google موقتاً آماده نیست',titleEn:'Google sign-in is not configured',hintFa:'این مورد از سمت تنظیمات سرویس است؛ بعداً دوباره امتحان کن.',hintEn:'This is a service configuration issue. Please try again later.'},
+    rate_limited:{icon:'⏳',titleFa:'تلاش‌های زیادی انجام شد',titleEn:'Too many attempts',hintFa:'چند دقیقه صبر کن و دوباره امتحان کن.',hintEn:'Wait a few minutes and try again.'},
+    not_verified:{icon:'🔐',titleFa:'تأیید حساب کامل نشد',titleEn:'Verification was not completed',hintFa:'دوباره تلاش کن و مرحله احراز هویت را تا پایان ادامه بده.',hintEn:'Try again and complete the verification step.'},
+    invalid_recovery_code:{icon:'🔑',titleFa:'کد بازیابی درست نیست',titleEn:'Recovery code is invalid',hintFa:'کد را دقیقاً همان‌طور که هنگام ساخت حساب ذخیره کردی وارد کن.',hintEn:'Enter the recovery code exactly as you saved it.'}
+  };
+  return map[code]||null;
+}
 function errMsg(j){
   if(j&&j.error&&ERRS[j.error]&&lang()==='en')return ERRS[j.error][1];
   if(j&&j.message)return j.message;
@@ -1288,16 +1371,103 @@ function errMsg(j){
 function explain(e){
   if(!e)return errMsg(null);
   var n=e.name;
-  if(n==='NotAllowedError')return T('احراز هویت دستگاه مجاز نشد. اگر قفل صفحه/اثر انگشت فعال نیست، اول آن را فعال کن و دوباره بزن.','Device authentication was not allowed. Make sure a screen lock/fingerprint is set up, then try again.');
+  if(n==='NotAllowedError')return T('احراز هویت دستگاه لغو شد یا مرورگر اجازه ادامه نداد.','Device authentication was cancelled or the browser did not allow it.');
   if(n==='InvalidStateError')return errMsg({error:'credential_already_registered'});
   if(n==='SecurityError')return errMsg({error:'origin_not_allowed'});
-  if(n==='NotSupportedError')return T('این مرورگر یا دستگاه قابلیت Passkey/احراز هویت دستگاه را پشتیبانی نمی‌کند.','This browser or device does not support Passkeys/device authentication.');
-  if(n==='ConstraintError')return T('این دستگاه نتوانست Passkey موردنیاز را بسازد. قفل صفحه یا اثر انگشت دستگاه را بررسی کن و دوباره امتحان کن.','The device could not create the required Passkey. Check your screen lock/fingerprint and try again.');
-  if(n==='InvalidModificationError')return T('این Passkey قبلاً روی دستگاه ثبت شده است.','This Passkey is already registered on this device.');
-  if(n==='UnknownError')return T('سیستم احراز هویت دستگاه خطای نامشخص داد. قفل صفحه/اثر انگشت را یک‌بار بررسی و دوباره امتحان کن.','The device authenticator returned an unknown error. Check your screen lock/fingerprint and try again.');
-  if(n==='AbortError')return T('احراز هویت دستگاه لغو شد. دوباره روی دکمه ادامه بزن.','Device authentication was cancelled. Tap Continue again.');
-  if(e instanceof TypeError)return T('ارتباط با سرور برقرار نشد. اینترنتت را بررسی کن.','Could not reach the server. Check your connection.');
+  if(n==='NotSupportedError')return T('این مرورگر یا دستگاه از Passkey پشتیبانی نمی‌کند.','This browser or device does not support Passkeys.');
+  if(n==='ConstraintError')return T('ساخت Passkey روی این دستگاه ممکن نشد.','This device could not create the Passkey.');
+  if(n==='InvalidModificationError')return T('این Passkey قبلاً روی این دستگاه ثبت شده است.','This Passkey is already registered on this device.');
+  if(n==='UnknownError')return T('سیستم احراز هویت دستگاه خطای نامشخص داد.','The device authenticator returned an unknown error.');
+  if(n==='AbortError')return T('عملیات لغو شد. دوباره امتحان کن.','The operation was cancelled. Try again.');
+  if(e instanceof TypeError)return T('ارتباط با سرویس برقرار نشد. اتصال اینترنت را بررسی کن.','Could not reach the service. Check your connection.');
   return errMsg(e);
+}
+function showErr(input){
+  var msg=typeof input==='string'?input:explain(input);
+  var meta=errorMeta(input)||{};
+  if(!meta.titleFa && typeof input==='object' && input && input.error==='unsupported'){meta={icon:'📱',titleFa:'این روش ورود روی این دستگاه در دسترس نیست',titleEn:'This sign-in method is not available on this device',hintFa:'از «ورود با Google» استفاده کن؛ این روش به اثر انگشت وابسته نیست.',hintEn:'Use “Sign in with Google”; it does not depend on fingerprint authentication.'};}
+  if(!meta.titleFa){meta={icon:'⚠️',titleFa:'احراز هویت انجام نشد',titleEn:'Sign-in could not be completed',hintFa:'اطلاعات بالا را بررسی کن و دوباره تلاش کن.',hintEn:'Check the information above and try again.'];}
+  $('agErrIcon').textContent=meta.icon||'⚠️';
+  $('agErrTitle').textContent=lang()==='en'?meta.titleEn:meta.titleFa;
+  $('agErrDetail').textContent=msg||T('مشکل نامشخصی رخ داد.','An unknown problem occurred.');
+  $('agErrHint').textContent=lang()==='en'?meta.hintEn:meta.hintFa;
+  errBox.classList.remove('show');void errBox.offsetWidth;errBox.classList.add('show');
+}
+function clearErr(){
+  if(errBox){errBox.classList.remove('show');if($('agErrDetail'))$('agErrDetail').textContent='';}
+}
+function showDone(f,title){
+  setLogged(f.user);
+  S.hasCode=!!f.recoveryCode;
+  $('agDoneT').textContent=title;
+  $('agSuccessIcon').textContent=title.indexOf('ساخته')>-1||title.indexOf('created')>-1?'🎉':'✅';
+  $('agDoneDesc').textContent=S.hasCode
+    ?T('حساب Playtime Channel آماده است. کد بازیابی زیر را حتماً در یک جای امن نگه دار؛ این کد برای بازیابی حساب توست.','Your Playtime Channel account is ready. Keep the recovery code below somewhere safe; it is used to recover your account.')
+    :T('ورود با موفقیت انجام شد. خوش آمدی؛ حالا می‌توانی از امکانات حساب استفاده کنی.','You are signed in successfully. Welcome; your account features are now available.');
+  $('agId').textContent=fmtId(S.display);
+  $('agCodeBox').style.display=S.hasCode?'':'none';
+  $('agWarn').style.display=S.hasCode?'':'none';
+  $('agCodeTxt').textContent=f.recoveryCode||'';
+  view('done');refreshTexts();
+}
+function playAuthMusic(choice){
+  var c=choice||lsGet('poppy_auth_music')||'off';
+  lsSet('poppy_auth_music',c);
+  if(c==='off'){
+    try{if(window.__poppyAuthAudio)window.__poppyAuthAudio.pause();}catch(e){}
+    if(window.__poppyAuthAudio)window.__poppyAuthAudio.currentTime=0;
+    if(window.__poppyAuthPulse&&window.__poppyAuthPulse.stop)window.__poppyAuthPulse.stop();
+    return;
+  }
+  if(c==='hour'){
+    try{
+      var a=window.__poppyAuthAudio||(window.__poppyAuthAudio=new Audio('https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/The%20Hour%20of%20Joy.m4a'));
+      a.loop=true;a.volume=Math.max(0,Math.min(1,Number(lsGet('poppy_auth_music_vol')||28)/100));
+      a.play().catch(function(){});
+    }catch(e){}
+  }
+  if(c==='pulse'){
+    try{
+      var AC=W.AudioContext||W.webkitAudioContext;
+      if(!AC)return;
+      var ctx=window.__poppyAuthPulseCtx||(window.__poppyAuthPulseCtx=new AC());
+      if(ctx.state==='suspended')ctx.resume();
+      if(!window.__poppyAuthPulse){
+        var osc=ctx.createOscillator(),gain=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();
+        osc.type='sine';osc.frequency.value=68;gain.gain.value=0.018;lfo.frequency.value=.18;lg.gain.value=0.015;
+        lfo.connect(lg).connect(gain.gain);osc.connect(gain).connect(ctx.destination);osc.start();lfo.start();
+        window.__poppyAuthPulse={stop:function(){try{gain.gain.setTargetAtTime(0,ctx.currentTime,.05)}catch(e){}}};
+      }
+      var g=window.__poppyAuthPulseCtx;
+      if(g&&g.state==='suspended')g.resume();
+    }catch(e){}
+  }
+}
+function setAuthMusicVol(v){
+  var n=Math.max(0,Math.min(100,Number(v)||0));lsSet('poppy_auth_music_vol',String(n));
+  try{if(window.__poppyAuthAudio)window.__poppyAuthAudio.volume=n/100;}catch(e){}
+}
+function updateAuthPrefsUI(){
+  var c=lsGet('poppy_auth_music')||'off',v=Number(lsGet('poppy_auth_music_vol')||28);
+  document.querySelectorAll('.agMusicOpt').forEach(function(b){b.classList.toggle('active',b.dataset.music===c);});
+  var vol=$('agMusicVol');if(vol)vol.value=v;
+  var isEn=lang()==='en';
+  $('agLangFa')&&$('agLangFa').classList.toggle('active',!isEn);
+  $('agLangEn')&&$('agLangEn').classList.toggle('active',isEn);
+}
+function setAuthLanguage(code){
+  try{
+    if(typeof W.setLanguage==='function'){W.setLanguage(code);return;}
+    lsSet('poppy_lang',code);
+  }catch(e){lsSet('poppy_lang',code);}
+  refreshTexts();updateAuthPrefsUI();
+}
+function initAuthPrefs(){
+  updateAuthPrefsUI();
+  $('agLangFa')&&($('agLangFa').onclick=function(){setAuthLanguage('fa');});
+  $('agLangEn')&&($('agLangEn').onclick=function(){setAuthLanguage('en');});
+  document.querySelectorAll('.agMusicOpt').forEach(function(b){b.onclick=function(){playAuthMusic(b.dataset.music);updateAuthPrefsUI();};});
+  $('agMusicVol')&&($('agMusicVol').oninput=function(){setAuthMusicVol(this.value);});
 }
 
 /* ---------- network ---------- */
@@ -1474,8 +1644,8 @@ function refreshAccountStatus(){
   var token=lsGet(KT);if(!token)return;
   api('GET','/api/auth/me',null,token).then(function(j){
     if(!j||!j.success||!j.user)return;
-    if(j.user.googleLinked){st.textContent=T('✅ حساب Google به این حساب Poppy وصل است.','✅ A Google Account is linked to this Poppy account.');if(host)host.style.display='none';}
-    else{st.textContent=T('Google را به همین حساب وصل کن تا بعداً همان Google نتواند حساب دوم بسازد.','Link Google to this account so the same Google Account cannot create a second Poppy account later.');if(host)host.style.display='';openGoogleLink();}
+    if(j.user.googleLinked){st.textContent=T('✅ حساب Google به حساب Playtime Channel وصل است.','✅ A Google Account is linked to this Playtime Channel account.');if(host)host.style.display='none';}
+    else{st.textContent=T('Google را به همین حساب وصل کن تا بعداً همان Google نتواند حساب دوم بسازد.','Link Google to this Playtime Channel account so the same Google Account cannot create a second account later.');if(host)host.style.display='';openGoogleLink();}
   });
 }
 function linkGoogleWithCredential(googleIdToken){
@@ -1610,17 +1780,7 @@ function init(){
   $('agGoogleLoginBack').onclick=function(){view('main');};
   $('agLogin').onclick=function(){run(this,doLogin,function(f){setLogged(f.user);hideGate();});};
   $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(explain(e));});};
-  $('agGoogleBack').onclick=function(){
-    pendingGoogleRegistration=null;
-    var host=$('agGoogleBtn');if(host)host.style.display='';
-    var step=$('agGooglePasskeyStep');if(step)step.hidden=true;
-    view('main');
-  };
-  $('agGooglePasskeyBtn').onclick=function(){
-    run(this,completeGoogleRegistration,function(f){
-      showDone(f,T('✅ حساب ساخته شد!','✅ Account created!'));
-    });
-  };
+  $('agGoogleBack').onclick=function(){view('main');};
   $('agAccountClose').onclick=function(){hideGate();};
   $('agGuest').onclick=function(){setGuest();hideGate();};
   $('agRecLink').onclick=function(){view('recovery');setTimeout(function(){try{$('agCodeIn').focus();}catch(e){}},50);};
@@ -1642,6 +1802,7 @@ function init(){
   $('agLockReg').onclick=function(){hideLock();showGate(false,'agReg');};
   $('agLockGuest').onclick=hideLock;
   $('authLock').addEventListener('click',function(e){if(e.target===this)hideLock();});
+  initAuthPrefs();
   D.addEventListener('keydown',function(e){if(e.key==='Escape'){hideLock();if(!$('agClose').hidden&&!gate.classList.contains('gone'))hideGate();}});
   D.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('#authBtn'):null;if(b)showGate(false);});
   if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',updateBtn);
