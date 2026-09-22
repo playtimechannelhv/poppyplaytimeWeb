@@ -1787,23 +1787,11 @@ function init(){
     var step=$('agGooglePasskeyStep');if(step)step.hidden=true;
     view('main');
   };
-  $('agGooglePasskeyBtn').onclick=function(){
-    run(this,completeGoogleRegistration,function(f){
-      showDone(f,T('✅ حساب ساخته شد!','✅ Account created!'));
-    });
-  };
   $('agAccountClose').onclick=function(){hideGate();};
   $('agGuest').onclick=function(){setGuest();hideGate();};
   $('agRecLink').onclick=function(){view('recovery');setTimeout(function(){try{$('agCodeIn').focus();}catch(e){}},50);};
   $('agRecBack').onclick=function(){view('main');};
   $('agRecGo').onclick=function(){run(this,doRecovery,function(f){showDone(f,T('✅ وارد شدی!','✅ Signed in!'));});};
-  $('agAddDevice').onclick=function(){
-    run(this,doAddCredential,function(){
-      $('agDoneT').textContent=T('✅ دستگاه جدید اضافه شد!','✅ New device added!');
-      $('agCodeBox').style.display='none';
-      $('agWarn').style.display='none';
-    });
-  };
   $('agCodeIn').addEventListener('input',function(){var v=fmtCode(this.value);if(this.value!==v)this.value=v;});
   $('agCodeIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('agRecGo').click();});
   $('agCopy').onclick=function(){copyText($('agCodeTxt').textContent,this);};
