@@ -3713,6 +3713,10 @@ $('submitComment').onclick = async () => {
     }
     const data = await res.json();
     if (!data.success) {
+      if (data.error === 'rate_limited') {
+        showToast(currentLang === 'fa' ? '⏳ تعداد درخواست‌ها زیاد شده است. کمی بعد دوباره تلاش کن.' : '⏳ Too many requests right now. Please wait a moment and try again.', 'error');
+        return;
+      }
       // FIX: حالت‌های update_mode و server_offline پیام اختصاصی سرور رو نشون بدن
       if (data.error === 'update_mode' || data.error === 'server_offline') {
         showToast(data.message || data.error, 'error');
@@ -3826,7 +3830,9 @@ const AI_ERROR_MESSAGES = {
     rate_limit: '⏳ Sending a bit fast — wait a moment and try again.',
     invalid_input: "❌ That message couldn't be processed. Try rephrasing it.",
     unauthorized: '🔐 Please sign in to use this feature.',
+    ai_disabled: '🌙 Poppy AI is temporarily unavailable. Please try again in a few minutes.',
     quota_unavailable: '⚠️ Quota service is temporarily unavailable. Please try again.',
+    server_error: '⚠️ The AI service is temporarily unavailable. Please try again.',
     default: '⚠️ Something went wrong. Please try again.'
   }
 };
@@ -3963,13 +3969,20 @@ async function fetchAiStatus() {
     if (res.status === 401) {
       const authResult = await confirmAuthSession();
       if (authResult.state === false) handleAuthExpired(authResult.checkedToken);
-      else if (authResult.state === null) showToast('⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.','error');
-      else { const bridgeStatus = res.headers.get('X-Auth-Upstream-Status'); showToast('⚠️ نشست معتبر است؛ سرویس مقصد احراز هویت را نپذیرفت.' + (bridgeStatus ? ' [Auth upstream: ' + bridgeStatus + ']' : ''), 'error'); }
-      return;
+      else if (authResult.state === null) showToast(currentLang === 'fa' ? '⚠️ اتصال سرویس احراز هویت موقتاً در دسترس نیست.' : '⚠️ The authentication service is temporarily unavailable.', 'error');
+      else { const bridgeStatus = res.headers.get('X-Auth-Upstream-Status'); showToast((currentLang === 'fa' ? '⚠️ نشست معتبر است؛ سرویس مقصد احراز هویت را نپذیرفت.' : '⚠️ Your session is valid, but the destination rejected authentication.') + (bridgeStatus ? ' [Auth upstream: ' + bridgeStatus + ']' : ''), 'error'); }
+      return false;
     }
     const data = await res.json();
-    if (data.success) updateAiBadge(data.remaining, data.limit, true);
-  } catch (e) { console.log('status fetch failed'); }
+    if (data.success) {
+      updateAiBadge(data.remaining, data.limit, true);
+      return true;
+    }
+    return false;
+  } catch (e) {
+    console.log('status fetch failed');
+    return false;
+  }
 }
 
 function showAiWelcome() {
@@ -4052,15 +4065,22 @@ async function sendAiMessage() {
   if (!raw) return;
 
   if (aiRemaining <= 0) {
-    const fa = currentLang === 'fa';
-    const limitDiv = document.createElement('div');
-    limitDiv.className = 'aiMsg limit';
-    limitDiv.innerHTML = fa
-      ? '🌙 <b>محدودیت روزانه تمام شد</b><br>از فردا ساعت ۳:۳۰ دوباره می‌تونید سوال بپرسید. 🎀'
-      : '🌙 <b>Daily limit reached</b><br>You can ask again tomorrow at 00:00. 🎀';
-    $('aiChatMessages').appendChild(limitDiv);
-    $('aiChatMessages').scrollTop = $('aiChatMessages').scrollHeight;
-    return;
+    const verified = await fetchAiStatus();
+    if (!verified && aiRemaining <= 0) {
+      showToast(currentLang === 'fa' ? '⚠️ وضعیت سهمیه قابل بررسی نیست. دوباره امتحان کن.' : '⚠️ The daily quota could not be verified. Please try again.', 'error');
+      return;
+    }
+    if (aiRemaining <= 0) {
+      const fa = currentLang === 'fa';
+      const limitDiv = document.createElement('div');
+      limitDiv.className = 'aiMsg limit';
+      limitDiv.innerHTML = fa
+        ? '🌙 <b>محدودیت روزانه تمام شد</b><br>از فردا ساعت ۳:۳۰ دوباره می‌تونید سوال بپرسید. 🎀'
+        : '🌙 <b>Daily limit reached</b><br>Try again after the daily reset. 🎀';
+      $('aiChatMessages').appendChild(limitDiv);
+      $('aiChatMessages').scrollTop = $('aiChatMessages').scrollHeight;
+      return;
+    }
   }
 
   if (raw.length > 500) {
@@ -5048,6 +5068,10 @@ updateFloatingUI();
       });
       const data = await res.json();
       if (!data.success) {
+        if (data.error === 'rate_limited') {
+          showToast(fa ? '⏳ تعداد تیکت/گزارش‌ها به سقف موقت رسیده است. کمی بعد دوباره تلاش کن.' : '⏳ The support/report limit has been reached for now. Please wait and try again.', 'error');
+          return;
+        }
         if (data.error === 'server_offline' || data.error === 'update_mode') {
           showToast(data.message || data.error, 'error');
           return;
