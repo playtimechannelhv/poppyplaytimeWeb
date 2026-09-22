@@ -1438,6 +1438,25 @@ function linkGoogleWithCredential(googleIdToken){
 }
 
 /* ---------- flows ---------- */
+function doRegisterWithGoogle(googleIdToken){
+  if(!googleIdToken)throw {error:'invalid_google_credential'};
+  needWA();
+  return api('POST','/api/auth/register/begin',{googleIdToken:googleIdToken}).then(function(b){
+    if(!b.success)throw b;
+    return navigator.credentials.create({publicKey:toCreate(b.options)}).then(function(c){
+      if(!c)throw {error:'not_verified'};
+      return api('POST','/api/auth/register/finish',{
+        challengeId:b.challengeId,
+        credential:serReg(c)
+      }).then(function(f){
+        if(!f.success)throw f;
+        saveSession(f);
+        addCredId(c.id);
+        return f;
+      });
+    });
+  });
+}
 function doRegister(){return openGoogleRegister();}
 function doLogin(){
   needWA();
