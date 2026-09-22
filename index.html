@@ -808,7 +808,14 @@ body.font-small{zoom:.92}
 body.font-large{zoom:1.08}
 @media(max-width:640px){.sideMenuPanel{width:min(92vw,300px)}.customizeBox,.faqBox{max-width:100%}.menuToggleBtn{width:32px;height:32px;padding:0;font-size:14px}}
 
-</style>
+<style id="auth-recovery-patch">
+.agRecoveryStepTitle{font-size:12px;font-weight:900;color:#d8c5cc;margin:0 0 8px;text-align:center}
+.agRecoveryCenter .agRecoveryForm[hidden]{display:none!important}
+.agRecoveryCenter .agRecoveryCodeCard{position:relative}
+.agRecoveryCenter .agRecoveryCodeCard .agRecoveryStepTitle{color:#bff5dc;margin-bottom:9px}
+.agRecoveryCenter .agRecoveryCopy.agRgbExit{color:#fff;border-color:transparent;background:linear-gradient(90deg,#ff0055,#ff8a00,#ffe600,#00d95a,#00cfff,#365cff,#a300ff,#ff0055);background-size:400% 100%;box-shadow:0 0 26px rgba(255,0,150,.28),0 10px 30px rgba(0,210,255,.18);animation:agRgbFlow 2.6s linear infinite}
+@keyframes agRgbFlow{0%{background-position:0% 50%;filter:hue-rotate(0deg)}100%{background-position:400% 50%;filter:hue-rotate(360deg)}}
+</style></style>
 
 <!-- FIXER-LOTTIE-P1-APPLIED -->
 <script async src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js"></script>
@@ -1307,19 +1314,22 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
   <div class="agView" data-view="recoveryCenter" hidden>
      <div class="agRecoveryCenter">
        <div class="agDoneT"><span class="gx" data-fa="کد حساب من" data-en="My account code">کد حساب من</span></div>
-       <div class="agLbl" style="text-align:center"><span class="gx" data-fa="شناسه‌ی حساب" data-en="Account ID">شناسه‌ی حساب</span></div>
-       <div class="agId" id="agAccountId"></div>
-       <div class="agRecoveryMask">
-         <div class="agRecoveryMaskLabel"><span class="gx" data-fa="کد بازیابی دائمی" data-en="Permanent recovery code">کد بازیابی دائمی</span></div>
-         <b class="agRecoveryMaskCode">•••••-•••••-•••••-•••••-•••••</b>
+       <div id="agRecoveryIntro" class="agRecoveryIntro">
+         <div class="agRecoveryMask">
+           <div class="agRecoveryMaskLabel"><span class="gx" data-fa="کد بازیابی دائمی" data-en="Permanent recovery code">کد بازیابی دائمی</span></div>
+           <b class="agRecoveryMaskCode">•••••-•••••-•••••-•••••-•••••</b>
+         </div>
+         <button type="button" class="agBtn primary" id="agRevealRecoveryPage"><span class="gx" data-fa="نمایش کد بازیابی" data-en="Reveal recovery code">نمایش کد بازیابی</span></button>
+         <div class="agRecoveryDesc"><span class="gx" data-fa="برای نمایش کد، وارد مرحله‌ی تأیید رمز شو. کد فقط از سمت سرور قابل نمایش است." data-en="Continue to password verification. The code can only be revealed by the server.">برای نمایش کد، وارد مرحله‌ی تأیید رمز شو. کد فقط از سمت سرور قابل نمایش است.</span></div>
        </div>
-       <button type="button" class="agBtn primary" id="agRevealRecoveryPage"><span class="gx" data-fa="نمایش کد بازیابی" data-en="Reveal recovery code">نمایش کد بازیابی</span></button>
-       <div class="agRecoveryDesc"><span class="gx" data-fa="برای نمایش کد، همان رمزی را که هنگام ثبت‌نام انتخاب کردی وارد کن." data-en="Enter the password you chose during registration to reveal the code.">برای نمایش کد، همان رمزی را که هنگام ثبت‌نام انتخاب کردی وارد کن.</span></div>
-       <div class="agRecoveryForm" id="agRecoveryRevealForm" hidden>
-         <input class="agRecoveryInput" id="agRecoveryPassword" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="Password">
+       <div class="agRecoveryForm" id="agRecoveryPasswordStep" hidden>
+         <div class="agRecoveryStepTitle"><span class="gx" data-fa="تأیید رمز حساب" data-en="Verify account password">تأیید رمز حساب</span></div>
+         <input class="agRecoveryInput" id="agRecoveryPassword" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="رمز حساب">
+         <input class="agRecoveryInput" id="agRecoveryPasswordConfirm" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="تأیید رمز حساب">
          <button type="button" class="agBtn primary" id="agRevealRecovery"><i class="agSp"></i><span class="gx" data-fa="تأیید رمز و نمایش کد" data-en="Verify password and reveal code">تأیید رمز و نمایش کد</span></button>
        </div>
        <div class="agRecoveryCodeCard" id="agRecoveryCodeCard">
+         <div class="agRecoveryStepTitle"><span class="gx" data-fa="کد بازیابی دائمی" data-en="Permanent recovery code">کد بازیابی دائمی</span></div>
          <b class="agRecoveryCodeText" id="agRecoveryCodeText"></b>
          <button type="button" class="agRecoveryCopy" id="agCopyRecovery"><span class="gx" data-fa="📋 کپی کد بازیابی" data-en="📋 Copy recovery code">📋 کپی کد بازیابی</span></button>
        </div>
@@ -1402,12 +1412,12 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
  </div>
 </div>
 <script id="auth-script">
-/* ===== Poppy Auth: Gate + topbar badge + guest locks (WebAuthn) ===== */
+/* ===== Poppy Auth: Gate + topbar badge + guest locks ===== */
 (function(){
 'use strict';
 var API='https://poppy-auth-api.hosseinasgari898989.workers.dev';
 var D=document,W=window,R=D.documentElement;
-var KT='poppy_auth_token',KD='poppy_auth_display',KC='poppy_cred_ids',KG='poppy_guest';
+var KT='poppy_auth_token',KD='poppy_auth_display',KG='poppy_guest';
 function $(id){return D.getElementById(id);}
 function qsa(s,r){return Array.prototype.slice.call((r||D).querySelectorAll(s));}
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
@@ -1432,6 +1442,7 @@ function refreshTexts(){
   R.setAttribute('data-authlang',en?'en':'fa');
   [gate,$('authLock')].forEach(function(e){if(e)e.style.direction=en?'ltr':'rtl';});
   var rp=$('agRecoveryPassword');if(rp)rp.placeholder=en?'Account password':'رمز حساب';
+  var rpc=$('agRecoveryPasswordConfirm');if(rpc)rpc.placeholder=en?'Confirm account password':'تأیید رمز حساب';
   var lnk=$('agCodeIn');if(lnk)lnk.placeholder='XXXXX-XXXXX-XXXXX-XXXXX-XXXXX';
   updateBtn();
 }
@@ -1439,68 +1450,6 @@ function wrapLang(){
   var f=W.setLanguage;
   if(typeof f==='function'&&!f.__auth){var g=function(l){var r=f.apply(this,arguments);refreshTexts();return r;};g.__auth=1;W.setLanguage=g;}
 }
-var ERRS={
-  credential_already_registered:['این روش ورود قبلاً روی یک دستگاه ثبت شده است. برای ادامه، از کد بازیابی استفاده کن.','This sign-in method is already registered on a device. Use your recovery code to continue.'],
-  invalid_recovery_code:['کد بازیابی معتبر نیست. کد ذخیره‌شده‌ی خودت را دقیقاً وارد کن.','The recovery code is invalid. Enter the recovery code exactly as saved.'],
-  not_verified:['تأیید احراز هویت کامل نشد. دوباره تلاش کن.','Authentication verification was not completed. Please try again.'],
-  origin_not_allowed:['این سایت اجازه‌ی استفاده از ورود امن را ندارد. از آدرس رسمی Playtime Channel استفاده کن.','This site is not authorized for secure sign-in. Use the official Playtime Channel address.'],
-  registration_closed:['ثبت‌نام حساب جدید در حال حاضر بسته است. با حساب موجود وارد شو و دستگاه جدید را اضافه کن.','New account registration is currently closed. Sign in to your existing account and add a new device.'],
-  google_not_configured:['ورود با Google موقتاً آماده نیست. تنظیمات Google در سرویس احراز هویت کامل نشده است.','Google sign-in is temporarily unavailable because the authentication service is not fully configured.'],
-  google_account_exists:['این Google Account قبلاً به یک حساب Playtime Channel متصل شده است. برای ورود، همان حساب Google را انتخاب کن.','This Google Account is already linked to a Playtime Channel account. Use that same Google Account to sign in.'],
-  google_already_linked:['این حساب Playtime Channel از قبل به یک Google Account متصل است.','This Playtime Channel account is already linked to a Google Account.'],
-  invalid_google_credential:['تأیید هویت Google کامل نشد. دوباره حساب درست را انتخاب کن.','Google verification was not completed. Choose the correct Google Account and try again.'],
-  rate_limited:['تعداد تلاش‌ها زیاد شده است. کمی صبر کن و دوباره امتحان کن.','There have been too many attempts. Please wait a moment and try again.'],
-  not_logged_in:['برای ادامه ابتدا وارد حساب شو.','Please sign in before continuing.'],
-  google_registration_not_ready:['مرحله‌ی ثبت‌نام Google منقضی شده است. دوباره حساب Google را انتخاب کن.','The Google registration step has expired. Choose your Google Account again.'],
-  platform_authenticator_unavailable:['ورود امن دستگاه در دسترس نیست. قفل صفحه یا احراز هویت دستگاه را فعال کن و دوباره تلاش کن.','Device authentication is unavailable. Set up a screen lock or device authentication and try again.'],
-  password_required:['رمز حساب را وارد کن.','Enter your account password.'],
-  password_mismatch:['رمز و تکرار رمز یکسان نیستند.','The password and confirmation do not match.'],
-  password_invalid_length:['رمز باید بین ۱۰ تا ۱۲۸ کاراکتر باشد.','The password must be between 10 and 128 characters.'],
-  password_weak:['رمز باید حداقل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک نماد داشته باشد.','The password must include at least one uppercase letter, one lowercase letter, one number, and one symbol.'],
-  password_already_set:['رمز این حساب قبلاً تنظیم شده است.','A password has already been configured for this account.'],
-  password_invalid:['رمز حساب درست نیست.','The account password is incorrect.'],
-  password_not_set:['برای این حساب هنوز رمز تنظیم نشده است.','This account does not have a password configured yet.'],
-  recovery_code_unavailable:['کد بازیابی دائمی در دسترس نیست. ابتدا امنیت حساب را کامل کن.','The permanent recovery code is unavailable. Complete account security setup first.'],
-  google_account_not_linked:['این Google Account هنوز به یک حساب Playtime Channel متصل نیست. برای اولین ورود، با کد بازیابی وارد حساب شو و بعد Google را از مرکز حساب متصل کن.','This Google Account is not linked to a Playtime Channel account yet. Sign in with your recovery code first, then link Google from Account Center.'],
-  account_disabled:['این حساب غیرفعال شده است.','This account has been disabled.'],
-  bad_registration_info:['اطلاعات ثبت‌نام کامل نبود. دوباره تلاش کن.','The registration data was incomplete. Please try again.'],
-  challenge_not_found_or_expired:['مرحله‌ی امنیتی منقضی شده است. دوباره شروع کن.','The security step expired. Please start again.'],
-  credential_not_found:['این روش ورود روی سایت ثبت نشده است. با کد بازیابی وارد شو.','This sign-in method is not registered. Sign in with your recovery code.'],
-  id_generation_failed:['ساخت شناسه‌ی حساب انجام نشد. دوباره تلاش کن.','The account ID could not be generated. Please try again.'],
-  invalid_status:['وضعیت حساب معتبر نیست.','The account status is invalid.'],
-  invalid_token:['نشست ورود معتبر نیست. دوباره وارد شو.','Your sign-in session is invalid. Please sign in again.'],
-  last_credential:['آخرین روش ورود را نمی‌توان حذف کرد.','The last sign-in method cannot be removed.'],
-  missing_fields:['اطلاعات لازم ارسال نشده است. صفحه را دوباره باز کن.','Required information was missing. Please reopen the page and try again.'],
-  no_token:['نشست ورود پیدا نشد. دوباره وارد شو.','No sign-in session was found. Please sign in again.'],
-  not_found:['مسیر درخواست پیدا نشد.','The requested path was not found.'],
-  rate_limit_unavailable:['سرویس محدودسازی درخواست‌ها موقتاً در دسترس نیست. دوباره تلاش کن.','The request-limiting service is temporarily unavailable. Please try again.'],
-  recovery_unavailable:['بخش بازیابی موقتاً در دسترس نیست. دوباره تلاش کن.','The recovery service is temporarily unavailable. Please try again.'],
-  server_error:['یک خطای داخلی در سرویس رخ داد. کمی بعد دوباره تلاش کن.','An internal service error occurred. Please try again shortly.'],
-  unauthorized:['دسترسی نیاز به ورود معتبر دارد.','Valid sign-in is required.'],
-  user_create_failed:['ساخت حساب کامل نشد. دوباره تلاش کن.','Account creation could not be completed. Please try again.']
-};
-function errMsg(j){
-  var code=j&&j.error?String(j.error):'';
-  if(/^verification_failed:/.test(code))return T('تأیید احراز هویت دستگاه کامل نشد. دوباره تلاش کن.','Device verification could not be completed. Please try again.');
-  if(code&&ERRS[code])return lang()==='en'?ERRS[code][1]:ERRS[code][0];
-  if(j&&j.message&&lang()!=='en')return j.message;
-  return T('خطایی رخ داد. دوباره تلاش کن.','Something went wrong. Please try again.');
-}
-function explain(e){
-  if(!e)return errMsg(null);
-  var n=e.name;
-  if(n==='NotAllowedError')return T('احراز هویت دستگاه مجاز نشد. اگر قفل صفحه/اثر انگشت فعال نیست، اول آن را فعال کن و دوباره بزن.','Device authentication was not allowed. Make sure a screen lock/fingerprint is set up, then try again.');
-  if(n==='InvalidStateError')return errMsg({error:'credential_already_registered'});
-  if(n==='SecurityError')return errMsg({error:'origin_not_allowed'});
-  if(n==='NotSupportedError')return T('این مرورگر یا دستگاه قابلیت Passkey/احراز هویت دستگاه را پشتیبانی نمی‌کند.','This browser or device does not support Passkeys/device authentication.');
-  if(n==='ConstraintError')return T('این دستگاه نتوانست Passkey موردنیاز را بسازد. قفل صفحه یا اثر انگشت دستگاه را بررسی کن و دوباره امتحان کن.','The device could not create the required Passkey. Check your screen lock/fingerprint and try again.');
-  if(n==='InvalidModificationError')return T('این Passkey قبلاً روی دستگاه ثبت شده است.','This Passkey is already registered on this device.');
-  if(n==='UnknownError')return T('سیستم احراز هویت دستگاه خطای نامشخص داد. قفل صفحه/اثر انگشت را یک‌بار بررسی و دوباره امتحان کن.','The device authenticator returned an unknown error. Check your screen lock/fingerprint and try again.');
-  if(n==='AbortError')return T('احراز هویت دستگاه لغو شد. دوباره روی دکمه ادامه بزن.','Device authentication was cancelled. Tap Continue again.');
-  if(e instanceof TypeError)return T('ارتباط با سرور برقرار نشد. اینترنتت را بررسی کن.','Could not reach the server. Check your connection.');
-  return errMsg(e);
-}
-
 /* ---------- network ---------- */
 function api(method,path,body,token){
   var h={'Content-Type':'application/json'};if(token)h.Authorization='Bearer '+token;
@@ -1511,52 +1460,6 @@ function api(method,path,body,token){
   },function(e){clearTimeout(to);throw e;});
 }
 
-/* ---------- WebAuthn helpers ---------- */
-function buf(s){s=String(s).replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer;}
-function b64(x){var u=new Uint8Array(x),s='';for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
-function toCreate(o){
-  o=JSON.parse(JSON.stringify(o));
-  o.challenge=buf(o.challenge);o.user.id=buf(o.user.id);
-  (o.excludeCredentials||[]).forEach(function(c){c.id=buf(c.id);});
-  return o;
-}
-function toGet(o){
-  o=JSON.parse(JSON.stringify(o));
-  o.challenge=buf(o.challenge);
-  if(o.allowCredentials&&o.allowCredentials.length)o.allowCredentials.forEach(function(c){c.id=buf(c.id);});
-  else delete o.allowCredentials;      /* some phones reject an empty allowCredentials list */
-  return o;
-}
-function serReg(c){
-  var r=c.response,out={id:c.id,rawId:b64(c.rawId),type:c.type,clientExtensionResults:c.getClientExtensionResults?c.getClientExtensionResults():{},
-    authenticatorAttachment:c.authenticatorAttachment||undefined,
-    response:{clientDataJSON:b64(r.clientDataJSON),attestationObject:b64(r.attestationObject),transports:r.getTransports?r.getTransports():[]}};
-  try{
-    if(r.getAuthenticatorData)out.response.authenticatorData=b64(r.getAuthenticatorData());
-    if(r.getPublicKey){var pk=r.getPublicKey();if(pk)out.response.publicKey=b64(pk);}
-    if(r.getPublicKeyAlgorithm)out.response.publicKeyAlgorithm=r.getPublicKeyAlgorithm();
-  }catch(e){}
-  return out;
-}
-function serAuth(c){
-  var r=c.response;
-  return {id:c.id,rawId:b64(c.rawId),type:c.type,clientExtensionResults:c.getClientExtensionResults?c.getClientExtensionResults():{},
-    authenticatorAttachment:c.authenticatorAttachment||undefined,
-    response:{clientDataJSON:b64(r.clientDataJSON),authenticatorData:b64(r.authenticatorData),signature:b64(r.signature),userHandle:r.userHandle?b64(r.userHandle):undefined}};
-}
-function needWA(){
-  if(!W.PublicKeyCredential||!navigator.credentials||!W.isSecureContext)
-    throw {error:'unsupported',message:T('مرورگر یا دستگاهت از Passkey/احراز هویت دستگاه پشتیبانی نمی‌کند.','Your browser/device does not support Passkeys/device authentication.')};
-}
-async function ensurePlatformAuthenticator(){
-  needWA();
-  if(typeof W.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable==='function'){
-    var available=await W.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-    if(!available)throw {error:'platform_authenticator_unavailable',message:T('روی این دستگاه احراز هویت بیومتریک/قفل صفحه برای Passkey در دسترس نیست. اول قفل صفحه و اثر انگشت را فعال کن.','A platform authenticator is not available. Set up a screen lock/fingerprint first.')};
-  }
-}
-function credIds(){try{var a=JSON.parse(lsGet(KC)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
-function addCredId(id){var a=credIds();if(id&&a.indexOf(id)<0){a.push(id);lsSet(KC,JSON.stringify(a));}}
 function fmtId(d){d=String(d||'');return d.charAt(0)==='#'?d:'#'+d;}
 
 /* ---------- session ---------- */
@@ -1580,12 +1483,28 @@ function updateBtn(){
 }
 
 /* ---------- gate view ---------- */
+function resetRecoveryCenter(){
+  var intro=$('agRecoveryIntro'),step=$('agRecoveryPasswordStep'),card=$('agRecoveryCodeCard'),p=$('agRecoveryPassword'),pc=$('agRecoveryPasswordConfirm'),code=$('agRecoveryCodeText'),copy=$('agCopyRecovery');
+  if(intro)intro.hidden=false;
+  if(step)step.hidden=true;
+  if(card)card.classList.remove('show');
+  if(p)p.value='';
+  if(pc)pc.value='';
+  if(code)code.textContent='';
+  if(copy){
+    copy.classList.remove('agRgbExit');
+    var lbl=copy.querySelector('.gx');if(lbl)lbl.textContent=T('📋 کپی کد بازیابی','📋 Copy recovery code');
+    copy.removeAttribute('title');
+    copy.onclick=function(){copyRecoveryAndEnableExit(copy);};
+  }
+}
 function view(n){
   if(gate)gate.classList.remove('loading');
   qsa('.agView',gate).forEach(function(v){v.hidden=v.dataset.view!==n;});
   var center=n==='recoveryCenter';
   qsa('.agBrandLine,.agLogo,.agSub,.agSecurityPill,.agSettings',gate).forEach(function(v){v.style.display=center?'none':'';});
   $('agClose').hidden=S.forced||n==='done'||center;
+  if(center)resetRecoveryCenter();
   clearErr();
 }
 function authErrorMeta(e){
@@ -1661,7 +1580,7 @@ function showDone(f,title){
   hideGate();
 }
 
-/* ---------- Google signup + WebAuthn registration ---------- */
+/* ---------- Google signup ---------- */
 function loadGoogleScript(){
   if(W.google&&W.google.accounts&&W.google.accounts.id)return Promise.resolve();
   return new Promise(function(resolve,reject){
@@ -1746,7 +1665,6 @@ function openGoogleLink(){
   return getGoogleConfig().then(loadGoogleScript).then(function(){ensureGoogleClient();renderGoogleButton('agGoogleLinkBtn');});
 }
 function refreshAccountStatus(){
-  var id=$('agAccountId');if(id)id.textContent=fmtId(S.display);
   var token=lsGet(KT);if(!token)return;
   api('GET','/api/auth/me',null,token).catch(function(){});
 }
@@ -1815,8 +1733,17 @@ function setAccountPassword(){
   return api('POST','/api/auth/password/setup',{password:password,passwordConfirm:confirm},token).then(function(f){if(!f.success)throw f;$('agSetupPassword').value='';$('agSetupPasswordConfirm').value='';refreshAccountStatus();return f;});
 }
 function revealRecoveryCode(){
-  var password=$('agRecoveryPassword').value||'',token=lsGet(KT);if(!token)throw {error:'not_logged_in'};
-  return api('POST','/api/auth/recovery/view',{password:password},token).then(function(f){if(!f.success)throw f;$('agRecoveryCodeText').textContent=f.recoveryCode||'';$('agRecoveryCodeCard').classList.add('show');$('agRecoveryPassword').value='';return f;});
+  var password=$('agRecoveryPassword').value||'',confirm=$('agRecoveryPasswordConfirm').value||'',token=lsGet(KT);if(!token)throw {error:'not_logged_in'};
+  return api('POST','/api/auth/recovery/view',{password:password,passwordConfirm:confirm},token).then(function(f){
+    if(!f.success)throw f;
+    $('agRecoveryCodeText').textContent=f.recoveryCode||'';
+    $('agRecoveryCodeCard').classList.add('show');
+    $('agRecoveryIntro').hidden=true;
+    $('agRecoveryPasswordStep').hidden=true;
+    $('agRecoveryPassword').value='';
+    $('agRecoveryPasswordConfirm').value='';
+    return f;
+  });
 }
 
 function doGoogleLogin(googleIdToken){
@@ -1828,42 +1755,10 @@ function doGoogleLogin(googleIdToken){
   });
 }
 function doRegister(){return openGoogleRegister();}
-function doLogin(){
-  needWA();
-  return api('POST','/api/auth/login/begin',{credentialIds:credIds()}).then(function(b){
-    if(!b.success)throw b;
-    return navigator.credentials.get({publicKey:toGet(b.options)}).then(function(c){
-      if(!c)throw {error:'not_verified'};
-      return api('POST','/api/auth/login/finish',{challengeId:b.challengeId,credential:serAuth(c)}).then(function(f){
-        if(!f.success)throw f;
-        saveSession(f);addCredId(c.id);return f;
-      });
-    });
-  });
-}
 function doRecovery(){
   var code=($('agCodeIn').value||'').trim();
   if(code.replace(/-/g,'').length<10)throw {error:'invalid_recovery_code'};
   return api('POST','/api/auth/recovery/login',{code:code}).then(function(f){if(!f.success)throw f;saveSession(f);return f;});
-}
-function doAddCredential(){
-  needWA();
-  var token=lsGet(KT);
-  if(!token)throw {error:'not_logged_in'};
-  return api('POST','/api/auth/credential/add/begin',{},token).then(function(b){
-    if(!b.success)throw b;
-    return navigator.credentials.create({publicKey:toCreate(b.options)}).then(function(c){
-      if(!c)throw {error:'not_verified'};
-      return api('POST','/api/auth/credential/add/finish',{
-        challengeId:b.challengeId,
-        credential:serReg(c)
-      },token).then(function(f){
-        if(!f.success)throw f;
-        addCredId(c.id);
-        return f;
-      });
-    });
-  });
 }
 function fmtCode(v){
   v=String(v).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,25);
@@ -1874,6 +1769,17 @@ function copyText(txt,btn){
   var ok=function(){lbl.textContent=T('✅ کپی شد','✅ Copied');setTimeout(function(){lbl.textContent=T('📋 کپی','📋 Copy');},1800);};
   var fb=function(){var ta=D.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;top:0;opacity:0';D.body.appendChild(ta);ta.select();try{D.execCommand('copy');ok();}catch(e){}ta.remove();};
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,fb);else fb();
+}
+function copyRecoveryAndEnableExit(btn){
+  var txt=$('agRecoveryCodeText').textContent||'',lbl=btn.querySelector('.gx');
+  var done=function(){
+    btn.classList.add('agRgbExit');
+    lbl.textContent=T('🚪 خروج از این قسمت','🚪 Exit this section');
+    btn.setAttribute('title',T('بازگشت به صفحه اصلی auth','Return to the main auth screen'));
+    btn.onclick=function(){S.forced=false;view('main');};
+  };
+  var fb=function(){var ta=D.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;top:0;opacity:0';D.body.appendChild(ta);ta.select();try{D.execCommand('copy');done();}catch(e){}ta.remove();};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done,fb);else fb();
 }
 
 /* ---------- guest lock card ---------- */
@@ -1943,9 +1849,15 @@ function init(){
   bindManualPasswordField('agPassword');bindManualPasswordField('agPasswordConfirm');updatePasswordSetupUI();
   var agSetPassword=$('agSetPassword');
   if(agSetPassword)agSetPassword.onclick=function(){run(this,setAccountPassword,function(){showSuccess('رمز حساب ثبت شد. حالا می‌توانی کد بازیابی دائمی را با همان رمز ببینی.','Password saved. You can now reveal your permanent recovery code with that password.');});};
-  $('agRevealRecovery').onclick=function(){run(this,revealRecoveryCode,function(){showSuccess('کد بازیابی نمایش داده شد. این کد برای همین حساب روی دستگاه‌های دیگر هم معتبر است.','Recovery code revealed. This code is valid for this same account on other devices.');});};
-  $('agCopyRecovery').onclick=function(){copyText($('agRecoveryCodeText').textContent,this);};
-  $('agRevealRecoveryPage').onclick=function(){var f=$('agRecoveryRevealForm');if(f){f.hidden=false;var p=$('agRecoveryPassword');if(p)p.focus();}this.hidden=true;};
+  $('agRevealRecovery').onclick=function(){run(this,revealRecoveryCode,function(f){
+    showSuccess('کد بازیابی نمایش داده شد. این کد برای همین حساب روی دستگاه‌های دیگر هم معتبر است.','Recovery code revealed. This code is valid for this same account on other devices.');
+  });};
+  $('agCopyRecovery').onclick=function(){copyRecoveryAndEnableExit(this);};
+  $('agRevealRecoveryPage').onclick=function(){
+    $('agRecoveryIntro').hidden=true;
+    $('agRecoveryPasswordStep').hidden=false;
+    var p=$('agRecoveryPassword');if(p)p.focus();
+  };
   $('agAccountClose').onclick=function(){
     S.forced=false;
     if(S.logged){hideGate();return;}
