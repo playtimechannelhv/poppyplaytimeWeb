@@ -1523,7 +1523,17 @@ function authErrorMeta(e){
 }
 function authErrorDetail(input){
   if(typeof input==='string')return input;
-  if(input&&input.message)return String(input.message);
+  var code=input&&input.error?String(input.error):'';
+  var map={
+    recovery_view_cooldown:T('کد بازیابی اخیراً نمایش داده شده است. برای نمایش دوباره باید ۱ روز کامل صبر کنی.','The recovery code was viewed recently. Wait 1 full day before viewing it again.'),
+    password_required:T('رمز حساب را وارد کن.','Enter your account password.'),
+    password_mismatch:T('رمز و تأیید رمز یکسان نیستند.','The password and confirmation do not match.'),
+    password_invalid:T('رمز حساب درست نیست.','The account password is incorrect.'),
+    password_not_set:T('برای این حساب هنوز رمز عبور تنظیم نشده است.','This account does not have a password set yet.'),
+    recovery_code_unavailable:T('کد بازیابی برای این حساب در دسترس نیست.','The recovery code is unavailable for this account.')
+  };
+  if(code&&map[code])return map[code];
+  if(input&&input.message&&lang()!=='en')return String(input.message);
   if(input instanceof TypeError)return T('ارتباط با سرور برقرار نشد. اینترنتت را بررسی کن.','Could not reach the server. Check your connection.');
   return T('خطایی رخ داد. دوباره تلاش کن.','Something went wrong. Please try again.');
 }
