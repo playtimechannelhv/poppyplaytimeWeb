@@ -1223,7 +1223,7 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
 .agRecoveryCenter .agRecoveryInput{height:48px;background:rgba(0,0,0,.24)}
 .agRecoveryCodeCard{box-shadow:0 12px 28px rgba(37,217,145,.07)}
 .agRecoveryCenter .agLink{margin-top:4px}
-.agPasswordRules{margin:2px 0 10px;padding:10px 11px;border-radius:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,75,110,.12);text-align:start}.agRule{display:flex;align-items:center;gap:7px;font-size:10.5px;color:#9e8b93;line-height:1.9}.agRule b{font-size:11px;color:#7dffbd}.agRule.fail b{color:#ff91a6}.agPasswordMeter{height:5px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:8px}.agPasswordMeter i{display:block;height:100%;width:0%;border-radius:999px;background:#ff315a;transition:.2s}.agPasswordMeterLabel{font-size:10px;color:#9e8b93;margin-top:5px;text-align:end}.agSettings{
+.agPasswordRules{margin:2px 0 10px;padding:10px 11px;border-radius:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,75,110,.12);text-align:start}.agRule{display:flex;align-items:center;gap:7px;font-size:10.5px;color:#9e8b93;line-height:1.9}.agRule b{font-size:11px;color:#7dffbd}.agRule.fail b{color:#ff91a6}.agPasswordMeter{height:5px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:8px}.agPasswordMeter i{display:block;height:100%;width:0%;border-radius:999px;background:#ff315a;transition:width .2s,background .2s,box-shadow .2s}.agPasswordMeter i.complete{background:#35e6a0;box-shadow:0 0 14px rgba(53,230,160,.45)}.agPasswordMeterLabel{font-size:10px;color:#9e8b93;margin-top:5px;text-align:end}.agSettings{
   margin-top:15px;padding:10px;border-radius:16px;
   border:1px solid rgba(255,75,110,.13);background:rgba(255,255,255,.018);
 }
@@ -1348,7 +1348,7 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
          <div class="agRule fail" id="ruleLength"><b>•</b><span class="gx" data-fa="حداقل ۱۰ کاراکتر" data-en="At least 10 characters">حداقل ۱۰ کاراکتر</span></div>
          <div class="agRule fail" id="ruleUpper"><b>•</b><span class="gx" data-fa="حداقل یک حرف بزرگ" data-en="At least one uppercase letter">حداقل یک حرف بزرگ</span></div>
          <div class="agRule fail" id="ruleLower"><b>•</b><span class="gx" data-fa="حداقل یک حرف کوچک" data-en="At least one lowercase letter">حداقل یک حرف کوچک</span></div>
-         <div class="agRule fail" id="ruleDigit"><b>•</b><span class="gx" data-fa="حداقل یک عدد" data-en="At least one عدد">At least one number</span></div>
+         <div class="agRule fail" id="ruleDigit"><b>•</b><span class="gx" data-fa="حداقل یک عدد" data-en="At least one number">حداقل یک عدد</span></div>
          <div class="agRule fail" id="ruleSymbol"><b>•</b><span class="gx" data-fa="حداقل یک نماد" data-en="At least one symbol">حداقل یک نماد</span></div>
          <div class="agRule fail" id="ruleMatch"><b>•</b><span class="gx" data-fa="تکرار رمز باید دقیقاً یکسان باشد" data-en="Password confirmation must match">تکرار رمز باید دقیقاً یکسان باشد</span></div>
          <div class="agPasswordMeter"><i id="agPasswordMeterFill"></i></div>
@@ -1357,6 +1357,7 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
        <button type="button" class="agBtn primary" id="agPasswordConfirmBtn" disabled><i class="agSp"></i><span class="gx" data-fa="تأیید و ساخت حساب" data-en="Confirm and create account">تأیید و ساخت حساب</span></button>
      </div>
      <button type="button" class="agLink" id="agPasswordBack"><span class="gx" data-fa="← تغییر حساب Google" data-en="← Choose another Google Account">← تغییر حساب Google</span></button>
+     <button type="button" class="agLink" id="agPasswordMainBack"><span class="gx" data-fa="← بازگشت به احراز هویت" data-en="← Back to authentication">← بازگشت به احراز هویت</span></button>
    </div>
    <div class="agView" data-view="recovery" hidden>
    <div class="agLbl"><span class="gx" data-fa="کد بازیابی خودت رو وارد کن:" data-en="Enter your recovery code:">کد بازیابی خودت رو وارد کن:</span></div>
@@ -1676,7 +1677,9 @@ function handleGoogleCredential(resp){
      The user must choose a password in the next step, then completeGoogleRegistration()
      sends Google credential + password to /api/auth/google/signup. */
   if(googleAction==='register'){
-    try{
+    busy(null,true);
+    checkGoogleSignupAvailability(resp.credential).then(function(){
+      busy(null,false);
       pendingGoogleRegistration=resp.credential;
       if(gate)gate.classList.remove('loading','gone');
       view('passwordSetup');
@@ -1687,10 +1690,12 @@ function handleGoogleCredential(resp){
           if(gate)gate.classList.remove('loading');
         }catch(e){}
       },60);
-    }catch(e){
+    },function(e){
+      busy(null,false);
       if(gate)gate.classList.remove('loading');
+      pendingGoogleRegistration=null;
       showErr(e);
-    }
+    });
     return;
   }
 
@@ -1749,6 +1754,10 @@ function linkGoogleWithCredential(googleIdToken){
 }
 
 /* ---------- flows ---------- */
+function checkGoogleSignupAvailability(googleIdToken){
+  if(!googleIdToken)throw {error:'invalid_google_credential'};
+  return api('POST','/api/auth/google/signup/check',{googleIdToken:googleIdToken}).then(function(f){if(!f.success)throw f;return f;});
+}
 function doRegisterWithGoogle(googleIdToken,password,passwordConfirm){
   if(!googleIdToken)throw {error:'invalid_google_credential'};
   return api('POST','/api/auth/google/signup',{googleIdToken:googleIdToken,password:password,passwordConfirm:passwordConfirm}).then(function(f){if(!f.success)throw f;saveSession(f);return f;});
@@ -1774,7 +1783,7 @@ function updatePasswordSetupUI(){
     var b=e.querySelector('b');if(b)b.textContent=a[1]?'✓':'•';
   });
   var fill=$('agPasswordMeterFill'),label=$('agPasswordMeterLabel');
-  if(fill)fill.style.width=Math.round(good/map.length*100)+'%';
+  if(fill){fill.style.width=Math.round(good/map.length*100)+'%';fill.classList.toggle('complete',good===map.length);}
   if(label){
     label.textContent=good===6
       ? T('رمز قوی و آماده است','Strong password ready')
@@ -1926,6 +1935,7 @@ function init(){
   $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(e);});};
   $('agGoogleBack').onclick=function(){pendingGoogleRegistration=null;view('main');};
   $('agPasswordBack').onclick=function(){pendingGoogleRegistration=null;$('agPassword').value='';$('agPasswordConfirm').value='';view('googleRegister');};
+  $('agPasswordMainBack').onclick=function(){pendingGoogleRegistration=null;$('agPassword').value='';$('agPasswordConfirm').value='';view('main');};
   $('agPasswordConfirmBtn').onclick=function(){run(this,completeGoogleRegistration,function(f){showDone(f,T('حساب Playtime Channel ساخته شد','Your Playtime Channel account is ready'));});};
   bindManualPasswordField('agPassword');bindManualPasswordField('agPasswordConfirm');updatePasswordSetupUI();
   var agSetPassword=$('agSetPassword');
