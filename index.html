@@ -1172,6 +1172,14 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
    <button type="button" class="agBtn ghost" id="agGuest"><span class="gx" data-fa="👤 ورود مهمان" data-en="👤 Continue as guest">👤 ورود مهمان</span></button>
    <button type="button" class="agLink" id="agRecLink"><span class="gx" data-fa="🔑 ورود با کد بازیابی" data-en="🔑 Sign in with recovery code">🔑 ورود با کد بازیابی</span></button>
   </div>
+  <div class="agView" data-view="account" hidden>
+   <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="👤 حساب من" data-en="👤 My account">👤 حساب من</span></div>
+   <div class="agLbl" style="text-align:center"><span class="gx" data-fa="شناسه:" data-en="ID:">شناسه:</span></div>
+   <div class="agId" id="agAccountId"></div>
+   <p class="agGoogleNote" id="agGoogleStatus"></p>
+   <div class="agGoogleWrap"><div id="agGoogleLinkBtn" class="agGoogleBtnWrap"></div></div>
+   <button type="button" class="agLink" id="agAccountClose"><span class="gx" data-fa="بستن" data-en="Close">بستن</span></button>
+  </div>
   <div class="agView" data-view="googleRegister" hidden>
    <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="🟢 انتخاب حساب Google" data-en="🟢 Choose your Google Account">🟢 انتخاب حساب Google</span></div>
    <p class="agGoogleNote"><span class="gx" data-fa="برای جلوگیری از ساخت چند حساب با یک Google Account، حساب Google تو به حساب Poppy وصل می‌شود." data-en="To prevent duplicate Poppy accounts, your Google Account will be linked to your Poppy account.">برای جلوگیری از ساخت چند حساب با یک Google Account، حساب Google تو به حساب Poppy وصل می‌شود.</span></p>
@@ -1229,7 +1237,7 @@ function lang(){try{return currentLang==='en'?'en':'fa';}catch(e){return 'fa';}}
 function T(fa,en){return lang()==='en'?en:fa;}
 
 var S={logged:false,display:'',started:false,busy:false,hasCode:false,forced:true};
-var gate,box,errBox,googleReady=false,googleClientId='';
+var gate,box,errBox,googleReady=false,googleClientId='',googleAction='register';
 
 /* ---------- texts ---------- */
 function refreshTexts(){
@@ -1252,6 +1260,7 @@ var ERRS={
   registration_closed:['ثبت‌نام حساب جدید بسته است. با حساب موجود وارد شو و دستگاه جدید را اضافه کن','New account registration is closed. Sign in to your existing account and add a device'],
   google_not_configured:['ورود با Google هنوز تنظیم نشده. مدیر سایت باید Google Client ID را تنظیم کند','Google sign-up is not configured yet. The site owner must configure the Google Client ID'],
   google_account_exists:['این حساب Google قبلاً یک حساب Poppy دارد. با همان حساب وارد شو و دستگاه جدید را اضافه کن','This Google Account already has a Poppy account. Sign in to that account and add this device'],
+  google_already_linked:['این حساب Poppy از قبل به یک Google Account وصل است','This Poppy account is already linked to a Google Account'],
   invalid_google_credential:['اعتبار Google تأیید نشد. دوباره حساب Google را انتخاب کن','Google could not verify this account. Please choose your Google Account again'],
   rate_limited:['تعداد تلاش‌ها زیاد است. چند دقیقه بعد دوباره امتحان کن','Too many attempts. Please try again later'],
   not_logged_in:['ابتدا وارد حساب شو','Please sign in first']
@@ -1353,7 +1362,8 @@ function showGate(forced,hint){
   gate.classList.remove('gone','loading');
   R.classList.add('authg-open');
   S.forced=!!forced;
-  view('main');refreshTexts();
+  view(S.logged?'account':'main');refreshTexts();
+  if(S.logged)refreshAccountStatus();
   box.style.animation='none';void box.offsetWidth;box.style.animation='';
   if(hint){var b=$(hint);if(b){b.classList.remove('pulse');void b.offsetWidth;b.classList.add('pulse');}}
 }
@@ -1380,70 +1390,51 @@ function loadGoogleScript(){
   if(W.google&&W.google.accounts&&W.google.accounts.id)return Promise.resolve();
   return new Promise(function(resolve,reject){
     var existing=D.querySelector('script[data-poppy-google="1"]');
-    if(existing){existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});return;}
-    var sc=D.createElement('script');
-    sc.src='https://accounts.google.com/gsi/client';
-    sc.async=true;sc.defer=true;sc.dataset.poppyGoogle='1';
-    sc.onload=resolve;sc.onerror=function(){reject({error:'google_script_failed',message:T('اتصال به سرویس Google برقرار نشد','Could not load Google Sign-In')});};
-    D.head.appendChild(sc);
+    if(existing){if(W.google&&W.google.accounts&&W.google.accounts.id){resolve();return;}existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});return;}
+    var sc=D.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.defer=true;sc.dataset.poppyGoogle='1';
+    sc.onload=resolve;sc.onerror=function(){reject({error:'google_script_failed',message:T('اتصال به سرویس Google برقرار نشد','Could not load Google Sign-In')});};D.head.appendChild(sc);
   });
+}
+function handleGoogleCredential(resp){
+  if(!resp||!resp.credential){showErr(T('از Google اطلاعات لازم دریافت نشد. دوباره انتخاب کن','Google did not return a credential. Please try again'));return;}
+  busy(null,true);clearErr();
+  var p=googleAction==='link'?linkGoogleWithCredential(resp.credential):doRegisterWithGoogle(resp.credential);
+  p.then(function(f){busy(null,false);if(googleAction==='link'){refreshAccountStatus();showErr(T('✅ Google با موفقیت به حساب وصل شد','✅ Google was linked successfully'));return;}showDone(f,T('✅ حساب ساخته شد!','✅ Account created!'));},function(e){busy(null,false);showErr(explain(e));});
+}
+function ensureGoogleClient(){
+  if(googleReady)return;
+  W.google.accounts.id.initialize({client_id:googleClientId,callback:handleGoogleCredential,auto_select:false,use_fedcm_for_button:true,context:'signup'});
+  googleReady=true;
+}
+function renderGoogleButton(hostId){
+  var host=$(hostId);if(!host)return;host.textContent='';W.google.accounts.id.renderButton(host,{theme:'outline',size:'large',text:'continue_with',shape:'pill',width:280,logo_alignment:'left'});
+}
+function getGoogleConfig(){
+  if(googleClientId)return Promise.resolve();
+  return api('GET','/api/auth/google/config').then(function(cfg){if(!cfg.success)throw cfg;googleClientId=cfg.clientId;});
 }
 function openGoogleRegister(){
-  view('googleRegister');
-  clearErr();
-  return api('GET','/api/auth/google/config').then(function(cfg){
-    if(!cfg.success)throw cfg;
-    googleClientId=cfg.clientId;
-    return loadGoogleScript();
-  }).then(function(){
-    if(googleReady)return;
-    W.google.accounts.id.initialize({
-      client_id:googleClientId,
-      callback:function(resp){
-        if(!resp||!resp.credential){
-          showErr(T('از Google اطلاعات لازم دریافت نشد. دوباره انتخاب کن','Google did not return a credential. Please try again'));
-          return;
-        }
-        busy(null,true);clearErr();
-        doRegisterWithGoogle(resp.credential).then(function(f){
-          busy(null,false);
-          showDone(f,T('✅ حساب ساخته شد!','✅ Account created!'));
-        },function(e){
-          busy(null,false);
-          showErr(explain(e));
-        });
-      },
-      auto_select:false,
-      use_fedcm_for_button:true,
-      context:'signup'
-    });
-    googleReady=true;
-  }).then(function(){
-    var host=$('agGoogleBtn');
-    if(!host)return;
-    host.textContent='';
-    W.google.accounts.id.renderButton(host,{
-      theme:'outline',
-      size:'large',
-      text:'signup_with',
-      shape:'pill',
-      width:280,
-      logo_alignment:'left'
-    });
+  view('googleRegister');clearErr();googleAction='register';
+  return getGoogleConfig().then(loadGoogleScript).then(function(){ensureGoogleClient();renderGoogleButton('agGoogleBtn');});
+}
+function openGoogleLink(){
+  view('account');clearErr();googleAction='link';
+  return getGoogleConfig().then(loadGoogleScript).then(function(){ensureGoogleClient();renderGoogleButton('agGoogleLinkBtn');});
+}
+function refreshAccountStatus(){
+  var id=$( 'agAccountId' );if(id)id.textContent=fmtId(S.display);
+  var st=$('agGoogleStatus'),host=$('agGoogleLinkBtn');if(!st)return;
+  st.textContent=T('در حال بررسی اتصال Google...','Checking Google link...');
+  var token=lsGet(KT);if(!token)return;
+  api('GET','/api/auth/me',null,token).then(function(j){
+    if(!j||!j.success||!j.user)return;
+    if(j.user.googleLinked){st.textContent=T('✅ حساب Google به این حساب Poppy وصل است.','✅ A Google Account is linked to this Poppy account.');if(host)host.style.display='none';}
+    else{st.textContent=T('Google را به همین حساب وصل کن تا بعداً همان Google نتواند حساب دوم بسازد.','Link Google to this account so the same Google Account cannot create a second Poppy account later.');if(host)host.style.display='';}
   });
 }
-function doRegisterWithGoogle(googleIdToken){
-  needWA();
-  return api('POST','/api/auth/register/begin',{googleIdToken:googleIdToken}).then(function(b){
-    if(!b.success)throw b;
-    return navigator.credentials.create({publicKey:toCreate(b.options)}).then(function(c){
-      if(!c)throw {error:'not_verified'};
-      return api('POST','/api/auth/register/finish',{challengeId:b.challengeId,credential:serReg(c)}).then(function(f){
-        if(!f.success)throw f;
-        saveSession(f);addCredId(c.id);return f;
-      });
-    });
-  });
+function linkGoogleWithCredential(googleIdToken){
+  var token=lsGet(KT);if(!token)throw {error:'not_logged_in'};
+  return api('POST','/api/auth/google/link',{googleIdToken:googleIdToken},token).then(function(f){if(!f.success)throw f;return f;});
 }
 
 /* ---------- flows ---------- */
@@ -1556,6 +1547,7 @@ function init(){
   $('agLogin').onclick=function(){run(this,doLogin,function(f){setLogged(f.user);hideGate();});};
   $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(explain(e));});};
   $('agGoogleBack').onclick=function(){view('main');};
+  $('agAccountClose').onclick=function(){hideGate();};
   $('agGuest').onclick=function(){setGuest();hideGate();};
   $('agRecLink').onclick=function(){view('recovery');setTimeout(function(){try{$('agCodeIn').focus();}catch(e){}},50);};
   $('agRecBack').onclick=function(){view('main');};
@@ -1577,7 +1569,7 @@ function init(){
   $('agLockGuest').onclick=hideLock;
   $('authLock').addEventListener('click',function(e){if(e.target===this)hideLock();});
   D.addEventListener('keydown',function(e){if(e.key==='Escape'){hideLock();if(!$('agClose').hidden&&!gate.classList.contains('gone'))hideGate();}});
-  D.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('#authBtn'):null;if(b&&!S.logged)showGate(false);});
+  D.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('#authBtn'):null;if(b)showGate(false);});
   if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',updateBtn);
   /* guests: comments / AI / ticket buttons open the lock card instead */
   D.addEventListener('click',function(e){
