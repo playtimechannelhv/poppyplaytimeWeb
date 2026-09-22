@@ -1295,13 +1295,6 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
   <div class="agView" data-view="recoveryCenter" hidden>
      <div class="agRecoveryCenter">
        <div class="agDoneT"><span class="gx" data-fa="کد حساب من" data-en="My account code">کد حساب من</span></div>
-       <div class="agRecoveryForm" id="agSetupPasswordStep">
-         <div class="agRecoveryStepTitle"><span class="gx" data-fa="تنظیم رمز حساب" data-en="Set account password">تنظیم رمز حساب</span></div>
-         <input class="agRecoveryInput" id="agSetupPassword" type="password" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="رمز حساب">
-         <input class="agRecoveryInput" id="agSetupPasswordConfirm" type="password" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="تکرار رمز حساب">
-         <button type="button" class="agBtn primary" id="agSetPassword"><i class="agSp"></i><span class="gx" data-fa="ثبت رمز حساب" data-en="Save account password">ثبت رمز حساب</span></button>
-         <div class="agRecoveryDesc"><span class="gx" data-fa="این رمز برای محافظت از کد بازیابی دائمی حساب استفاده می‌شود." data-en="This password protects your permanent recovery code.">این رمز برای محافظت از کد بازیابی دائمی حساب استفاده می‌شود.</span></div>
-       </div>
        <div id="agRecoveryIntro" class="agRecoveryIntro">
          <div class="agRecoveryMask">
            <div class="agRecoveryMaskLabel"><span class="gx" data-fa="کد بازیابی دائمی" data-en="Permanent recovery code">کد بازیابی دائمی</span></div>
@@ -1472,15 +1465,12 @@ function updateBtn(){
 
 /* ---------- gate view ---------- */
 function resetRecoveryCenter(){
-  var intro=$('agRecoveryIntro'),step=$('agRecoveryPasswordStep'),card=$('agRecoveryCodeCard'),p=$('agRecoveryPassword'),pc=$('agRecoveryPasswordConfirm'),setup=$('agSetupPassword'),setupConfirm=$('agSetupPasswordConfirm'),setupStep=$('agSetupPasswordStep'),code=$('agRecoveryCodeText'),copy=$('agCopyRecovery');
+  var intro=$('agRecoveryIntro'),step=$('agRecoveryPasswordStep'),card=$('agRecoveryCodeCard'),p=$('agRecoveryPassword'),pc=$('agRecoveryPasswordConfirm'),code=$('agRecoveryCodeText'),copy=$('agCopyRecovery');
   if(intro)intro.hidden=false;
   if(step)step.hidden=true;
   if(card)card.classList.remove('show');
   if(p)p.value='';
   if(pc)pc.value='';
-  if(setup)setup.value='';
-  if(setupConfirm)setupConfirm.value='';
-  if(setupStep)setupStep.hidden=false;
   if(code)code.textContent='';
   if(copy){
     copy.classList.remove('agRgbExit');
@@ -1730,10 +1720,6 @@ function completeGoogleRegistration(){
   var pc=passwordChecks();if(Object.keys(pc).some(function(k){return !pc[k];}))throw {error:'password_weak'};
   return doRegisterWithGoogle(pendingGoogleRegistration,password,confirm).then(function(f){pendingGoogleRegistration=null;return f;});
 }
-function setAccountPassword(){
-  var password=$('agSetupPassword').value||'',confirm=$('agSetupPasswordConfirm').value||'',token=lsGet(KT);if(!token)throw {error:'not_logged_in'};
-  return api('POST','/api/auth/password/setup',{password:password,passwordConfirm:confirm},token).then(function(f){if(!f.success)throw f;$('agSetupPassword').value='';$('agSetupPasswordConfirm').value='';refreshAccountStatus();return f;});
-}
 function revealRecoveryCode(){
   var password=$('agRecoveryPassword').value||'',confirm=$('agRecoveryPasswordConfirm').value||'',token=lsGet(KT);if(!token)throw {error:'not_logged_in'};
   return api('POST','/api/auth/recovery/view',{password:password,passwordConfirm:confirm},token).then(function(f){
@@ -1849,8 +1835,6 @@ function init(){
   $('agPasswordMainBack').onclick=function(){pendingGoogleRegistration=null;$('agPassword').value='';$('agPasswordConfirm').value='';view('main');};
   $('agPasswordConfirmBtn').onclick=function(){run(this,completeGoogleRegistration,function(f){showDone(f,T('حساب Playtime Channel ساخته شد','Your Playtime Channel account is ready'));});};
   bindManualPasswordField('agPassword');bindManualPasswordField('agPasswordConfirm');updatePasswordSetupUI();
-  var agSetPassword=$('agSetPassword');
-  if(agSetPassword)agSetPassword.onclick=function(){run(this,setAccountPassword,function(){showSuccess('رمز حساب ثبت شد. حالا می‌توانی کد بازیابی دائمی را با همان رمز ببینی.','Password saved. You can now reveal your permanent recovery code with that password.');});};
   $('agRevealRecovery').onclick=function(){run(this,revealRecoveryCode,function(f){
     showSuccess('کد بازیابی نمایش داده شد. این کد برای همین حساب روی دستگاه‌های دیگر هم معتبر است.','Recovery code revealed. This code is valid for this same account on other devices.');
   });};
