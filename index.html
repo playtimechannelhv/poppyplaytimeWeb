@@ -4009,7 +4009,14 @@ function showDailyLimitMessage(resetAt) {
       : `🌙 <b>You have reached your daily limit</b><br>The daily limit is 5 messages and resets every day at 3:30 AM. 🎀${resetText ? '<br><small>Next reset: ' + resetText + '</small>' : ''}`;
     list.scrollTop = list.scrollHeight;
   }
-  if (typeof setAiClientInputDisabled === 'function') setAiClientInputDisabled(true);
+  const limitInput = $('aiChatInput');
+  const limitSend = $('aiChatSend');
+  const limitSuggestions = document.querySelectorAll('.suggBtn');
+  if (limitInput) { limitInput.disabled = true; limitInput.setAttribute('aria-disabled','true'); }
+  if (limitSend) { limitSend.disabled = true; limitSend.setAttribute('aria-disabled','true'); }
+  limitSuggestions.forEach(btn => { btn.disabled = true; btn.setAttribute('aria-disabled','true'); });
+  const limitModal = $('aiChatModal');
+  if (limitModal) limitModal.classList.add('ai-client-limit');
 }
 
 async function sendAiMessage() {
