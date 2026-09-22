@@ -1561,7 +1561,9 @@ function authErrorMeta(e){
     rate_limited:{titleFa:'تلاش‌های زیادی انجام شد',titleEn:'Too many attempts',hintFa:'چند دقیقه صبر کن و دوباره امتحان کن.',hintEn:'Wait a few minutes and try again.',icon:'!'},
     invalid_recovery_code:{titleFa:'کد بازیابی معتبر نیست',titleEn:'Recovery code is invalid',hintFa:'کد را دقیقاً همان‌طور که هنگام ساخت حساب ذخیره کردی وارد کن.',hintEn:'Enter the recovery code exactly as you saved it.',icon:'!'},
     origin_not_allowed:{titleFa:'این سایت اجازه‌ی ورود ندارد',titleEn:'This site is not allowed to sign in',hintFa:'از نسخه‌ی رسمی سایت Playtime Channel استفاده کن.',hintEn:'Use the official Playtime Channel website.',icon:'!'},
-    not_verified:{titleFa:'احراز هویت کامل نشد',titleEn:'Verification was not completed',hintFa:'دوباره تلاش کن و مراحل Google را تا پایان انجام بده.',hintEn:'Try again and complete the Google sign-in flow.',icon:'!'}
+    not_verified:{titleFa:'احراز هویت کامل نشد',titleEn:'Verification was not completed',hintFa:'دوباره تلاش کن و مراحل Google را تا پایان انجام بده.',hintEn:'Try again and complete the Google sign-in flow.',icon:'!'},
+    server_error:{titleFa:'خطای سرور',titleEn:'Server error',hintFa:'کمی صبر کن و دوباره تلاش کن. اگر مشکل ادامه داشت، به مدیر سایت اطلاع بده.',hintEn:'Wait a moment and try again. If it continues, contact the site admin.',icon:'!'},
+    user_create_failed:{titleFa:'ساخت حساب انجام نشد',titleEn:'Account creation failed',hintFa:'مشکلی در ساخت حساب در سرور پیش آمد. دوباره تلاش کن؛ اگر ادامه داشت، به مدیر سایت اطلاع بده.',hintEn:'A problem occurred creating the account on the server. Try again; if it continues, contact the site admin.',icon:'!'}
   };
   return map[code]||null;
 }
@@ -1578,7 +1580,8 @@ function showErr(input){
   errBox.classList.remove('success');
   $('agErrIcon').textContent=meta.icon;
   $('agErrTitle').textContent=lang()==='en'?meta.titleEn:meta.titleFa;
-  $('agErrDetail').textContent=detail||T('مشکل نامشخصی رخ داد.','An unknown problem occurred.');
+  var diag=(obj&&obj.detail)?(' ['+obj.detail+']'):'';
+  $('agErrDetail').textContent=(detail||T('مشکل نامشخصی رخ داد.','An unknown problem occurred.'))+diag;
   $('agErrHint').textContent=lang()==='en'?meta.hintEn:meta.hintFa;
   errBox.classList.remove('show');void errBox.offsetWidth;errBox.classList.add('show');
 }
