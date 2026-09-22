@@ -1318,7 +1318,7 @@ function lang(){try{return currentLang==='en'?'en':'fa';}catch(e){return 'fa';}}
 function T(fa,en){return lang()==='en'?en:fa;}
 
 var S={logged:false,display:'',started:false,busy:false,hasCode:false,forced:true};
-var gate,box,errBox,googleReady=false,googleClientId='',googleAction='register',pendingGoogleRegistration=null;
+var gate,box,errBox,googleReady=false,googleClientId='',googleAction='register';
 
 /* ---------- texts ---------- */
 function refreshTexts(){
@@ -1340,8 +1340,8 @@ var ERRS={
   origin_not_allowed:['این آدرس اجازه‌ی استفاده از اثر انگشت رو نداره','This address is not allowed to use fingerprint login'],
   registration_closed:['ثبت‌نام حساب جدید بسته است. با حساب موجود وارد شو و دستگاه جدید را اضافه کن','New account registration is closed. Sign in to your existing account and add a device'],
   google_not_configured:['ورود با Google هنوز تنظیم نشده. مدیر سایت باید Google Client ID را تنظیم کند','Google sign-up is not configured yet. The site owner must configure the Google Client ID'],
-  google_account_exists:['این حساب Google قبلاً یک حساب Poppy دارد. با همان حساب وارد شو و دستگاه جدید را اضافه کن','This Google Account already has a Poppy account. Sign in to that account and add this device'],
-  google_already_linked:['این حساب Poppy از قبل به یک Google Account وصل است','This Poppy account is already linked to a Google Account'],
+  google_account_exists:['این Google Account قبلاً به یک حساب Playtime Channel متصل شده است. برای ورود، همان Google را انتخاب کن.','This Google Account is already linked to a Playtime Channel account. Choose that same Google Account to sign in'],
+  google_already_linked:['این حساب Playtime Channel از قبل به یک Google Account وصل است','This Playtime Channel account is already linked to a Google Account'],
   invalid_google_credential:['اعتبار Google تأیید نشد. دوباره حساب Google را انتخاب کن','Google could not verify this account. Please choose your Google Account again'],
   rate_limited:['تعداد تلاش‌ها زیاد است. چند دقیقه بعد دوباره امتحان کن','Too many attempts. Please try again later'],
   not_logged_in:['ابتدا وارد حساب شو','Please sign in first'],
@@ -1386,7 +1386,7 @@ function showErr(input){
   var msg=typeof input==='string'?input:explain(input);
   var meta=errorMeta(input)||{};
   if(!meta.titleFa && typeof input==='object' && input && input.error==='unsupported'){meta={icon:'📱',titleFa:'این روش ورود روی این دستگاه در دسترس نیست',titleEn:'This sign-in method is not available on this device',hintFa:'از «ورود با Google» استفاده کن؛ این روش به اثر انگشت وابسته نیست.',hintEn:'Use “Sign in with Google”; it does not depend on fingerprint authentication.'};}
-  if(!meta.titleFa){meta={icon:'⚠️',titleFa:'احراز هویت انجام نشد',titleEn:'Sign-in could not be completed',hintFa:'اطلاعات بالا را بررسی کن و دوباره تلاش کن.',hintEn:'Check the information above and try again.'];}
+  if(!meta.titleFa){meta={icon:'⚠️',titleFa:'احراز هویت انجام نشد',titleEn:'Sign-in could not be completed',hintFa:'اطلاعات بالا را بررسی کن و دوباره تلاش کن.',hintEn:'Check the information above and try again.'};}
   $('agErrIcon').textContent=meta.icon||'⚠️';
   $('agErrTitle').textContent=lang()==='en'?meta.titleEn:meta.titleFa;
   $('agErrDetail').textContent=msg||T('مشکل نامشخصی رخ داد.','An unknown problem occurred.');
@@ -1434,10 +1434,11 @@ function playAuthMusic(choice){
       if(ctx.state==='suspended')ctx.resume();
       if(!window.__poppyAuthPulse){
         var osc=ctx.createOscillator(),gain=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();
-        osc.type='sine';osc.frequency.value=68;gain.gain.value=0.018;lfo.frequency.value=.18;lg.gain.value=0.015;
+        gain.gain.value=0;osc.type='sine';osc.frequency.value=68;lfo.frequency.value=.18;lg.gain.value=.015;
         lfo.connect(lg).connect(gain.gain);osc.connect(gain).connect(ctx.destination);osc.start();lfo.start();
-        window.__poppyAuthPulse={stop:function(){try{gain.gain.setTargetAtTime(0,ctx.currentTime,.05)}catch(e){}}};
+        window.__poppyAuthPulse={play:function(){try{gain.gain.setTargetAtTime(.018,ctx.currentTime,.08)}catch(e){}},stop:function(){try{gain.gain.setTargetAtTime(0,ctx.currentTime,.05)}catch(e){}}};
       }
+      window.__poppyAuthPulse.play();
       var g=window.__poppyAuthPulseCtx;
       if(g&&g.state==='suspended')g.resume();
     }catch(e){}
@@ -1446,6 +1447,10 @@ function playAuthMusic(choice){
 function setAuthMusicVol(v){
   var n=Math.max(0,Math.min(100,Number(v)||0));lsSet('poppy_auth_music_vol',String(n));
   try{if(window.__poppyAuthAudio)window.__poppyAuthAudio.volume=n/100;}catch(e){}
+}
+function stopAuthMusic(){
+  try{if(window.__poppyAuthAudio){window.__poppyAuthAudio.pause();window.__poppyAuthAudio.currentTime=0;}}catch(e){}
+  try{if(window.__poppyAuthPulse&&window.__poppyAuthPulse.stop)window.__poppyAuthPulse.stop();}catch(e){}
 }
 function updateAuthPrefsUI(){
   var c=lsGet('poppy_auth_music')||'off',v=Number(lsGet('poppy_auth_music_vol')||28);
@@ -1457,7 +1462,11 @@ function updateAuthPrefsUI(){
 }
 function setAuthLanguage(code){
   try{
-    if(typeof W.setLanguage==='function'){W.setLanguage(code);return;}
+    if(typeof W.setLanguage==='function'){
+      W.setLanguage(code);
+      updateAuthPrefsUI();
+      return;
+    }
     lsSet('poppy_lang',code);
   }catch(e){lsSet('poppy_lang',code);}
   refreshTexts();updateAuthPrefsUI();
@@ -1562,7 +1571,7 @@ function showGate(forced,hint){
   box.style.animation='none';void box.offsetWidth;box.style.animation='';
   if(hint){var b=$(hint);if(b){b.classList.remove('pulse');void b.offsetWidth;b.classList.add('pulse');}}
 }
-function hideGate(){gate.classList.add('gone');gate.classList.remove('loading');R.classList.remove('authg-open');}
+function hideGate(){stopAuthMusic();gate.classList.add('gone');gate.classList.remove('loading');R.classList.remove('authg-open');}
 function busy(btn,on){S.busy=on;gate.classList.toggle('busy',on);if(btn)btn.classList.toggle('loading',on);}
 function run(btn,fn,done){
   if(S.busy)return;busy(btn,true);clearErr();
