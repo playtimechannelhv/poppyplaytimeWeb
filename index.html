@@ -1167,8 +1167,9 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
   <div class="agLogo">POPPY <span>PLAYTIME</span></div>
   <div class="agSub"><span class="gx" data-fa="🔐 ورود به آرشیو" data-en="🔐 Enter the Archive">🔐 ورود به آرشیو</span></div>
   <div class="agView" data-view="main">
-   <button type="button" class="agBtn primary" id="agLogin"><i class="agSp"></i><span class="gx" data-fa="🔐 ورود با اثر انگشت" data-en="🔐 Sign in with fingerprint">🔐 ورود با اثر انگشت</span></button>
-   <button type="button" class="agBtn" id="agReg"><i class="agSp"></i><span class="gx" data-fa="✨ ساخت حساب جدید" data-en="✨ Create new account">✨ ساخت حساب جدید</span></button>
+   <button type="button" class="agBtn primary" id="agGoogleLogin"><i class="agSp"></i><span class="gx" data-fa="🔵 ورود با Google" data-en="🔵 Sign in with Google">🔵 ورود با Google</span></button>
+   <button type="button" class="agBtn" id="agLogin"><i class="agSp"></i><span class="gx" data-fa="🔐 ورود با دستگاه" data-en="🔐 Sign in with device">🔐 ورود با دستگاه</span></button>
+   <button type="button" class="agBtn" id="agReg"><i class="agSp"></i><span class="gx" data-fa="✨ ساخت حساب جدید با Google" data-en="✨ Create new account with Google">✨ ساخت حساب جدید با Google</span></button>
    <button type="button" class="agBtn ghost" id="agGuest"><span class="gx" data-fa="👤 ورود مهمان" data-en="👤 Continue as guest">👤 ورود مهمان</span></button>
    <button type="button" class="agLink" id="agRecLink"><span class="gx" data-fa="🔑 ورود با کد بازیابی" data-en="🔑 Sign in with recovery code">🔑 ورود با کد بازیابی</span></button>
   </div>
@@ -1179,6 +1180,12 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
    <p class="agGoogleNote" id="agGoogleStatus"></p>
    <div class="agGoogleWrap"><div id="agGoogleLinkBtn" class="agGoogleBtnWrap"></div></div>
    <button type="button" class="agLink" id="agAccountClose"><span class="gx" data-fa="بستن" data-en="Close">بستن</span></button>
+  </div>
+  <div class="agView" data-view="googleLogin" hidden>
+   <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="🔵 ورود با Google" data-en="🔵 Sign in with Google">🔵 ورود با Google</span></div>
+   <p class="agGoogleNote"><span class="gx" data-fa="با همان Google Account که به حساب Poppy وصل شده وارد شو." data-en="Sign in with the Google Account linked to your Poppy account.">با همان Google Account که به حساب Poppy وصل شده وارد شو.</span></p>
+   <div class="agGoogleWrap"><div id="agGoogleLoginBtn" class="agGoogleBtnWrap"></div></div>
+   <button type="button" class="agLink" id="agGoogleLoginBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
   </div>
   <div class="agView" data-view="googleRegister" hidden>
    <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="🟢 انتخاب حساب Google" data-en="🟢 Choose your Google Account">🟢 انتخاب حساب Google</span></div>
@@ -1269,7 +1276,8 @@ var ERRS={
   rate_limited:['تعداد تلاش‌ها زیاد است. چند دقیقه بعد دوباره امتحان کن','Too many attempts. Please try again later'],
   not_logged_in:['ابتدا وارد حساب شو','Please sign in first'],
   google_registration_not_ready:['مرحله Google منقضی شده. دوباره حساب Google را انتخاب کن','The Google registration step expired. Choose your Google Account again'],
-  platform_authenticator_unavailable:['احراز هویت دستگاه در دسترس نیست. قفل صفحه و اثر انگشت را فعال کن و دوباره امتحان کن','A platform authenticator is not available. Set up a screen lock/fingerprint and try again']
+  platform_authenticator_unavailable:['احراز هویت دستگاه در دسترس نیست. قفل صفحه و اثر انگشت را فعال کن و دوباره امتحان کن','A platform authenticator is not available. Set up a screen lock/fingerprint and try again'],
+  google_account_not_linked:['این Google Account هنوز به حساب Poppy وصل نشده. برای اولین ورود، با روش ورود قبلی وارد شو و Google را از بخش حساب من وصل کن.','This Google Account is not linked to a Poppy account yet. Sign in with your existing method first, then link Google from My Account']
 };
 function errMsg(j){
   if(j&&j.error&&ERRS[j.error]&&lang()==='en')return ERRS[j.error][1];
@@ -1413,9 +1421,15 @@ function loadGoogleScript(){
   });
 }
 function handleGoogleCredential(resp){
-  if(!resp||!resp.credential){showErr(T('از Google اطلاعات لازم دریافت نشد. دوباره انتخاب کن','Google did not return a credential. Please try again'));return;}
+  if(!resp||!resp.credential){
+    showErr(T('از Google اطلاعات لازم دریافت نشد. دوباره انتخاب کن','Google did not return a credential. Please try again'));
+    return;
+  }
   busy(null,true);clearErr();
-  var p=googleAction==='link'?linkGoogleWithCredential(resp.credential):prepareGoogleRegistration(resp.credential);
+  var p;
+  if(googleAction==='link') p=linkGoogleWithCredential(resp.credential);
+  else if(googleAction==='login') p=doGoogleLogin(resp.credential);
+  else p=doRegisterWithGoogle(resp.credential);
   p.then(function(f){
     busy(null,false);
     if(googleAction==='link'){
@@ -1423,16 +1437,11 @@ function handleGoogleCredential(resp){
       showErr(T('✅ Google با موفقیت به حساب وصل شد','✅ Google was linked successfully'));
       return;
     }
-    var host=$('agGoogleBtn');
-    if(host)host.style.display='none';
-    var step=$('agGooglePasskeyStep');
-    if(step)step.hidden=false;
-    var msg=$('agErr');
-    if(msg){
-      msg.classList.remove('show');
-      msg.textContent='';
-    }
-  },function(e){busy(null,false);showErr(explain(e));});
+    showDone(f,googleAction==='login'?T('✅ وارد شدی!','✅ Signed in!'):T('✅ حساب ساخته شد!','✅ Account created!'));
+  },function(e){
+    busy(null,false);
+    showErr(explain(e));
+  });
 }
 function ensureGoogleClient(){
   if(googleReady)return;
@@ -1449,6 +1458,10 @@ function getGoogleConfig(){
 function openGoogleRegister(){
   view('googleRegister');clearErr();googleAction='register';
   return getGoogleConfig().then(loadGoogleScript).then(function(){ensureGoogleClient();renderGoogleButton('agGoogleBtn');});
+}
+function openGoogleLogin(){
+  view('googleLogin');clearErr();googleAction='login';
+  return getGoogleConfig().then(loadGoogleScript).then(function(){ensureGoogleClient();renderGoogleButton('agGoogleLoginBtn');});
 }
 function openGoogleLink(){
   view('account');clearErr();googleAction='link';
@@ -1471,31 +1484,19 @@ function linkGoogleWithCredential(googleIdToken){
 }
 
 /* ---------- flows ---------- */
-function prepareGoogleRegistration(googleIdToken){
+function doRegisterWithGoogle(googleIdToken){
   if(!googleIdToken)throw {error:'invalid_google_credential'};
-  return api('POST','/api/auth/register/begin',{googleIdToken:googleIdToken}).then(function(b){
-    if(!b.success)throw b;
-    pendingGoogleRegistration={
-      challengeId:b.challengeId,
-      options:b.options
-    };
-    return b;
-  });
-}
-async function completeGoogleRegistration(){
-  await ensurePlatformAuthenticator();
-  var pending=pendingGoogleRegistration;
-  if(!pending||!pending.options||!pending.challengeId)throw {error:'google_registration_not_ready',message:T('مرحله Google منقضی شده. دوباره از انتخاب حساب Google شروع کن.','The Google registration step expired. Start again by choosing your Google Account.')};
-  pendingGoogleRegistration=null;
-  var c=await navigator.credentials.create({publicKey:toCreate(pending.options)});
-  if(!c)throw {error:'not_verified'};
-  return api('POST','/api/auth/register/finish',{
-    challengeId:pending.challengeId,
-    credential:serReg(c)
-  }).then(function(f){
+  return api('POST','/api/auth/google/signup',{googleIdToken:googleIdToken}).then(function(f){
     if(!f.success)throw f;
     saveSession(f);
-    addCredId(c.id);
+    return f;
+  });
+}
+function doGoogleLogin(googleIdToken){
+  if(!googleIdToken)throw {error:'invalid_google_credential'};
+  return api('POST','/api/auth/google/login',{googleIdToken:googleIdToken}).then(function(f){
+    if(!f.success)throw f;
+    saveSession(f);
     return f;
   });
 }
@@ -1605,6 +1606,8 @@ function skip(){S.started=true;hideGate();}
 function init(){
   gate=$('authGate');box=$('agBox');errBox=$('agErr');
   if(!gate)return;
+  $('agGoogleLogin').onclick=function(){openGoogleLogin().catch(function(e){showErr(explain(e));});};
+  $('agGoogleLoginBack').onclick=function(){view('main');};
   $('agLogin').onclick=function(){run(this,doLogin,function(f){setLogged(f.user);hideGate();});};
   $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(explain(e));});};
   $('agGoogleBack').onclick=function(){
