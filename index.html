@@ -1158,20 +1158,129 @@ body.tb-medium .topbar .actions>button#authBtn[id]{min-width:72px!important;font
 body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-size:10px!important;padding:0 8px!important}
 
 </style>
+<style id="auth-premium-style">
+.authGate{
+  background:
+    radial-gradient(circle at 50% -10%,rgba(255,44,90,.20),transparent 34%),
+    radial-gradient(circle at 100% 100%,rgba(128,16,44,.14),transparent 32%),
+    linear-gradient(145deg,#070307,#0b0509 55%,#050205);
+}
+.agBox{max-width:430px}
+.agPremiumShell{
+  padding:22px 18px 16px;
+  border:1px solid rgba(255,75,110,.18);
+  border-radius:28px;
+  background:linear-gradient(155deg,rgba(255,255,255,.045),rgba(255,255,255,.018));
+  box-shadow:0 28px 100px rgba(0,0,0,.46),inset 0 1px rgba(255,255,255,.05);
+  backdrop-filter:blur(14px);
+}
+.agBrandLine{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:7px;color:#89e8c2;font-size:10px;font-weight:800;letter-spacing:1px}
+.agBrandDot{width:7px;height:7px;border-radius:50%;background:#56e2a1;box-shadow:0 0 12px #56e2a1}
+.agLogo{font-size:31px}
+.agSub{margin:8px 0 16px;font-size:13px;color:#d9c4cb}
+.agSecurityPill{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin:0 0 17px;padding:9px 12px;border-radius:12px;
+  border:1px solid rgba(137,232,194,.15);background:rgba(86,226,161,.055);
+  color:#b7dece;font-size:10.5px;line-height:1.7;
+}
+.agSecurityPill b{color:#effbf6}
+.agBtn{
+  min-height:56px;border-radius:15px;
+  transition:transform .16s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease;
+}
+.agBtn.primary{box-shadow:0 12px 32px rgba(255,23,77,.26)}
+.agBtn.primary:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(255,23,77,.36)}
+.agBtn.secondary{
+  background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,23,77,.045));
+  border-color:rgba(255,75,110,.22);
+}
+.agBtn.secondary:hover{transform:translateY(-2px);background:linear-gradient(145deg,rgba(255,75,110,.10),rgba(255,255,255,.045))}
+.agGoogleMark{
+  width:27px;height:27px;display:flex;align-items:center;justify-content:center;
+  border-radius:9px;background:#fff;color:#4285f4;font:900 15px/1 Arial,sans-serif;
+  box-shadow:0 2px 10px rgba(0,0,0,.16);flex:0 0 27px;
+}
+.agLaunchText{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:start}
+.agLaunchTitle{font-size:14px;font-weight:900}
+.agLaunchDesc{font-size:10px;color:#d8bec7;font-weight:500}
+.agTrustLine{margin:1px 0 12px;color:#8f7b83;font-size:10.5px;line-height:1.8}
+.agTrustLine b{color:#cdb7bf}
+.agDivider{display:flex;align-items:center;gap:9px;margin:5px 0 3px;color:#725f67;font-size:9.5px}
+.agDivider:before,.agDivider:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(255,75,110,.20))}
+.agDivider:after{background:linear-gradient(90deg,rgba(255,75,110,.20),transparent)}
+.agSettings{
+  margin-top:15px;padding:10px;border-radius:16px;
+  border:1px solid rgba(255,75,110,.13);background:rgba(255,255,255,.018);
+}
+.agSettingsHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.agSettingsTitle{font-size:10px;color:#b99fa8;font-weight:800;letter-spacing:.4px}
+.agSettingActions{display:flex;gap:6px;flex-wrap:wrap}
+.agSettingBtn{
+  min-width:78px;height:34px;padding:0 10px;border-radius:10px;
+  border:1px solid rgba(255,75,110,.16);background:rgba(255,255,255,.025);
+  color:#cdb8c0;font-family:inherit;font-size:10.5px;font-weight:700;cursor:pointer;
+}
+.agSettingBtn.active{background:linear-gradient(135deg,var(--red,#ff174d),var(--red2,#ff4b6e));color:#fff;border-color:transparent}
+.agMusicLine{display:flex;align-items:center;gap:8px;margin-top:8px}
+.agMusicPlay{
+  width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,75,110,.22);
+  background:rgba(255,23,77,.08);color:#ff91a6;font-size:14px;flex:0 0 34px
+}
+.agMusicSlider{flex:1;accent-color:var(--red,#ff174d)}
+.agMusicState{min-width:44px;text-align:center;color:#8e7982;font-size:9px}
+.agErr{
+  margin-top:14px;padding:13px 14px;border-radius:15px;
+  background:linear-gradient(145deg,rgba(100,11,27,.28),rgba(255,23,77,.055));
+  border:1px solid rgba(255,91,116,.36);color:#f6d9de;font-size:12.5px;line-height:1.8;text-align:right;
+}
+.agErrTitle{font-weight:900;color:#fff;font-size:13.5px;margin-bottom:3px}
+.agErrDetail{color:#e3c6ce}
+.agErrHint{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.06);color:#e9a1b1;font-size:10.5px}
+.agErrIcon{display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;border-radius:7px;background:rgba(255,75,110,.12);border:1px solid rgba(255,75,110,.24);margin-inline-start:6px;font-weight:900}
+.agSuccess{
+  margin-bottom:15px;padding:16px;border-radius:16px;
+  background:linear-gradient(145deg,rgba(25,114,81,.18),rgba(255,255,255,.025));
+  border:1px solid rgba(91,230,174,.25);text-align:center
+}
+.agSuccessIcon{font-size:28px;color:#8cf0c7}
+.agSuccessTitle{font-size:18px;font-weight:900;margin:3px 0 4px}
+.agSuccessDetail{font-size:11.5px;color:#bfe5d7;line-height:1.9}
+#agAddDevice{display:none!important}
+#agGooglePasskeyStep{display:none!important}
+#agLogin{display:none!important}
+@media(max-width:480px){
+  .agPremiumShell{padding:18px 13px 13px;border-radius:24px}
+  .agLogo{font-size:28px}
+  .agBtn{min-height:54px}
+  .agSettingActions{width:100%}
+  .agSettingBtn{flex:1;min-width:0}
+}
+</style>
 </head>
 <body>
 <div class="authGate loading" id="authGate" role="dialog" aria-modal="true">
  <div class="agSpinBig"></div>
  <div class="agBox" id="agBox">
   <button type="button" class="agClose" id="agClose" aria-label="Close" hidden>✕</button>
-  <div class="agLogo">POPPY <span>PLAYTIME</span></div>
-  <div class="agSub"><span class="gx" data-fa="🔐 ورود به آرشیو" data-en="🔐 Enter the Archive">🔐 ورود به آرشیو</span></div>
+  <div class="agPremiumShell">
+  <div class="agBrandLine"><span class="agBrandDot"></span><span class="gx" data-fa="PLAYTIME CHANNEL • احراز هویت حساب" data-en="PLAYTIME CHANNEL • Account Authentication">PLAYTIME CHANNEL • احراز هویت حساب</span></div>
+  <div class="agLogo">PLAYTIME <span>CHANNEL</span></div>
+  <div class="agSub"><span class="gx" data-fa="ورود امن به آرشیو اطلاعاتی" data-en="Secure access to the information archive">ورود امن به آرشیو اطلاعاتی</span></div>
+  <div class="agSecurityPill"><span>SECURE ACCESS</span><b>Google Account → Playtime Channel</b></div>
   <div class="agView" data-view="main">
-   <button type="button" class="agBtn primary" id="agGoogleLogin"><i class="agSp"></i><span class="gx" data-fa="🔵 ورود با Google" data-en="🔵 Sign in with Google">🔵 ورود با Google</span></button>
-   <button type="button" class="agBtn" id="agLogin"><i class="agSp"></i><span class="gx" data-fa="🔐 ورود با دستگاه" data-en="🔐 Sign in with device">🔐 ورود با دستگاه</span></button>
-   <button type="button" class="agBtn" id="agReg"><i class="agSp"></i><span class="gx" data-fa="✨ ساخت حساب جدید با Google" data-en="✨ Create new account with Google">✨ ساخت حساب جدید با Google</span></button>
-   <button type="button" class="agBtn ghost" id="agGuest"><span class="gx" data-fa="👤 ورود مهمان" data-en="👤 Continue as guest">👤 ورود مهمان</span></button>
-   <button type="button" class="agLink" id="agRecLink"><span class="gx" data-fa="🔑 ورود با کد بازیابی" data-en="🔑 Sign in with recovery code">🔑 ورود با کد بازیابی</span></button>
+   <button type="button" class="agBtn primary agGoogleLaunch" id="agGoogleLogin">
+    <span class="agGoogleMark">G</span>
+    <span class="agLaunchText"><span class="agLaunchTitle gx" data-fa="ورود با حساب Google" data-en="Continue with Google">ورود با حساب Google</span><span class="agLaunchDesc gx" data-fa="ورود سریع به حساب Playtime Channel" data-en="Sign in to your Playtime Channel account">ورود سریع به حساب Playtime Channel</span></span>
+   </button>
+   <button type="button" class="agBtn secondary agGoogleLaunch" id="agReg">
+    <span class="agGoogleMark">+</span>
+    <span class="agLaunchText"><span class="agLaunchTitle gx" data-fa="ساخت حساب جدید با Google" data-en="Create a new account with Google">ساخت حساب جدید با Google</span><span class="agLaunchDesc gx" data-fa="هر Google Account فقط یک حساب Playtime Channel" data-en="One Google Account per Playtime Channel account">هر Google Account فقط یک حساب Playtime Channel</span></span>
+   </button>
+   <div class="agTrustLine"><b>Google identity</b> • <span class="gx" data-fa="بدون اثر انگشت و بدون رمز؛ حساب Google تو شناسه‌ی اصلی حساب است." data-en="No fingerprint and no password; your Google Account is the primary identity.">بدون اثر انگشت و بدون رمز؛ حساب Google تو شناسه‌ی اصلی حساب است.</span></div>
+   <button type="button" class="agBtn ghost" id="agGuest"><span class="gx" data-fa="ادامه به‌صورت مهمان" data-en="Continue as guest">ادامه به‌صورت مهمان</span></button>
+   <div class="agDivider"><span class="gx" data-fa="بازیابی حساب" data-en="Account recovery">بازیابی حساب</span></div>
+   <button type="button" class="agLink" id="agRecLink"><span class="gx" data-fa="ورود با کد بازیابی" data-en="Sign in with recovery code">ورود با کد بازیابی</span></button>
   </div>
   <div class="agView" data-view="account" hidden>
    <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="👤 حساب من" data-en="👤 My account">👤 حساب من</span></div>
@@ -1182,19 +1291,15 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
    <button type="button" class="agLink" id="agAccountClose"><span class="gx" data-fa="بستن" data-en="Close">بستن</span></button>
   </div>
   <div class="agView" data-view="googleLogin" hidden>
-   <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="🔵 ورود با Google" data-en="🔵 Sign in with Google">🔵 ورود با Google</span></div>
-   <p class="agGoogleNote"><span class="gx" data-fa="با همان Google Account که به حساب Poppy وصل شده وارد شو." data-en="Sign in with the Google Account linked to your Poppy account.">با همان Google Account که به حساب Poppy وصل شده وارد شو.</span></p>
+   <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="ورود با Google" data-en="Continue with Google">ورود با Google</span></div>
+   <p class="agGoogleNote"><span class="gx" data-fa="با همان Google Account متصل به حساب Playtime Channel وارد شو." data-en="Sign in with the Google Account linked to your Playtime Channel account.">با همان Google Account متصل به حساب Playtime Channel وارد شو.</span></p>
    <div class="agGoogleWrap"><div id="agGoogleLoginBtn" class="agGoogleBtnWrap"></div></div>
    <button type="button" class="agLink" id="agGoogleLoginBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
   </div>
   <div class="agView" data-view="googleRegister" hidden>
-   <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="🟢 انتخاب حساب Google" data-en="🟢 Choose your Google Account">🟢 انتخاب حساب Google</span></div>
-   <p class="agGoogleNote"><span class="gx" data-fa="برای جلوگیری از ساخت چند حساب با یک Google Account، حساب Google تو به حساب Poppy وصل می‌شود." data-en="To prevent duplicate Poppy accounts, your Google Account will be linked to your Poppy account.">برای جلوگیری از ساخت چند حساب با یک Google Account، حساب Google تو به حساب Poppy وصل می‌شود.</span></p>
+   <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="انتخاب حساب Google" data-en="Choose your Google Account">انتخاب حساب Google</span></div>
+   <p class="agGoogleNote"><span class="gx" data-fa="برای این حساب یک شناسه‌ی Google ثبت می‌شود. همان Google Account بعداً نمی‌تواند حساب Playtime Channel دیگری بسازد." data-en="A Google identity is registered for this account. The same Google Account cannot create another Playtime Channel account later.">برای این حساب یک شناسه‌ی Google ثبت می‌شود. همان Google Account بعداً نمی‌تواند حساب Playtime Channel دیگری بسازد.</span></p>
    <div class="agGoogleWrap"><div id="agGoogleBtn" class="agGoogleBtnWrap"></div></div>
-   <div id="agGooglePasskeyStep" hidden>
-    <p class="agGoogleNote"><span class="gx" data-fa="✅ حساب Google تأیید شد. حالا روی دکمه زیر بزن تا اثر انگشت/قفل صفحه دستگاه برای ساخت حساب باز شود." data-en="✅ Google is verified. Now tap the button below to use your fingerprint/device lock to finish creating the account.">✅ حساب Google تأیید شد. حالا روی دکمه زیر بزن تا اثر انگشت/قفل صفحه دستگاه برای ساخت حساب باز شود.</span></p>
-    <button type="button" class="agBtn primary" id="agGooglePasskeyBtn"><i class="agSp"></i><span class="gx" data-fa="🔐 ادامه و فعال‌سازی ورود دستگاه" data-en="🔐 Continue and enable device sign-in">🔐 ادامه و فعال‌سازی ورود دستگاه</span></button>
-   </div>
    <button type="button" class="agLink" id="agGoogleBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
   </div>
   <div class="agView" data-view="recovery" hidden>
@@ -1213,19 +1318,37 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
     <button type="button" id="agCopy"><span class="gx" data-fa="📋 کپی" data-en="📋 Copy">📋 کپی</span></button>
    </div>
    <div class="agWarn" id="agWarn"><span class="gx" data-fa="⚠️ این کد رو جای امن ذخیره کن. اگه گم شد، با پشتیبانی تماس بگیر" data-en="⚠️ Keep this code somewhere safe. If you lose it, contact support">⚠️ این کد رو جای امن ذخیره کن. اگه گم شد، با پشتیبانی تماس بگیر</span></div>
-   <button type="button" class="agBtn" id="agAddDevice"><span class="gx" data-fa="➕ افزودن دستگاه جدید" data-en="➕ Add this device">➕ افزودن دستگاه جدید</span></button>
    <button type="button" class="agBtn primary" id="agDoneGo"><span class="gx" data-fa="✅ ذخیره کردم، ورود به سایت" data-en="✅ Saved it, enter the site">✅ ذخیره کردم، ورود به سایت</span></button>
   </div>
-  <div class="agErr" id="agErr" role="alert"></div>
+  <div class="agErr" id="agErr" role="alert">
+   <div><span class="agErrIcon" id="agErrIcon">!</span><b class="agErrTitle" id="agErrTitle">احراز هویت انجام نشد</b></div>
+   <div class="agErrDetail" id="agErrDetail"></div>
+   <div class="agErrHint" id="agErrHint"></div>
+  </div>
+  <div class="agSettings">
+   <div class="agSettingsHead">
+    <div class="agSettingsTitle"><span class="gx" data-fa="تنظیمات این صفحه" data-en="Page settings">تنظیمات این صفحه</span></div>
+    <div class="agSettingActions">
+     <button type="button" class="agSettingBtn" id="agLangFa">FA</button>
+     <button type="button" class="agSettingBtn" id="agLangEn">EN</button>
+    </div>
+   </div>
+   <div class="agMusicLine">
+    <button type="button" class="agMusicPlay" id="agMusicPlay" aria-label="Music">▶</button>
+    <input class="agMusicSlider" id="agMusicSlider" type="range" min="0" max="100" value="30" aria-label="Music volume">
+    <span class="agMusicState" id="agMusicState">30%</span>
+   </div>
+  </div>
  </div>
+</div>
 </div>
 <div class="authLock" id="authLock">
  <div class="agCard">
   <h3><span class="gx" data-fa="🔒 این بخش قفله" data-en="🔒 This section is locked">🔒 این بخش قفله</span></h3>
   <p><span class="gx" data-fa="برای استفاده از این قابلیت، اول حسابت رو کامل کن" data-en="To use this feature, please complete your account first">برای استفاده از این قابلیت، اول حسابت رو کامل کن</span></p>
   <div class="agRow">
-   <button type="button" class="agBtn primary" id="agLockLogin"><span class="gx" data-fa="🔐 ورود" data-en="🔐 Sign in">🔐 ورود</span></button>
-   <button type="button" class="agBtn" id="agLockReg"><span class="gx" data-fa="✨ ثبت‌نام" data-en="✨ Sign up">✨ ثبت‌نام</span></button>
+   <button type="button" class="agBtn primary" id="agLockLogin"><span class="gx" data-fa="ورود با Google" data-en="Continue with Google">ورود با Google</span></button>
+   <button type="button" class="agBtn" id="agLockReg"><span class="gx" data-fa="ساخت حساب با Google" data-en="Create with Google">ساخت حساب با Google</span></button>
   </div>
   <button type="button" class="agSmall" id="agLockGuest"><span class="gx" data-fa="👤 ادامه با مهمان" data-en="👤 Continue as guest">👤 ادامه با مهمان</span></button>
  </div>
@@ -1380,8 +1503,42 @@ function updateBtn(){
 
 /* ---------- gate view ---------- */
 function view(n){qsa('.agView',gate).forEach(function(v){v.hidden=v.dataset.view!==n;});$('agClose').hidden=S.forced||n==='done';clearErr();}
-function clearErr(){if(errBox){errBox.classList.remove('show');errBox.textContent='';}}
-function showErr(m){errBox.textContent=m;errBox.classList.remove('show');void errBox.offsetWidth;errBox.classList.add('show');}
+function authErrorMeta(e){
+  var code=e&&e.error?String(e.error):'';
+  var map={
+    google_account_exists:{titleFa:'این Google Account قبلاً ثبت شده است',titleEn:'This Google Account is already registered',hintFa:'این حساب Google از قبل به یک حساب Playtime Channel متصل است. برای ورود، گزینه «ورود با Google» را بزن.',hintEn:'This Google Account is already linked to a Playtime Channel account. Use “Continue with Google” to sign in.',icon:'!'},
+    google_account_not_linked:{titleFa:'این Google Account هنوز متصل نیست',titleEn:'This Google Account is not linked',hintFa:'برای اولین ورود، با کد بازیابی وارد حسابت شو و از بخش حساب من Google را متصل کن.',hintEn:'For the first Google sign-in, use your recovery code to enter the account and link Google from My Account.',icon:'i'},
+    invalid_google_credential:{titleFa:'تأیید Google کامل نشد',titleEn:'Google verification failed',hintFa:'حساب Google را دوباره انتخاب کن و مطمئن شو حساب درست را انتخاب کرده‌ای.',hintEn:'Choose the Google Account again and make sure it is the correct account.',icon:'!'},
+    google_not_configured:{titleFa:'ورود Google موقتاً آماده نیست',titleEn:'Google sign-in is temporarily unavailable',hintFa:'تنظیمات سرویس کامل نیست. بعداً دوباره امتحان کن.',hintEn:'The Google sign-in service is not fully configured. Please try again later.',icon:'!'},
+    rate_limited:{titleFa:'تلاش‌های زیادی انجام شد',titleEn:'Too many attempts',hintFa:'چند دقیقه صبر کن و دوباره امتحان کن.',hintEn:'Wait a few minutes and try again.',icon:'!'},
+    invalid_recovery_code:{titleFa:'کد بازیابی معتبر نیست',titleEn:'Recovery code is invalid',hintFa:'کد را دقیقاً همان‌طور که هنگام ساخت حساب ذخیره کردی وارد کن.',hintEn:'Enter the recovery code exactly as you saved it.',icon:'!'},
+    origin_not_allowed:{titleFa:'این سایت اجازه‌ی ورود ندارد',titleEn:'This site is not allowed to sign in',hintFa:'از نسخه‌ی رسمی سایت Playtime Channel استفاده کن.',hintEn:'Use the official Playtime Channel website.',icon:'!'},
+    not_verified:{titleFa:'احراز هویت کامل نشد',titleEn:'Verification was not completed',hintFa:'دوباره تلاش کن و مراحل Google را تا پایان انجام بده.',hintEn:'Try again and complete the Google sign-in flow.',icon:'!'}
+  };
+  return map[code]||null;
+}
+function showErr(input){
+  var obj=(input&&typeof input==='object')?input:null;
+  var detail=typeof input==='string'?input:explain(input);
+  var meta=authErrorMeta(obj);
+  if(!meta){
+    meta={titleFa:'احراز هویت انجام نشد',titleEn:'Sign-in could not be completed',hintFa:'جزئیات بالا را بررسی کن و دوباره تلاش کن.',hintEn:'Check the details above and try again.',icon:'!'};
+    if(obj&&obj.error==='unsupported'){
+      meta={titleFa:'این روش ورود در دسترس نیست',titleEn:'This sign-in method is unavailable',hintFa:'برای ورود یا ساخت حساب از Google استفاده کن.',hintEn:'Use Google to sign in or create an account.',icon:'i'};
+    }
+  }
+  $('agErrIcon').textContent=meta.icon;
+  $('agErrTitle').textContent=lang()==='en'?meta.titleEn:meta.titleFa;
+  $('agErrDetail').textContent=detail||T('مشکل نامشخصی رخ داد.','An unknown problem occurred.');
+  $('agErrHint').textContent=lang()==='en'?meta.hintEn:meta.hintFa;
+  errBox.classList.remove('show');void errBox.offsetWidth;errBox.classList.add('show');
+}
+function clearErr(){
+  if(!errBox)return;
+  errBox.classList.remove('show');
+  if($('agErrDetail'))$('agErrDetail').textContent='';
+  if($('agErrHint'))$('agErrHint').textContent='';
+}
 function showGate(forced,hint){
   R.classList.remove('authg-skip');
   gate.classList.remove('gone','loading');
@@ -1404,8 +1561,10 @@ function run(btn,fn,done){
 }
 function showDone(f,title){
   setLogged(f.user);S.hasCode=!!f.recoveryCode;
-  $('agDoneT').textContent=title;$('agId').textContent=fmtId(S.display);
-  $('agCodeBox').style.display=S.hasCode?'':'none';$('agWarn').style.display=S.hasCode?'':'none';
+  $('agDoneT').textContent=title;
+  $('agId').textContent=fmtId(S.display);
+  $('agCodeBox').style.display=S.hasCode?'':'none';
+  $('agWarn').style.display=S.hasCode?'':'none';
   $('agCodeTxt').textContent=f.recoveryCode||'';
   view('done');refreshTexts();
 }
@@ -1474,8 +1633,8 @@ function refreshAccountStatus(){
   var token=lsGet(KT);if(!token)return;
   api('GET','/api/auth/me',null,token).then(function(j){
     if(!j||!j.success||!j.user)return;
-    if(j.user.googleLinked){st.textContent=T('✅ حساب Google به این حساب Poppy وصل است.','✅ A Google Account is linked to this Poppy account.');if(host)host.style.display='none';}
-    else{st.textContent=T('Google را به همین حساب وصل کن تا بعداً همان Google نتواند حساب دوم بسازد.','Link Google to this account so the same Google Account cannot create a second Poppy account later.');if(host)host.style.display='';openGoogleLink();}
+    if(j.user.googleLinked){st.textContent=T('Google به حساب Playtime Channel متصل است.','Google is linked to this Playtime Channel account.');if(host)host.style.display='none';}
+    else{st.textContent=T('Google را به حساب Playtime Channel وصل کن تا همین Google نتواند حساب دوم بسازد.','Link Google to this Playtime Channel account so the same Google Account cannot create a second account.');if(host)host.style.display='';openGoogleLink();}
   });
 }
 function linkGoogleWithCredential(googleIdToken){
@@ -1608,7 +1767,6 @@ function init(){
   if(!gate)return;
   $('agGoogleLogin').onclick=function(){openGoogleLogin().catch(function(e){showErr(explain(e));});};
   $('agGoogleLoginBack').onclick=function(){view('main');};
-  $('agLogin').onclick=function(){run(this,doLogin,function(f){setLogged(f.user);hideGate();});};
   $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(explain(e));});};
   $('agGoogleBack').onclick=function(){
     pendingGoogleRegistration=null;
@@ -1638,7 +1796,7 @@ function init(){
   $('agCopy').onclick=function(){copyText($('agCodeTxt').textContent,this);};
   $('agDoneGo').onclick=function(){hideGate();};
   $('agClose').onclick=function(){hideGate();};
-  $('agLockLogin').onclick=function(){hideLock();showGate(false,'agLogin');};
+  $('agLockLogin').onclick=function(){hideLock();showGate(false,'agGoogleLogin');};
   $('agLockReg').onclick=function(){hideLock();showGate(false,'agReg');};
   $('agLockGuest').onclick=hideLock;
   $('authLock').addEventListener('click',function(e){if(e.target===this)hideLock();});
@@ -1654,6 +1812,42 @@ function init(){
   },true);
   updateBtn();
 }
+function initAuthPageControls(){
+  var fa=$('agLangFa'),en=$('agLangEn'),play=$('agMusicPlay'),slider=$('agMusicSlider'),state=$('agMusicState');
+  function syncMusic(){
+    try{
+      var v=Math.round((typeof targetVolume==='number'?targetVolume:0.3)*100);
+      if(slider)slider.value=v;
+      if(state)state.textContent=v+'%';
+      if(play)play.textContent=(typeof musicPlaying!=='undefined'&&musicPlaying)?'Ⅱ':'▶';
+    }catch(e){}
+  }
+  fa&& (fa.onclick=function(){setLanguage('fa');});
+  en&& (en.onclick=function(){setLanguage('en');});
+  play&& (play.onclick=async function(){
+    try{
+      if(typeof musicPlaying!=='undefined'&&musicPlaying) stopMusic();
+      else await startMusic();
+      syncMusic();
+    }catch(e){}
+  });
+  slider&& (slider.oninput=function(){
+    try{
+      targetVolume=Math.max(0,Math.min(100,Number(this.value)||0))/100;
+      storageSet('poppy_music_vol',String(Math.round(targetVolume*100)));
+      if(typeof musicPlaying!=='undefined'&&musicPlaying&&typeof music!=='undefined') music.volume=targetVolume;
+      syncMusic();
+    }catch(e){}
+  });
+  syncMusic();
+  if(typeof MutationObserver!=='undefined'){
+    var obs=new MutationObserver(syncMusic);
+    var b=$('themeToggle'); if(b) obs.observe(b,{characterData:true,childList:true,subtree:true});
+  }
+}
+if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',initAuthPageControls);
+else initAuthPageControls();
+
 init();
 function forceLogout(){
   S.logged=false;
