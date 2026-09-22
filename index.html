@@ -1209,7 +1209,7 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
 .agDivider{display:flex;align-items:center;gap:9px;margin:5px 0 3px;color:#725f67;font-size:9.5px}
 .agDivider:before,.agDivider:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(255,75,110,.20))}
 .agDivider:after{background:linear-gradient(90deg,rgba(255,75,110,.20),transparent)}
-.agSettings{
+.agRecoveryCard{margin-top:14px;padding:14px;border-radius:17px;border:1px solid rgba(137,232,194,.16);background:linear-gradient(145deg,rgba(86,226,161,.045),rgba(255,255,255,.018));text-align:right}.agRecoveryTitle{font-size:12.5px;font-weight:900;color:#eafbf4;margin-bottom:5px}.agRecoveryDesc{font-size:10.5px;line-height:1.9;color:#a9939c;margin-bottom:10px}.agRecoveryForm{display:flex;flex-direction:column;gap:8px}.agRecoveryInput{width:100%;height:46px;border-radius:12px;border:1px solid rgba(255,75,110,.22);background:rgba(0,0,0,.28);color:#fff;padding:0 12px;font-family:inherit;font-size:13px;outline:none;direction:ltr;text-align:left}.agRecoveryInput:focus{border-color:rgba(255,75,110,.55);box-shadow:0 0 0 3px rgba(255,75,110,.12)}.agRecoveryCodeCard{display:none;margin-top:10px;padding:12px;border-radius:13px;background:rgba(37,217,145,.07);border:1px solid rgba(37,217,145,.28);text-align:center}.agRecoveryCodeCard.show{display:block}.agRecoveryCodeText{display:block;direction:ltr;font-family:'Courier New',monospace;letter-spacing:1px;font-size:14px;color:#caffeb;user-select:all;margin-bottom:9px;word-break:break-all}.agRecoveryCopy{padding:8px 14px;border-radius:10px;border:1px solid rgba(37,217,145,.35);background:rgba(37,217,145,.08);color:#bdf6dc;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer}.agRecoveryState{font-size:10.5px;line-height:1.9;color:#bca9b1;margin-bottom:9px}.agPasswordBox{margin-top:8px}.agSuccessRecovery{margin:0 0 14px;padding:13px 14px;border-radius:15px;border:1px solid rgba(137,232,194,.18);background:rgba(86,226,161,.045);color:#cae9dc;font-size:11px;line-height:1.9;text-align:center}.agSettings{
   margin-top:15px;padding:10px;border-radius:16px;
   border:1px solid rgba(255,75,110,.13);background:rgba(255,255,255,.018);
 }
@@ -1280,50 +1280,78 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
     <span class="agGoogleMark">+</span>
     <span class="agLaunchText"><span class="agLaunchTitle gx" data-fa="ساخت حساب جدید با Google" data-en="Create a new account with Google">ساخت حساب جدید با Google</span><span class="agLaunchDesc gx" data-fa="هر Google Account فقط یک حساب Playtime Channel" data-en="One Google Account per Playtime Channel account">هر Google Account فقط یک حساب Playtime Channel</span></span>
    </button>
-   <div class="agTrustLine"><b>Google identity</b> • <span class="gx" data-fa="بدون اثر انگشت و بدون رمز؛ حساب Google تو شناسه‌ی اصلی حساب است." data-en="No fingerprint and no password; your Google Account is the primary identity.">بدون اثر انگشت و بدون رمز؛ حساب Google تو شناسه‌ی اصلی حساب است.</span></div>
+   <div class="agTrustLine"><b>Google identity</b> • <span class="gx" data-fa="Google شناسه‌ی اصلی حساب است؛ رمز فقط برای نمایش کد بازیابی دائمی استفاده می‌شود." data-en="Google is the primary account identity; the password is only used to unlock your permanent recovery code.">Google شناسه‌ی اصلی حساب است؛ رمز فقط برای نمایش کد بازیابی دائمی استفاده می‌شود.</span></div>
    <button type="button" class="agBtn ghost" id="agGuest"><span class="gx" data-fa="ادامه به‌صورت مهمان" data-en="Continue as guest">ادامه به‌صورت مهمان</span></button>
    <div class="agDivider"><span class="gx" data-fa="بازیابی حساب" data-en="Account recovery">بازیابی حساب</span></div>
    <button type="button" class="agLink" id="agRecLink"><span class="gx" data-fa="ورود با کد بازیابی" data-en="Sign in with recovery code">ورود با کد بازیابی</span></button>
   </div>
   <div class="agView" data-view="account" hidden>
-   <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="👤 حساب من" data-en="👤 My account">👤 حساب من</span></div>
-   <div class="agLbl" style="text-align:center"><span class="gx" data-fa="شناسه:" data-en="ID:">شناسه:</span></div>
-   <div class="agId" id="agAccountId"></div>
-   <p class="agGoogleNote" id="agGoogleStatus"></p>
-   <div class="agGoogleWrap"><div id="agGoogleLinkBtn" class="agGoogleBtnWrap"></div></div>
-   <button type="button" class="agLink" id="agAccountClose"><span class="gx" data-fa="بستن" data-en="Close">بستن</span></button>
-  </div>
-  <div class="agView" data-view="googleLogin" hidden>
+    <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="👤 حساب من" data-en="👤 My account">👤 حساب من</span></div>
+    <div class="agLbl" style="text-align:center"><span class="gx" data-fa="شناسه:" data-en="ID:">شناسه:</span></div>
+    <div class="agId" id="agAccountId"></div>
+    <p class="agGoogleNote" id="agGoogleStatus"></p>
+    <div class="agGoogleWrap"><div id="agGoogleLinkBtn" class="agGoogleBtnWrap"></div></div>
+    <div class="agRecoveryCard" id="agRecoveryCard">
+      <div class="agRecoveryTitle"><span class="gx" data-fa="🔐 کد بازیابی دائمی" data-en="🔐 Permanent recovery code">🔐 کد بازیابی دائمی</span></div>
+      <div class="agRecoveryState" id="agRecoveryState"></div>
+      <div id="agRecoverySetup" hidden class="agPasswordBox">
+        <div class="agRecoveryDesc"><span class="gx" data-fa="برای فعال‌کردن نمایش کد، یک رمز برای حساب تنظیم کن." data-en="Set an account password to enable permanent recovery-code viewing.">برای فعال‌کردن نمایش کد، یک رمز برای حساب تنظیم کن.</span></div>
+        <div class="agRecoveryForm">
+          <input class="agRecoveryInput" id="agSetupPassword" type="password" autocomplete="new-password" placeholder="Password">
+          <input class="agRecoveryInput" id="agSetupPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repeat password">
+          <button type="button" class="agBtn primary" id="agSetPassword"><i class="agSp"></i><span class="gx" data-fa="ثبت رمز و فعال‌سازی کد" data-en="Set password and enable code">ثبت رمز و فعال‌سازی کد</span></button>
+        </div>
+      </div>
+      <div id="agRecoveryReveal" hidden class="agPasswordBox">
+        <div class="agRecoveryDesc"><span class="gx" data-fa="برای نمایش کد، رمز عبوری را که هنگام ثبت‌نام انتخاب کردی وارد کن." data-en="Enter the password you chose during registration to reveal the code.">برای نمایش کد، رمز عبوری را که هنگام ثبت‌نام انتخاب کردی وارد کن.</span></div>
+        <div class="agRecoveryForm">
+          <input class="agRecoveryInput" id="agRecoveryPassword" type="password" autocomplete="current-password" placeholder="Password">
+          <button type="button" class="agBtn primary" id="agRevealRecovery"><i class="agSp"></i><span class="gx" data-fa="نمایش کد بازیابی" data-en="Reveal recovery code">نمایش کد بازیابی</span></button>
+        </div>
+        <div class="agRecoveryCodeCard" id="agRecoveryCodeCard">
+          <b class="agRecoveryCodeText" id="agRecoveryCodeText"></b>
+          <button type="button" class="agRecoveryCopy" id="agCopyRecovery"><span class="gx" data-fa="📋 کپی کد" data-en="📋 Copy code">📋 کپی کد</span></button>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="agLink" id="agAccountClose"><span class="gx" data-fa="بستن" data-en="Close">بستن</span></button>
+   </div>
+   <div class="agView" data-view="googleLogin" hidden>
    <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="ورود با Google" data-en="Continue with Google">ورود با Google</span></div>
    <p class="agGoogleNote"><span class="gx" data-fa="با همان Google Account متصل به حساب Playtime Channel وارد شو." data-en="Sign in with the Google Account linked to your Playtime Channel account.">با همان Google Account متصل به حساب Playtime Channel وارد شو.</span></p>
    <div class="agGoogleWrap"><div id="agGoogleLoginBtn" class="agGoogleBtnWrap"></div></div>
    <button type="button" class="agLink" id="agGoogleLoginBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
   </div>
   <div class="agView" data-view="googleRegister" hidden>
-   <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="انتخاب حساب Google" data-en="Choose your Google Account">انتخاب حساب Google</span></div>
-   <p class="agGoogleNote"><span class="gx" data-fa="برای این حساب یک شناسه‌ی Google ثبت می‌شود. همان Google Account بعداً نمی‌تواند حساب Playtime Channel دیگری بسازد." data-en="A Google identity is registered for this account. The same Google Account cannot create another Playtime Channel account later.">برای این حساب یک شناسه‌ی Google ثبت می‌شود. همان Google Account بعداً نمی‌تواند حساب Playtime Channel دیگری بسازد.</span></p>
-   <div class="agGoogleWrap"><div id="agGoogleBtn" class="agGoogleBtnWrap"></div></div>
-   <button type="button" class="agLink" id="agGoogleBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
-  </div>
-  <div class="agView" data-view="recovery" hidden>
+    <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="انتخاب حساب Google" data-en="Choose your Google Account">انتخاب حساب Google</span></div>
+    <p class="agGoogleNote"><span class="gx" data-fa="بعد از انتخاب Google، یک رمز برای حساب تعیین می‌کنی." data-en="After choosing Google, you will set an account password.">بعد از انتخاب Google، یک رمز برای حساب تعیین می‌کنی.</span></p>
+    <div class="agGoogleWrap"><div id="agGoogleBtn" class="agGoogleBtnWrap"></div></div>
+    <button type="button" class="agLink" id="agGoogleBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
+   </div>
+   <div class="agView" data-view="passwordSetup" hidden>
+    <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="تنظیم رمز حساب" data-en="Set account password">تنظیم رمز حساب</span></div>
+    <p class="agGoogleNote"><span class="gx" data-fa="این رمز برای نمایش کد بازیابی دائمی حساب استفاده می‌شود. رمز و تکرار رمز باید یکسان باشند." data-en="This password protects access to your permanent recovery code. Both fields must match.">این رمز برای نمایش کد بازیابی دائمی حساب استفاده می‌شود. رمز و تکرار رمز باید یکسان باشند.</span></p>
+    <div class="agRecoveryForm">
+      <input class="agRecoveryInput" id="agPassword" type="password" autocomplete="new-password" placeholder="Password">
+      <input class="agRecoveryInput" id="agPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repeat password">
+      <button type="button" class="agBtn primary" id="agPasswordConfirmBtn"><i class="agSp"></i><span class="gx" data-fa="تأیید و ساخت حساب" data-en="Confirm and create account">تأیید و ساخت حساب</span></button>
+    </div>
+    <button type="button" class="agLink" id="agPasswordBack"><span class="gx" data-fa="← تغییر حساب Google" data-en="← Choose another Google Account">← تغییر حساب Google</span></button>
+   </div>
+   <div class="agView" data-view="recovery" hidden>
    <div class="agLbl"><span class="gx" data-fa="کد بازیابی خودت رو وارد کن:" data-en="Enter your recovery code:">کد بازیابی خودت رو وارد کن:</span></div>
    <input class="agIn" id="agCodeIn" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="29" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX">
    <button type="button" class="agBtn primary" id="agRecGo"><i class="agSp"></i><span class="gx" data-fa="🔑 ورود" data-en="🔑 Sign in">🔑 ورود</span></button>
    <button type="button" class="agLink" id="agRecBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
   </div>
   <div class="agView" data-view="done" hidden>
-   <div class="agDoneT" id="agDoneT"></div>
-   <div class="agLbl" style="text-align:center"><span class="gx" data-fa="شناسه‌ی تو:" data-en="Your ID:">شناسه‌ی تو:</span></div>
-   <div class="agId" id="agId"></div>
-   <div class="agCode" id="agCodeBox">
-    <div class="agLbl"><span class="gx" data-fa="🔑 کد بازیابی" data-en="🔑 Recovery code">🔑 کد بازیابی</span></div>
-    <b id="agCodeTxt"></b>
-    <button type="button" id="agCopy"><span class="gx" data-fa="📋 کپی" data-en="📋 Copy">📋 کپی</span></button>
+    <div class="agDoneT" id="agDoneT"></div>
+    <div class="agLbl" style="text-align:center"><span class="gx" data-fa="شناسه‌ی تو:" data-en="Your ID:">شناسه‌ی تو:</span></div>
+    <div class="agId" id="agId"></div>
+    <div class="agSuccessRecovery"><span class="gx" data-fa="🔐 کد بازیابی دائمی داخل حسابت ذخیره شد. برای دیدنش روی شناسه‌ی حساب بالای صفحه بزن و رمز حسابت را وارد کن." data-en="🔐 Your permanent recovery code is stored with your account. Tap your account ID at the top and enter your password to reveal it.">🔐 کد بازیابی دائمی داخل حسابت ذخیره شد. برای دیدنش روی شناسه‌ی حساب بالای صفحه بزن و رمز حسابت را وارد کن.</span></div>
+    <button type="button" class="agBtn primary" id="agDoneGo"><span class="gx" data-fa="ورود به سایت" data-en="Enter the site">ورود به سایت</span></button>
    </div>
-   <div class="agWarn" id="agWarn"><span class="gx" data-fa="⚠️ این کد رو جای امن ذخیره کن. اگه گم شد، با پشتیبانی تماس بگیر" data-en="⚠️ Keep this code somewhere safe. If you lose it, contact support">⚠️ این کد رو جای امن ذخیره کن. اگه گم شد، با پشتیبانی تماس بگیر</span></div>
-   <button type="button" class="agBtn primary" id="agDoneGo"><span class="gx" data-fa="✅ ذخیره کردم، ورود به سایت" data-en="✅ Saved it, enter the site">✅ ذخیره کردم، ورود به سایت</span></button>
-  </div>
-  <div class="agErr" id="agErr" role="alert">
+   <div class="agErr" id="agErr" role="alert">
    <div><span class="agErrIcon" id="agErrIcon">!</span><b class="agErrTitle" id="agErrTitle">احراز هویت انجام نشد</b></div>
    <div class="agErrDetail" id="agErrDetail"></div>
    <div class="agErrHint" id="agErrHint"></div>
@@ -1403,6 +1431,13 @@ var ERRS={
   not_logged_in:['ابتدا وارد حساب شو','Please sign in first'],
   google_registration_not_ready:['مرحله Google منقضی شده. دوباره حساب Google را انتخاب کن','The Google registration step expired. Choose your Google Account again'],
   platform_authenticator_unavailable:['احراز هویت دستگاه در دسترس نیست. قفل صفحه و اثر انگشت را فعال کن و دوباره امتحان کن','A platform authenticator is not available. Set up a screen lock/fingerprint and try again'],
+  password_required:['رمز حساب را وارد کن','Enter your account password'],
+  password_mismatch:['رمز و تکرار رمز یکسان نیستند','Password and confirmation do not match'],
+  password_invalid_length:['رمز حساب باید بین ۸ تا ۱۲۸ کاراکتر باشد','Password must be 8 to 128 characters'],
+  password_already_set:['رمز حساب قبلاً تنظیم شده است','The account password is already set'],
+  password_invalid:['رمز حساب درست نیست','Incorrect account password'],
+  password_not_set:['برای این حساب هنوز رمز عبور تنظیم نشده است','This account does not have a password yet'],
+  recovery_code_unavailable:['کد بازیابی در دسترس نیست','The recovery code is not available'],
   google_account_not_linked:['این Google Account هنوز به حساب Poppy وصل نشده. برای اولین ورود، با روش ورود قبلی وارد شو و Google را از بخش حساب من وصل کن.','This Google Account is not linked to a Poppy account yet. Sign in with your existing method first, then link Google from My Account']
 };
 function errMsg(j){
@@ -1593,28 +1628,14 @@ function loadGoogleScript(){
   });
 }
 function handleGoogleCredential(resp){
-  if(!resp||!resp.credential){
-    showErr(T('از Google اطلاعات لازم دریافت نشد. دوباره انتخاب کن','Google did not return a credential. Please try again'));
-    return;
-  }
-  busy(null,true);clearErr();
-  var p;
-  if(googleAction==='link') p=linkGoogleWithCredential(resp.credential);
-  else if(googleAction==='login') p=doGoogleLogin(resp.credential);
-  else p=doRegisterWithGoogle(resp.credential);
-  p.then(function(f){
-    busy(null,false);
-    if(googleAction==='link'){
-      refreshAccountStatus();
-      showSuccess('Google با موفقیت به حساب Playtime Channel متصل شد.','Google was successfully linked to your Playtime Channel account.');
-      return;
-    }
-    showDone(f,googleAction==='login'?T('ورود با موفقیت انجام شد','Sign-in completed'):T('حساب Playtime Channel ساخته شد','Your Playtime Channel account is ready'));
-  },function(e){
-    busy(null,false);
-    showErr(e);
-  });
+  if(!resp||!resp.credential){showErr(T('از Google اطلاعات لازم دریافت نشد. دوباره انتخاب کن','Google did not return a credential'));return;}
+  clearErr();
+  if(googleAction==='register'){pendingGoogleRegistration=resp.credential;view('passwordSetup');setTimeout(function(){try{$('agPassword').focus();}catch(e){}},60);return;}
+  busy(null,true);
+  var p=googleAction==='link'?linkGoogleWithCredential(resp.credential):doGoogleLogin(resp.credential);
+  p.then(function(f){busy(null,false);if(googleAction==='link'){refreshAccountStatus();showSuccess('Google با موفقیت به حساب Playtime Channel متصل شد.','Google was successfully linked to your Playtime Channel account.');return;}showDone(f,T('ورود با موفقیت انجام شد','Sign-in completed'));},function(e){busy(null,false);showErr(e);});
 }
+
 function ensureGoogleClient(){
   if(googleReady)return;
   W.google.accounts.id.initialize({client_id:googleClientId,callback:handleGoogleCredential,auto_select:false,use_fedcm_for_button:true,context:'signup'});
@@ -1640,30 +1661,43 @@ function openGoogleLink(){
   return getGoogleConfig().then(loadGoogleScript).then(function(){ensureGoogleClient();renderGoogleButton('agGoogleLinkBtn');});
 }
 function refreshAccountStatus(){
-  var id=$( 'agAccountId' );if(id)id.textContent=fmtId(S.display);
-  var st=$('agGoogleStatus'),host=$('agGoogleLinkBtn');if(!st)return;
-  st.textContent=T('در حال بررسی اتصال Google...','Checking Google link...');
+  var id=$('agAccountId');if(id)id.textContent=fmtId(S.display);
+  var st=$('agGoogleStatus'),host=$('agGoogleLinkBtn'),recState=$('agRecoveryState'),setup=$('agRecoverySetup'),reveal=$('agRecoveryReveal');
+  if(st)st.textContent=T('در حال بررسی اتصال Google...','Checking Google link...');
   var token=lsGet(KT);if(!token)return;
   api('GET','/api/auth/me',null,token).then(function(j){
     if(!j||!j.success||!j.user)return;
-    if(j.user.googleLinked){st.textContent=T('Google به حساب Playtime Channel متصل است.','Google is linked to this Playtime Channel account.');if(host)host.style.display='none';}
-    else{st.textContent=T('Google را به حساب Playtime Channel وصل کن تا همین Google نتواند حساب دوم بسازد.','Link Google to this Playtime Channel account so the same Google Account cannot create a second account.');if(host)host.style.display='';openGoogleLink();}
-  });
+    if(j.user.googleLinked){if(st)st.textContent=T('Google به حساب Playtime Channel متصل است.','Google is linked to this Playtime Channel account.');if(host)host.style.display='none';}
+    else{if(st)st.textContent=T('Google را به حساب Playtime Channel وصل کن تا همین Google نتواند حساب دوم بسازد.','Link Google to this Playtime Channel account so the same Google Account cannot create a second account.');if(host)host.style.display='';openGoogleLink().catch(function(e){showErr(e);});return;}
+    if(j.user.passwordConfigured&&j.user.recoveryReady){if(recState)recState.textContent=T('برای نمایش کد، رمز عبوری را که هنگام ثبت‌نام انتخاب کردی وارد کن.','Enter the password you chose during registration to reveal your permanent recovery code.');if(setup)setup.hidden=true;if(reveal)reveal.hidden=false;}
+    else{if(recState)recState.textContent=T('برای این حساب هنوز رمز امنیتی تنظیم نشده است.','This account has not set up its recovery-code password yet.');if(setup)setup.hidden=false;if(reveal)reveal.hidden=true;var card=$('agRecoveryCodeCard');if(card)card.classList.remove('show');}
+  },function(){if(st)st.textContent=T('وضعیت حساب بررسی نشد. دوباره بازش کن.','Could not check account status. Open it again.');});
 }
+
 function linkGoogleWithCredential(googleIdToken){
   var token=lsGet(KT);if(!token)throw {error:'not_logged_in'};
   return api('POST','/api/auth/google/link',{googleIdToken:googleIdToken},token).then(function(f){if(!f.success)throw f;return f;});
 }
 
 /* ---------- flows ---------- */
-function doRegisterWithGoogle(googleIdToken){
+function doRegisterWithGoogle(googleIdToken,password,passwordConfirm){
   if(!googleIdToken)throw {error:'invalid_google_credential'};
-  return api('POST','/api/auth/google/signup',{googleIdToken:googleIdToken}).then(function(f){
-    if(!f.success)throw f;
-    saveSession(f);
-    return f;
-  });
+  return api('POST','/api/auth/google/signup',{googleIdToken:googleIdToken,password:password,passwordConfirm:passwordConfirm}).then(function(f){if(!f.success)throw f;saveSession(f);return f;});
 }
+function completeGoogleRegistration(){
+  var password=$('agPassword').value||'',confirm=$('agPasswordConfirm').value||'';
+  if(!pendingGoogleRegistration)throw {error:'invalid_google_credential'};
+  return doRegisterWithGoogle(pendingGoogleRegistration,password,confirm).then(function(f){pendingGoogleRegistration=null;return f;});
+}
+function setAccountPassword(){
+  var password=$('agSetupPassword').value||'',confirm=$('agSetupPasswordConfirm').value||'',token=lsGet(KT);if(!token)throw {error:'not_logged_in'};
+  return api('POST','/api/auth/password/setup',{password:password,passwordConfirm:confirm},token).then(function(f){if(!f.success)throw f;$('agSetupPassword').value='';$('agSetupPasswordConfirm').value='';refreshAccountStatus();return f;});
+}
+function revealRecoveryCode(){
+  var password=$('agRecoveryPassword').value||'',token=lsGet(KT);if(!token)throw {error:'not_logged_in'};
+  return api('POST','/api/auth/recovery/view',{password:password},token).then(function(f){if(!f.success)throw f;$('agRecoveryCodeText').textContent=f.recoveryCode||'';$('agRecoveryCodeCard').classList.add('show');$('agRecoveryPassword').value='';return f;});
+}
+
 function doGoogleLogin(googleIdToken){
   if(!googleIdToken)throw {error:'invalid_google_credential'};
   return api('POST','/api/auth/google/login',{googleIdToken:googleIdToken}).then(function(f){
@@ -1781,12 +1815,12 @@ function init(){
   $('agGoogleLogin').onclick=function(){openGoogleLogin().catch(function(e){showErr(e);});};
   $('agGoogleLoginBack').onclick=function(){view('main');};
   $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(e);});};
-  $('agGoogleBack').onclick=function(){
-    pendingGoogleRegistration=null;
-    var host=$('agGoogleBtn');if(host)host.style.display='';
-    var step=$('agGooglePasskeyStep');if(step)step.hidden=true;
-    view('main');
-  };
+  $('agGoogleBack').onclick=function(){pendingGoogleRegistration=null;view('main');};
+  $('agPasswordBack').onclick=function(){pendingGoogleRegistration=null;$('agPassword').value='';$('agPasswordConfirm').value='';view('googleRegister');};
+  $('agPasswordConfirmBtn').onclick=function(){run(this,completeGoogleRegistration,function(f){showDone(f,T('حساب Playtime Channel ساخته شد','Your Playtime Channel account is ready'));});};
+  $('agSetPassword').onclick=function(){run(this,setAccountPassword,function(){showSuccess('رمز حساب ثبت شد. حالا می‌توانی کد بازیابی دائمی را با همان رمز ببینی.','Password saved. You can now reveal your permanent recovery code with that password.');});};
+  $('agRevealRecovery').onclick=function(){run(this,revealRecoveryCode,function(){showSuccess('کد بازیابی نمایش داده شد. این کد برای همین حساب روی دستگاه‌های دیگر هم معتبر است.','Recovery code revealed. This code is valid for this same account on other devices.');});};
+  $('agCopyRecovery').onclick=function(){copyText($('agRecoveryCodeText').textContent,this);};
   $('agAccountClose').onclick=function(){hideGate();};
   $('agGuest').onclick=function(){setGuest();hideGate();};
   $('agRecLink').onclick=function(){view('recovery');setTimeout(function(){try{$('agCodeIn').focus();}catch(e){}},50);};
@@ -1794,7 +1828,6 @@ function init(){
   $('agRecGo').onclick=function(){run(this,doRecovery,function(f){showDone(f,T('✅ وارد شدی!','✅ Signed in!'));});};
   $('agCodeIn').addEventListener('input',function(){var v=fmtCode(this.value);if(this.value!==v)this.value=v;});
   $('agCodeIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('agRecGo').click();});
-  $('agCopy').onclick=function(){copyText($('agCodeTxt').textContent,this);};
   $('agDoneGo').onclick=function(){hideGate();};
   $('agClose').onclick=function(){hideGate();};
   $('agLockLogin').onclick=function(){hideLock();showGate(false,'agGoogleLogin');};
@@ -1815,40 +1848,16 @@ function init(){
 }
 function initAuthPageControls(){
   var fa=$('agLangFa'),en=$('agLangEn'),play=$('agMusicPlay'),slider=$('agMusicSlider'),state=$('agMusicState');
-  function syncMusic(){
-    try{
-      var isEn=lang()==='en';
-      if(fa)fa.classList.toggle('active',!isEn);
-      if(en)en.classList.toggle('active',isEn);
-      var v=Math.round((typeof targetVolume==='number'?targetVolume:0.3)*100);
-      if(slider)slider.value=v;
-      if(state)state.textContent=v+'%';
-      if(play)play.textContent=(typeof musicPlaying!=='undefined'&&musicPlaying)?'Ⅱ':'▶';
-    }catch(e){}
-  }
-  fa&& (fa.onclick=function(){setLanguage('fa');});
-  en&& (en.onclick=function(){setLanguage('en');});
-  play&& (play.onclick=async function(){
-    try{
-      if(typeof musicPlaying!=='undefined'&&musicPlaying) stopMusic();
-      else await startMusic();
-      syncMusic();
-    }catch(e){}
-  });
-  slider&& (slider.oninput=function(){
-    try{
-      targetVolume=Math.max(0,Math.min(100,Number(this.value)||0))/100;
-      storageSet('poppy_music_vol',String(Math.round(targetVolume*100)));
-      if(typeof musicPlaying!=='undefined'&&musicPlaying&&typeof music!=='undefined') music.volume=targetVolume;
-      syncMusic();
-    }catch(e){}
-  });
+  function syncMusic(){try{var isEn=lang()==='en';if(fa)fa.classList.toggle('active',!isEn);if(en)en.classList.toggle('active',isEn);var v=Math.round((typeof targetVolume==='number'?targetVolume:0.3)*100);if(slider)slider.value=v;if(state)state.textContent=v+'%';if(play)play.textContent=(typeof musicPlaying!=='undefined'&&musicPlaying)?'Ⅱ':'▶';}catch(e){}}
+  function changeAuthLanguage(next,e){if(e){e.preventDefault();e.stopPropagation();}try{var fn=W.setLanguage;if(typeof fn==='function')fn(next);else if(typeof setLanguage==='function')setLanguage(next);}catch(err){showErr(err);}refreshTexts();syncMusic();}
+  if(fa)fa.onclick=function(e){changeAuthLanguage('fa',e);};
+  if(en)en.onclick=function(e){changeAuthLanguage('en',e);};
+  if(play)play.onclick=async function(e){e.preventDefault();e.stopPropagation();try{if(typeof musicPlaying!=='undefined'&&musicPlaying)stopMusic();else await startMusic();}catch(err){}setTimeout(syncMusic,0);};
+  if(slider)slider.oninput=function(e){e.preventDefault();e.stopPropagation();try{targetVolume=Math.max(0,Math.min(100,Number(this.value)||0))/100;storageSet('poppy_music_vol',String(Math.round(targetVolume*100)));if(typeof musicPlaying!=='undefined'&&musicPlaying&&typeof music!=='undefined')music.volume=targetVolume;syncMusic();}catch(err){}};
   syncMusic();
-  if(typeof MutationObserver!=='undefined'){
-    var obs=new MutationObserver(syncMusic);
-    var b=$('themeToggle'); if(b) obs.observe(b,{characterData:true,childList:true,subtree:true});
-  }
+  if(typeof MutationObserver!=='undefined'){var obs=new MutationObserver(syncMusic),b=$('themeToggle');if(b)obs.observe(b,{characterData:true,childList:true,subtree:true});}
 }
+
 if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',initAuthPageControls);
 else initAuthPageControls();
 
@@ -3323,22 +3332,12 @@ const translations = {
 };
 let currentLang = storageGet('poppy_lang') || 'fa';
 function setLanguage(lang) {
-  currentLang = lang;
-  storageSet('poppy_lang', lang);
-  document.documentElement.lang = lang;
-  // همیشه RTL نگه دار تا چیدمان دکمه‌ها و عناصر UI ثابت بمونه
-  document.documentElement.dir = 'rtl';
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.dataset.i18n;
-    if (translations[lang][key]) el.innerHTML = translations[lang][key];
-  });
-  $('lang').textContent = lang === 'fa' ? 'ENGLISH' : 'فارسی';
-  document.querySelectorAll('.filterBtn').forEach(btn => {
-    const f = btn.dataset.filter;
-    const labels = lang === 'fa' ? {all:'همه','mini-huggies':'Mini Huggies',smiling:'Smiling',nightmare:'Nightmare',wrongside:'Wrongside'} : {all:'All','mini-huggies':'Mini Huggies',smiling:'Smiling',nightmare:'Nightmare',wrongside:'Wrongside'};
-    btn.textContent = labels[f] || f;
-  });
-  if (currentArticleKey) openArticle(currentArticleKey);
+  const nextLang=lang==='en'?'en':'fa',dict=translations[nextLang]||translations.fa;
+  currentLang=nextLang;storageSet('poppy_lang',nextLang);document.documentElement.lang=nextLang;document.documentElement.dir='rtl';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n,value=dict&&dict[key];if(typeof value==='string')el.innerHTML=value;});
+  const langBtn=$('lang');if(langBtn)langBtn.textContent=nextLang==='fa'?'ENGLISH':'فارسی';
+  document.querySelectorAll('.filterBtn').forEach(btn=>{const f=btn.dataset.filter,labels=nextLang==='fa'?{all:'همه','mini-huggies':'Mini Huggies',smiling:'Smiling',nightmare:'Nightmare',wrongside:'Wrongside'}:{all:'All','mini-huggies':'Mini Huggies',smiling:'Smiling',nightmare:'Nightmare',wrongside:'Wrongside'};btn.textContent=labels[f]||f;});
+  if(currentArticleKey){try{openArticle(currentArticleKey);}catch(e){}}
 }
 $('lang').onclick = () => setLanguage(currentLang === 'fa' ? 'en' : 'fa');
 
