@@ -1224,11 +1224,18 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
 .agSettingBtn.active{background:linear-gradient(135deg,var(--red,#ff174d),var(--red2,#ff4b6e));color:#fff;border-color:transparent}
 .agMusicLine{display:flex;align-items:center;gap:8px;margin-top:8px}
 .agMusicPlay{
-  width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,75,110,.22);
-  background:rgba(255,23,77,.08);color:#ff91a6;font-size:14px;flex:0 0 34px
+  min-width:74px;height:34px;padding:0 10px;border-radius:10px;border:1px solid rgba(255,75,110,.22);
+  background:rgba(255,23,77,.08);color:#ff91a6;font-size:11px;flex:0 0 auto
 }
 .agMusicSlider{flex:1;accent-color:var(--red,#ff174d)}
 .agMusicState{min-width:44px;text-align:center;color:#8e7982;font-size:9px}
+.agAuthMusicPanel{margin-top:10px;padding:11px 10px;border-radius:16px;border:1px solid rgba(255,75,110,.13);background:rgba(0,0,0,.12);text-align:initial}
+.agAuthMusicPanel h4{margin:0 0 8px;font-size:12px;color:var(--red2);font-family:Oswald,Vazirmatn,sans-serif}
+.agMusicChoices{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.agMusicChoices button{width:100%;padding:8px 10px;border:1px solid rgba(255,75,110,.16);background:rgba(255,255,255,.025);border-radius:10px;color:#cdb8c0;font-family:Oswald,Vazirmatn,sans-serif;font-size:10.5px;text-align:start}
+.agMusicChoices button.active{background:linear-gradient(135deg,var(--red),var(--red2));border-color:transparent;color:#fff}
+.agMusicChoices button:hover{background:rgba(255,23,77,.12);color:#fff}
+@media(max-width:480px){.agMusicChoices button{font-size:10px}.agMusicPlay{min-width:68px;padding:0 8px}}
 .agErr{
   margin-top:14px;padding:13px 14px;border-radius:15px;
   background:linear-gradient(145deg,rgba(100,11,27,.28),rgba(255,23,77,.055));
@@ -1352,14 +1359,17 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
    <div class="agSettingsHead">
     <div class="agSettingsTitle"><span class="gx" data-fa="تنظیمات این صفحه" data-en="Page settings">تنظیمات این صفحه</span></div>
     <div class="agSettingActions">
-     <button type="button" class="agSettingBtn" id="agLangFa">FA</button>
-     <button type="button" class="agSettingBtn" id="agLangEn">EN</button>
+     <button type="button" class="agSettingBtn agLangToggle" id="agLangToggle" type="button" aria-label="Language">ENGLISH</button>
     </div>
    </div>
-   <div class="agMusicLine">
-    <button type="button" class="agMusicPlay" id="agMusicPlay" aria-label="Music">▶</button>
-    <input class="agMusicSlider" id="agMusicSlider" type="range" min="0" max="100" value="30" aria-label="Music volume">
-    <span class="agMusicState" id="agMusicState">30%</span>
+   <div class="agAuthMusicPanel">
+    <h4><span class="gx" data-fa="🎵 موسیقی پس‌زمینه" data-en="🎵 Background music">🎵 موسیقی پس‌زمینه</span></h4>
+    <div class="agMusicLine">
+      <button type="button" class="agMusicPlay" id="agMusicPlay" aria-label="Music">▶ پخش</button>
+      <input class="agMusicSlider" id="agMusicSlider" type="range" min="0" max="100" value="30" aria-label="Music volume">
+      <span class="agMusicState" id="agMusicState">30%</span>
+    </div>
+    <div class="agMusicChoices" id="agMusicChoices"></div>
    </div>
   </div>
  </div>
@@ -1630,9 +1640,21 @@ function handleGoogleCredential(resp){
      The user must choose a password in the next step, then completeGoogleRegistration()
      sends Google credential + password to /api/auth/google/signup. */
   if(googleAction==='register'){
-    pendingGoogleRegistration=resp.credential;
-    view('passwordSetup');
-    setTimeout(function(){try{$('agPassword').focus();}catch(e){}},60);
+    try{
+      pendingGoogleRegistration=resp.credential;
+      if(gate)gate.classList.remove('loading','gone');
+      view('passwordSetup');
+      setTimeout(function(){
+        try{
+          var p=$('agPassword');
+          if(p)p.focus();
+          if(gate)gate.classList.remove('loading');
+        }catch(e){}
+      },60);
+    }catch(e){
+      if(gate)gate.classList.remove('loading');
+      showErr(e);
+    }
     return;
   }
 
@@ -1651,7 +1673,13 @@ function handleGoogleCredential(resp){
 
 function ensureGoogleClient(){
   if(googleReady)return;
-  W.google.accounts.id.initialize({client_id:googleClientId,callback:handleGoogleCredential,auto_select:false,use_fedcm_for_button:true,context:'signup'});
+  W.google.accounts.id.initialize({client_id:googleClientId,callback:function(resp){
+    try{handleGoogleCredential(resp);}catch(e){
+      try{busy(null,false);showErr(e);}
+      catch(_){}
+      try{if(gate)gate.classList.remove('loading');}catch(_){}
+    }
+  },auto_select:false,use_fedcm_for_button:false,context:googleAction==='login'?'signin':'signup'});
   googleReady=true;
 }
 function renderGoogleButton(hostId){
@@ -1876,15 +1904,87 @@ function init(){
   updateBtn();
 }
 function initAuthPageControls(){
-  var fa=$('agLangFa'),en=$('agLangEn'),play=$('agMusicPlay'),slider=$('agMusicSlider'),state=$('agMusicState');
-  function syncMusic(){try{var isEn=lang()==='en';if(fa)fa.classList.toggle('active',!isEn);if(en)en.classList.toggle('active',isEn);var v=Math.round((typeof targetVolume==='number'?targetVolume:0.3)*100);if(slider)slider.value=v;if(state)state.textContent=v+'%';if(play)play.textContent=(typeof musicPlaying!=='undefined'&&musicPlaying)?'Ⅱ':'▶';}catch(e){}}
-  function changeAuthLanguage(next,e){if(e){e.preventDefault();e.stopPropagation();}try{var fn=W.setLanguage;if(typeof fn==='function')fn(next);else if(typeof setLanguage==='function')setLanguage(next);}catch(err){showErr(err);}refreshTexts();syncMusic();}
-  if(fa)fa.onclick=function(e){changeAuthLanguage('fa',e);};
-  if(en)en.onclick=function(e){changeAuthLanguage('en',e);};
-  if(play)play.onclick=async function(e){e.preventDefault();e.stopPropagation();try{if(typeof musicPlaying!=='undefined'&&musicPlaying)stopMusic();else await startMusic();}catch(err){}setTimeout(syncMusic,0);};
-  if(slider)slider.oninput=function(e){e.preventDefault();e.stopPropagation();try{targetVolume=Math.max(0,Math.min(100,Number(this.value)||0))/100;storageSet('poppy_music_vol',String(Math.round(targetVolume*100)));if(typeof musicPlaying!=='undefined'&&musicPlaying&&typeof music!=='undefined')music.volume=targetVolume;syncMusic();}catch(err){}};
+  var langBtn=$('agLangToggle'),play=$('agMusicPlay'),slider=$('agMusicSlider'),state=$('agMusicState'),choices=$('agMusicChoices');
+  var AUTH_SONGS={
+    hour:['The Hour of Joy','The%20Hour%20of%20Joy.m4a'],
+    sleep:['Sleep Well','Sleep%20Well.mp3'],
+    cg5:['CG5 - Wrong Side Out','CG5WrongSideOut.mp3']
+  };
+  var authSong='hour';
+
+  function syncLanguage(){
+    try{
+      var isEn=lang()==='en';
+      if(langBtn){
+        langBtn.textContent=isEn?'فارسی':'ENGLISH';
+        langBtn.setAttribute('aria-label',isEn?'Switch to Persian':'Switch to English');
+      }
+    }catch(e){}
+  }
+  function syncMusic(){
+    try{
+      var v=Math.round((typeof targetVolume==='number'?targetVolume:0.3)*100);
+      if(slider)slider.value=v;
+      if(state)state.textContent=v+'%';
+      if(play)play.textContent=(typeof musicPlaying!=='undefined'&&musicPlaying)?'⏸ توقف':'▶ پخش';
+      if(choices)Array.prototype.forEach.call(choices.querySelectorAll('[data-auth-song]'),function(b){b.classList.toggle('active',b.dataset.authSong===authSong);});
+    }catch(e){}
+  }
+  function changeAuthLanguage(e){
+    if(e){e.preventDefault();e.stopPropagation();}
+    try{
+      var next=lang()==='en'?'fa':'en';
+      var fn=W.setLanguage;
+      if(typeof fn==='function')fn(next);
+      else if(typeof setLanguage==='function')setLanguage(next);
+    }catch(err){showErr(err);}
+    refreshTexts();
+    syncLanguage();
+    syncMusic();
+  }
+  if(langBtn)langBtn.onclick=changeAuthLanguage;
+
+  if(choices){
+    choices.innerHTML=Object.keys(AUTH_SONGS).map(function(k){
+      return '<button type="button" data-auth-song="'+k+'">🎵 '+AUTH_SONGS[k][0]+'</button>';
+    }).join('');
+    choices.addEventListener('click',function(e){
+      var b=e.target.closest('[data-auth-song]');
+      if(!b)return;
+      e.preventDefault();e.stopPropagation();
+      authSong=b.dataset.authSong;
+      var a=$('bgMusic');
+      if(!a)return;
+      try{
+        var wasPlaying=typeof musicPlaying!=='undefined'&&musicPlaying;
+        a.src='https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/'+AUTH_SONGS[authSong][1];
+        if(wasPlaying){
+          var p=a.play();if(p&&p.catch)p.catch(function(){});
+        }
+        syncMusic();
+      }catch(err){showErr(err);}
+    });
+  }
+  if(play)play.onclick=async function(e){
+    e.preventDefault();e.stopPropagation();
+    try{if(typeof musicPlaying!=='undefined'&&musicPlaying)stopMusic();else await startMusic();}catch(err){}
+    setTimeout(syncMusic,0);
+  };
+  if(slider)slider.oninput=function(e){
+    e.preventDefault();e.stopPropagation();
+    try{
+      targetVolume=Math.max(0,Math.min(100,Number(this.value)||0))/100;
+      storageSet('poppy_music_vol',String(Math.round(targetVolume*100)));
+      if(typeof musicPlaying!=='undefined'&&musicPlaying&&typeof music!=='undefined')music.volume=targetVolume;
+      syncMusic();
+    }catch(e){}
+  };
+  syncLanguage();
   syncMusic();
-  if(typeof MutationObserver!=='undefined'){var obs=new MutationObserver(syncMusic),b=$('themeToggle');if(b)obs.observe(b,{characterData:true,childList:true,subtree:true});}
+  if(typeof MutationObserver!=='undefined'){
+    var obs=new MutationObserver(function(){syncLanguage();syncMusic();});
+    obs.observe(document.body,{attributes:true,attributeFilter:['class']});
+  }
 }
 
 if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',initAuthPageControls);
