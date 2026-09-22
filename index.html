@@ -1990,6 +1990,7 @@ else initAuthPageControls();
   S.busy=false;
   updateBtn();
   try{hideLock();}catch(e){}
+  try{D.dispatchEvent(new CustomEvent('poppy-auth',{detail:{logged:false}}));}catch(e){}
   showGate(true);
 }
 W.PoppyAuth={start:start,skip:skip,openGate:function(){showGate(false);},forceLogout:forceLogout,get logged(){return S.logged;}};
@@ -4352,7 +4353,12 @@ async function loadD1UserSettings() {
 }
 
 document.addEventListener('poppy-auth', e => {
-  if (e && e.detail && e.detail.logged) setTimeout(loadD1UserSettings, 0);
+  if (e && e.detail && e.detail.logged) {
+    d1SettingsReady = false;
+    setTimeout(loadD1UserSettings, 0);
+  } else if (e && e.detail && e.detail.logged === false) {
+    d1SettingsReady = false;
+  }
 });
 if (window.PoppyAuth && PoppyAuth.logged) setTimeout(loadD1UserSettings, 0);
 
