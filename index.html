@@ -1835,7 +1835,8 @@ function init(){
   $('agPasswordBack').onclick=function(){pendingGoogleRegistration=null;$('agPassword').value='';$('agPasswordConfirm').value='';view('googleRegister');};
   $('agPasswordConfirmBtn').onclick=function(){run(this,completeGoogleRegistration,function(f){showDone(f,T('حساب Playtime Channel ساخته شد','Your Playtime Channel account is ready'));});};
   bindManualPasswordField('agPassword');bindManualPasswordField('agPasswordConfirm');updatePasswordSetupUI();
-  $('agSetPassword').onclick=function(){run(this,setAccountPassword,function(){showSuccess('رمز حساب ثبت شد. حالا می‌توانی کد بازیابی دائمی را با همان رمز ببینی.','Password saved. You can now reveal your permanent recovery code with that password.');});};
+  var agSetPassword=$('agSetPassword');
+  if(agSetPassword)agSetPassword.onclick=function(){run(this,setAccountPassword,function(){showSuccess('رمز حساب ثبت شد. حالا می‌توانی کد بازیابی دائمی را با همان رمز ببینی.','Password saved. You can now reveal your permanent recovery code with that password.');});};
   $('agRevealRecovery').onclick=function(){run(this,revealRecoveryCode,function(){showSuccess('کد بازیابی نمایش داده شد. این کد برای همین حساب روی دستگاه‌های دیگر هم معتبر است.','Recovery code revealed. This code is valid for this same account on other devices.');});};
   $('agCopyRecovery').onclick=function(){copyText($('agRecoveryCodeText').textContent,this);};
   $('agRevealRecoveryPage').onclick=function(){var f=$('agRecoveryRevealForm');if(f){f.hidden=false;var p=$('agRecoveryPassword');if(p)p.focus();}this.hidden=true;};
