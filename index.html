@@ -3762,9 +3762,10 @@ const AI_ERROR_MESSAGES = {
     rate_limit: '⏳ یکم سریع پیام فرستادی! چند لحظه صبر کن و دوباره امتحان کن.',
     invalid_input: '❌ این پیام قابل پردازش نبود. لطفاً به شکل دیگه‌ای بنویسش.',
     unauthorized: '🔐 برای استفاده از این بخش باید وارد حسابت شوی.',
-    ai_disabled: '🌙 هوش مصنوعی فعلاً در دسترس نیست. لطفاً چند دقیقه بعد دوباره امتحان کن.',
+    ai_disabled: '🌙 سرویس هوش مصنوعی موقتاً در دسترس نیست. لطفاً بعداً دوباره امتحان کن.',
     server_error: '⚠️ سرور هوش مصنوعی موقتاً خطا داده. لطفاً دوباره امتحان کن.',
     quota_unavailable: '⚠️ بررسی سهمیه موقتاً در دسترس نیست. دوباره امتحان کن.',
+    daily_limit: '🌙 شما به محدودیت روزانه رسیدید. فردا ساعت ۰۳:۳۰ بامداد دوباره می‌توانید از هوش مصنوعی استفاده کنید.',
     default: '⚠️ مشکلی پیش اومد. لطفاً دوباره امتحان کن.'
   },
   en: {
@@ -3772,8 +3773,9 @@ const AI_ERROR_MESSAGES = {
     rate_limit: '⏳ Sending a bit fast — wait a moment and try again.',
     invalid_input: "❌ That message couldn't be processed. Try rephrasing it.",
     unauthorized: '🔐 Please sign in to use this feature.',
-    ai_disabled: '🌙 Poppy AI is temporarily unavailable. Please try again in a few minutes.',
+    ai_disabled: '🌙 The AI service is temporarily unavailable. Please try again later.',
     quota_unavailable: '⚠️ Quota service is temporarily unavailable. Please try again.',
+    daily_limit: '🌙 You have reached your daily limit. You can use Poppy AI again after the daily reset.',
     server_error: '⚠️ The AI service is temporarily unavailable. Please try again.',
     default: '⚠️ Something went wrong. Please try again.'
   }
@@ -3985,6 +3987,31 @@ function hideAiTyping() {
   if (t) t.remove();
 }
 
+function showDailyLimitMessage(resetAt) {
+  const list = $('aiChatMessages');
+  const ts = Number(resetAt || 0) || (typeof getNext0330 === 'function' ? getNext0330() : 0);
+  const fa = currentLang === 'fa';
+  const resetText = ts ? formatResetTime(ts) : '';
+  if (typeof aiRemaining !== 'undefined') aiRemaining = 0;
+  if (typeof updateAiBadge === 'function') updateAiBadge(0, aiLimit || 5);
+  if (list) {
+    let box = $('aiDailyLimitMessageFinal');
+    if (!box) {
+      const welcome = list.querySelector('.aiWelcome');
+      if (welcome) welcome.remove();
+      box = document.createElement('div');
+      box.id = 'aiDailyLimitMessageFinal';
+      box.className = 'aiMsg limit';
+      list.appendChild(box);
+    }
+    box.innerHTML = fa
+      ? `🌙 <b>شما به محدودیت روزانه رسیدید</b><br>محدودیت روزانه ۵ پیام است و هر روز ساعت ۰۳:۳۰ بامداد بازنشانی می‌شود. 🎀${resetText ? '<br><small>بازنشانی بعدی: ' + resetText + '</small>' : ''}`
+      : `🌙 <b>You have reached your daily limit</b><br>The daily limit is 5 messages and resets every day at 3:30 AM. 🎀${resetText ? '<br><small>Next reset: ' + resetText + '</small>' : ''}`;
+    list.scrollTop = list.scrollHeight;
+  }
+  if (typeof setAiClientInputDisabled === 'function') setAiClientInputDisabled(true);
+}
+
 async function sendAiMessage() {
   if (aiSending) return;
   const input = $('aiChatInput');
@@ -3992,20 +4019,23 @@ async function sendAiMessage() {
   if (!raw) return;
 
   if (aiRemaining <= 0) {
+    const storedLimit = typeof getAiClientLimitState === 'function' ? getAiClientLimitState() : null;
+    if (storedLimit) {
+      showDailyLimitMessage(storedLimit.resetAt);
+      return;
+    }
+
     const verified = await fetchAiStatus();
     if (!verified && aiRemaining <= 0) {
-      showToast(currentLang === 'fa' ? '⚠️ وضعیت سهمیه قابل بررسی نیست. دوباره امتحان کن.' : '⚠️ The daily quota could not be verified. Please try again.', 'error');
+      // The badge is already at zero. Show the normal quota message instead of a
+      // misleading top-level "AI failed" error.
+      const fallbackReset = typeof getNext0330 === 'function' ? getNext0330() : null;
+      showDailyLimitMessage(fallbackReset);
       return;
     }
     if (aiRemaining <= 0) {
-      const fa = currentLang === 'fa';
-      const limitDiv = document.createElement('div');
-      limitDiv.className = 'aiMsg limit';
-      limitDiv.innerHTML = fa
-        ? '🌙 <b>محدودیت روزانه تمام شد</b><br>از فردا ساعت ۳:۳۰ دوباره می‌تونید سوال بپرسید. 🎀'
-        : '🌙 <b>Daily limit reached</b><br>Try again after the daily reset. 🎀';
-      $('aiChatMessages').appendChild(limitDiv);
-      $('aiChatMessages').scrollTop = $('aiChatMessages').scrollHeight;
+      const latest = typeof getAiClientLimitState === 'function' ? getAiClientLimitState() : null;
+      showDailyLimitMessage(latest ? latest.resetAt : (typeof getNext0330 === 'function' ? getNext0330() : null));
       return;
     }
   }
@@ -4049,16 +4079,8 @@ async function sendAiMessage() {
 
     if (!data.success) {
       if (data.error === 'daily_limit') {
-        updateAiBadge(0, 5, true);
-        // FIX (باگ ۳): قفل روزانه دقیقاً همین‌جا ذخیره می‌شه، چون این تنها جاییه که سرور صراحتاً
-        // اعلام کرده سهمیه تموم شده (error: 'daily_limit')، نه هر بار که remaining به هر دلیلی صفر بشه.
-        if (typeof persistAiDailyLimit === 'function') persistAiDailyLimit();
-        const limitDiv = document.createElement('div');
-        limitDiv.className = 'aiMsg limit';
-        limitDiv.innerHTML = currentLang === 'fa'
-          ? '🌙 <b>محدودیت روزانه تمام شد</b><br>از فردا ساعت ۳:۳۰ دوباره امتحان کنید. 🎀'
-          : '🌙 <b>Daily limit reached</b><br>Try again tomorrow at 3:30. 🎀';
-        $('aiChatMessages').appendChild(limitDiv);
+        if (typeof persistAiDailyLimit === 'function') persistAiDailyLimit(data.resetAt);
+        showDailyLimitMessage(data.resetAt);
       } else {
         const errDiv = document.createElement('div');
         errDiv.className = 'aiMsg error';
@@ -4072,6 +4094,10 @@ async function sendAiMessage() {
       setAiHistory(updated);
       if (typeof data.remaining === 'number') {
         updateAiBadge(data.remaining, data.limit, true);
+        if (Number(data.remaining) <= 0) {
+          if (typeof persistAiDailyLimit === 'function') persistAiDailyLimit(data.resetAt);
+          showDailyLimitMessage(data.resetAt);
+        }
       } else {
         // FIX (باگ ۵): قبلاً وقتی سرور remaining رو برنمی‌گردوند، یک عدد از روی مقدار محلی حدس زده
         // و کم می‌شد. اگه چند بار پشت سر هم سرور remaining نمی‌فرستاد، این حدسِ محلی جمع می‌شد و
@@ -4398,8 +4424,13 @@ function getNext0330() {
   return d.getTime();
 }
 
-function persistAiDailyLimit() {
-  const state = { exhausted:true, remaining:0, limit:5, resetAt:getNext0330() };
+function persistAiDailyLimit(resetAt) {
+  const state = {
+    exhausted:true,
+    remaining:0,
+    limit:5,
+    resetAt:Number(resetAt || 0) || getNext0330()
+  };
   storageSet(AI_CLIENT_LIMIT_KEY, JSON.stringify(state));
   return state;
 }
