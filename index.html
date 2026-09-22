@@ -1267,7 +1267,9 @@ var ERRS={
   google_already_linked:['این حساب Poppy از قبل به یک Google Account وصل است','This Poppy account is already linked to a Google Account'],
   invalid_google_credential:['اعتبار Google تأیید نشد. دوباره حساب Google را انتخاب کن','Google could not verify this account. Please choose your Google Account again'],
   rate_limited:['تعداد تلاش‌ها زیاد است. چند دقیقه بعد دوباره امتحان کن','Too many attempts. Please try again later'],
-  not_logged_in:['ابتدا وارد حساب شو','Please sign in first']
+  not_logged_in:['ابتدا وارد حساب شو','Please sign in first'],
+  google_registration_not_ready:['مرحله Google منقضی شده. دوباره حساب Google را انتخاب کن','The Google registration step expired. Choose your Google Account again'],
+  platform_authenticator_unavailable:['احراز هویت دستگاه در دسترس نیست. قفل صفحه و اثر انگشت را فعال کن و دوباره امتحان کن','A platform authenticator is not available. Set up a screen lock/fingerprint and try again']
 };
 function errMsg(j){
   if(j&&j.error&&ERRS[j.error]&&lang()==='en')return ERRS[j.error][1];
@@ -1278,11 +1280,15 @@ function errMsg(j){
 function explain(e){
   if(!e)return errMsg(null);
   var n=e.name;
-  if(n==='NotAllowedError')return T('عملیات لغو شد، زمانش تمام شد یا اثر انگشتی برای این دستگاه پیدا نشد. اگه حساب داری با کد بازیابی وارد شو','Cancelled, timed out, or no fingerprint found on this device. If you have an account, use your recovery code');
+  if(n==='NotAllowedError')return T('احراز هویت دستگاه مجاز نشد. اگر قفل صفحه/اثر انگشت فعال نیست، اول آن را فعال کن و دوباره بزن.','Device authentication was not allowed. Make sure a screen lock/fingerprint is set up, then try again.');
   if(n==='InvalidStateError')return errMsg({error:'credential_already_registered'});
   if(n==='SecurityError')return errMsg({error:'origin_not_allowed'});
-  if(n==='NotSupportedError')return T('این دستگاه از اثر انگشت پشتیبانی نمی‌کنه','This device does not support fingerprint login');
-  if(e instanceof TypeError||n==='AbortError')return T('اتصال به سرور برقرار نشد. اینترنتت رو چک کن','Could not reach the server. Check your connection');
+  if(n==='NotSupportedError')return T('این مرورگر یا دستگاه قابلیت Passkey/احراز هویت دستگاه را پشتیبانی نمی‌کند.','This browser or device does not support Passkeys/device authentication.');
+  if(n==='ConstraintError')return T('این دستگاه نتوانست Passkey موردنیاز را بسازد. قفل صفحه یا اثر انگشت دستگاه را بررسی کن و دوباره امتحان کن.','The device could not create the required Passkey. Check your screen lock/fingerprint and try again.');
+  if(n==='InvalidModificationError')return T('این Passkey قبلاً روی دستگاه ثبت شده است.','This Passkey is already registered on this device.');
+  if(n==='UnknownError')return T('سیستم احراز هویت دستگاه خطای نامشخص داد. قفل صفحه/اثر انگشت را یک‌بار بررسی و دوباره امتحان کن.','The device authenticator returned an unknown error. Check your screen lock/fingerprint and try again.');
+  if(n==='AbortError')return T('احراز هویت دستگاه لغو شد. دوباره روی دکمه ادامه بزن.','Device authentication was cancelled. Tap Continue again.');
+  if(e instanceof TypeError)return T('ارتباط با سرور برقرار نشد. اینترنتت را بررسی کن.','Could not reach the server. Check your connection.');
   return errMsg(e);
 }
 
@@ -1331,7 +1337,14 @@ function serAuth(c){
 }
 function needWA(){
   if(!W.PublicKeyCredential||!navigator.credentials||!W.isSecureContext)
-    throw {error:'unsupported',message:T('مرورگر یا دستگاهت از اثر انگشت پشتیبانی نمی‌کنه. با کد بازیابی وارد شو','Your browser/device does not support fingerprint login. Use your recovery code')};
+    throw {error:'unsupported',message:T('مرورگر یا دستگاهت از Passkey/احراز هویت دستگاه پشتیبانی نمی‌کند.','Your browser/device does not support Passkeys/device authentication.')};
+}
+async function ensurePlatformAuthenticator(){
+  needWA();
+  if(typeof W.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable==='function'){
+    var available=await W.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    if(!available)throw {error:'platform_authenticator_unavailable',message:T('روی این دستگاه احراز هویت بیومتریک/قفل صفحه برای Passkey در دسترس نیست. اول قفل صفحه و اثر انگشت را فعال کن.','A platform authenticator is not available. Set up a screen lock/fingerprint first.')};
+  }
 }
 function credIds(){try{var a=JSON.parse(lsGet(KC)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
 function addCredId(id){var a=credIds();if(id&&a.indexOf(id)<0){a.push(id);lsSet(KC,JSON.stringify(a));}}
@@ -1469,22 +1482,21 @@ function prepareGoogleRegistration(googleIdToken){
     return b;
   });
 }
-function completeGoogleRegistration(){
-  needWA();
+async function completeGoogleRegistration(){
+  await ensurePlatformAuthenticator();
   var pending=pendingGoogleRegistration;
-  if(!pending||!pending.options||!pending.challengeId)throw {error:'google_registration_not_ready'};
+  if(!pending||!pending.options||!pending.challengeId)throw {error:'google_registration_not_ready',message:T('مرحله Google منقضی شده. دوباره از انتخاب حساب Google شروع کن.','The Google registration step expired. Start again by choosing your Google Account.')};
   pendingGoogleRegistration=null;
-  return navigator.credentials.create({publicKey:toCreate(pending.options)}).then(function(c){
-    if(!c)throw {error:'not_verified'};
-    return api('POST','/api/auth/register/finish',{
-      challengeId:pending.challengeId,
-      credential:serReg(c)
-    }).then(function(f){
-      if(!f.success)throw f;
-      saveSession(f);
-      addCredId(c.id);
-      return f;
-    });
+  var c=await navigator.credentials.create({publicKey:toCreate(pending.options)});
+  if(!c)throw {error:'not_verified'};
+  return api('POST','/api/auth/register/finish',{
+    challengeId:pending.challengeId,
+    credential:serReg(c)
+  }).then(function(f){
+    if(!f.success)throw f;
+    saveSession(f);
+    addCredId(c.id);
+    return f;
   });
 }
 function doRegister(){return openGoogleRegister();}
