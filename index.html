@@ -1289,7 +1289,7 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
   <div class="agBrandLine"><span class="agBrandDot"></span><span class="gx" data-fa="PLAYTIME CHANNEL • احراز هویت حساب" data-en="PLAYTIME CHANNEL • Account Authentication">PLAYTIME CHANNEL • احراز هویت حساب</span></div>
   <div class="agLogo">PLAYTIME <span>CHANNEL</span></div>
   <div class="agSub"><span class="gx" data-fa="ورود امن به Playtime Channel" data-en="Secure access to Playtime Channel">ورود امن به آرشیو اطلاعاتی</span></div>
-  <div class="agSecurityPill"><span>SECURE ACCESS</span><b>Google Account → Playtime Channel</b></div>
+  <div class="agSecurityPill"><span class="gx" data-fa="دسترسی امن" data-en="SECURE ACCESS">دسترسی امن</span><b class="gx" data-fa="حساب Google → Playtime Channel" data-en="Google Account → Playtime Channel">حساب Google → Playtime Channel</b></div>
   <div class="agView" data-view="main">
    <button type="button" class="agBtn primary agGoogleLaunch" id="agGoogleLogin">
     <span class="agGoogleMark">G</span>
@@ -1426,6 +1426,9 @@ function refreshTexts(){
   var en=lang()==='en';
   qsa('#authGate .gx,#authLock .gx').forEach(function(e){var t=en?e.dataset.en:e.dataset.fa;if(t&&e.textContent!==t)e.textContent=t;});
   var pl=$('agCodeIn');if(pl)pl.dir='ltr';
+  var pp=$('agPassword');if(pp)pp.placeholder=en?'Password':'رمز حساب';
+  var pc=$('agPasswordConfirm');if(pc)pc.placeholder=en?'Repeat password':'تکرار رمز';
+
   R.setAttribute('data-authlang',en?'en':'fa');
   [gate,$('authLock')].forEach(function(e){if(e)e.style.direction=en?'ltr':'rtl';});
   var rp=$('agRecoveryPassword');if(rp)rp.placeholder=en?'Account password':'رمز حساب';
@@ -3860,23 +3863,8 @@ function setAiHistory(h) {
 }
 
 function updateAiBadge(remaining, limit, fromServer) {
-  // FIXER3: اگه داده از سرور میاد، مقدار محلی رو در همین چرخه ترجیح بده اگه کمتر بود
-  if (fromServer === true) {
-    try {
-      var _r = storageGet(AI_LAST_STATUS_KEY);
-      if (_r) {
-        var _s = JSON.parse(_r);
-        var _n = Date.now();
-        var _dd = new Date();
-        var _bb = Date.UTC(_dd.getUTCFullYear(), _dd.getUTCMonth(), _dd.getUTCDate(), 0, 0, 0, 0);
-        if (_n < _bb) _bb -= 86400000;
-        if (_s && _s.timestamp >= _bb && Number(_s.remaining) < Number(remaining)) {
-          remaining = Number(_s.remaining);
-          if (Number(_s.limit)) limit = Number(_s.limit);
-        }
-      }
-    } catch (_e) {}
-  }
+  // The server is authoritative. localStorage is only a display cache and
+  // must never reduce a fresh server-side quota value.
   // FIX (باگ ۱): قبلاً وقتی badgeLocked از یک state محلی/قدیمی true بود، مقدار remaining واقعی
   // که همین الان از سرور رسیده بود نادیده گرفته می‌شد و به زور صفر می‌شد — حتی اگه سرور صراحتاً
   // remaining > 0 برگردونده بود. این باعث می‌شد کاربر با ۲ پیام باقی‌مونده، پیام «محدودیت تموم شد»
