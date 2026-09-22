@@ -1237,6 +1237,9 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
 .agErrTitle{font-weight:900;color:#fff;font-size:13.5px;margin-bottom:3px}
 .agErrDetail{color:#e3c6ce}
 .agErrHint{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.06);color:#e9a1b1;font-size:10.5px}
+.agErr.success{background:linear-gradient(145deg,rgba(20,105,72,.20),rgba(255,255,255,.02));border-color:rgba(92,231,175,.28)}
+.agErr.success .agErrTitle{color:#dffbef}
+.agErr.success .agErrHint{color:#96d7bd}
 .agErrIcon{display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;border-radius:7px;background:rgba(255,75,110,.12);border:1px solid rgba(255,75,110,.24);margin-inline-start:6px;font-weight:900}
 .agSuccess{
   margin-bottom:15px;padding:16px;border-radius:16px;
@@ -1393,8 +1396,8 @@ var ERRS={
   origin_not_allowed:['این آدرس اجازه‌ی استفاده از اثر انگشت رو نداره','This address is not allowed to use fingerprint login'],
   registration_closed:['ثبت‌نام حساب جدید بسته است. با حساب موجود وارد شو و دستگاه جدید را اضافه کن','New account registration is closed. Sign in to your existing account and add a device'],
   google_not_configured:['ورود با Google هنوز تنظیم نشده. مدیر سایت باید Google Client ID را تنظیم کند','Google sign-up is not configured yet. The site owner must configure the Google Client ID'],
-  google_account_exists:['این حساب Google قبلاً یک حساب Poppy دارد. با همان حساب وارد شو و دستگاه جدید را اضافه کن','This Google Account already has a Poppy account. Sign in to that account and add this device'],
-  google_already_linked:['این حساب Poppy از قبل به یک Google Account وصل است','This Poppy account is already linked to a Google Account'],
+  google_account_exists:['این Google Account قبلاً به یک حساب Playtime Channel متصل شده است. برای ورود، همان حساب Google را انتخاب کن.','This Google Account is already linked to a Playtime Channel account. Choose that same Google Account to sign in'],
+  google_already_linked:['این حساب Playtime Channel از قبل به یک Google Account وصل است','This Playtime Channel account is already linked to a Google Account'],
   invalid_google_credential:['اعتبار Google تأیید نشد. دوباره حساب Google را انتخاب کن','Google could not verify this account. Please choose your Google Account again'],
   rate_limited:['تعداد تلاش‌ها زیاد است. چند دقیقه بعد دوباره امتحان کن','Too many attempts. Please try again later'],
   not_logged_in:['ابتدا وارد حساب شو','Please sign in first'],
@@ -1527,15 +1530,25 @@ function showErr(input){
       meta={titleFa:'این روش ورود در دسترس نیست',titleEn:'This sign-in method is unavailable',hintFa:'برای ورود یا ساخت حساب از Google استفاده کن.',hintEn:'Use Google to sign in or create an account.',icon:'i'};
     }
   }
+  errBox.classList.remove('success');
   $('agErrIcon').textContent=meta.icon;
   $('agErrTitle').textContent=lang()==='en'?meta.titleEn:meta.titleFa;
   $('agErrDetail').textContent=detail||T('مشکل نامشخصی رخ داد.','An unknown problem occurred.');
   $('agErrHint').textContent=lang()==='en'?meta.hintEn:meta.hintFa;
   errBox.classList.remove('show');void errBox.offsetWidth;errBox.classList.add('show');
 }
+function showSuccess(mFa,mEn){
+  errBox.classList.add('success');
+  $('agErrIcon').textContent='✓';
+  $('agErrTitle').textContent=lang()==='en'?mEn:'';
+  $('agErrTitle').textContent=lang()==='en'?mEn:mFa;
+  $('agErrDetail').textContent='';
+  $('agErrHint').textContent='';
+  errBox.classList.remove('show');void errBox.offsetWidth;errBox.classList.add('show');
+}
 function clearErr(){
   if(!errBox)return;
-  errBox.classList.remove('show');
+  errBox.classList.remove('show','success');
   if($('agErrDetail'))$('agErrDetail').textContent='';
   if($('agErrHint'))$('agErrHint').textContent='';
 }
@@ -1555,7 +1568,7 @@ function run(btn,fn,done){
   if(S.busy)return;busy(btn,true);clearErr();
   var p;try{p=Promise.resolve(fn());}catch(e){p=Promise.reject(e);}
   p.then(function(r){busy(btn,false);done(r);},function(e){
-    busy(btn,false);showErr(explain(e));
+    busy(btn,false);showErr(e);
     btn.classList.remove('shake');void btn.offsetWidth;btn.classList.add('shake');setTimeout(function(){btn.classList.remove('shake');},500);
   });
 }
@@ -1593,13 +1606,13 @@ function handleGoogleCredential(resp){
     busy(null,false);
     if(googleAction==='link'){
       refreshAccountStatus();
-      showErr(T('✅ Google با موفقیت به حساب وصل شد','✅ Google was linked successfully'));
+      showSuccess('Google با موفقیت به حساب Playtime Channel متصل شد.','Google was successfully linked to your Playtime Channel account.');
       return;
     }
-    showDone(f,googleAction==='login'?T('✅ وارد شدی!','✅ Signed in!'):T('✅ حساب ساخته شد!','✅ Account created!'));
+    showDone(f,googleAction==='login'?T('ورود با موفقیت انجام شد','Sign-in completed'):T('حساب Playtime Channel ساخته شد','Your Playtime Channel account is ready'));
   },function(e){
     busy(null,false);
-    showErr(explain(e));
+    showErr(e);
   });
 }
 function ensureGoogleClient(){
@@ -1765,9 +1778,9 @@ function skip(){S.started=true;hideGate();}
 function init(){
   gate=$('authGate');box=$('agBox');errBox=$('agErr');
   if(!gate)return;
-  $('agGoogleLogin').onclick=function(){openGoogleLogin().catch(function(e){showErr(explain(e));});};
+  $('agGoogleLogin').onclick=function(){openGoogleLogin().catch(function(e){showErr(e);});};
   $('agGoogleLoginBack').onclick=function(){view('main');};
-  $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(explain(e));});};
+  $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(e);});};
   $('agGoogleBack').onclick=function(){
     pendingGoogleRegistration=null;
     var host=$('agGoogleBtn');if(host)host.style.display='';
@@ -1816,6 +1829,9 @@ function initAuthPageControls(){
   var fa=$('agLangFa'),en=$('agLangEn'),play=$('agMusicPlay'),slider=$('agMusicSlider'),state=$('agMusicState');
   function syncMusic(){
     try{
+      var isEn=lang()==='en';
+      if(fa)fa.classList.toggle('active',!isEn);
+      if(en)en.classList.toggle('active',isEn);
       var v=Math.round((typeof targetVolume==='number'?targetVolume:0.3)*100);
       if(slider)slider.value=v;
       if(state)state.textContent=v+'%';
