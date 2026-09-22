@@ -1429,7 +1429,7 @@ function refreshAccountStatus(){
   api('GET','/api/auth/me',null,token).then(function(j){
     if(!j||!j.success||!j.user)return;
     if(j.user.googleLinked){st.textContent=T('✅ حساب Google به این حساب Poppy وصل است.','✅ A Google Account is linked to this Poppy account.');if(host)host.style.display='none';}
-    else{st.textContent=T('Google را به همین حساب وصل کن تا بعداً همان Google نتواند حساب دوم بسازد.','Link Google to this account so the same Google Account cannot create a second Poppy account later.');if(host)host.style.display='';}
+    else{st.textContent=T('Google را به همین حساب وصل کن تا بعداً همان Google نتواند حساب دوم بسازد.','Link Google to this account so the same Google Account cannot create a second Poppy account later.');if(host)host.style.display='';openGoogleLink();}
   });
 }
 function linkGoogleWithCredential(googleIdToken){
