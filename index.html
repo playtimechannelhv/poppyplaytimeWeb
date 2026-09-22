@@ -1347,7 +1347,7 @@ var ERRS={
   not_logged_in:['ابتدا وارد حساب شو','Please sign in first'],
   google_registration_not_ready:['مرحله Google منقضی شده. دوباره حساب Google را انتخاب کن','The Google registration step expired. Choose your Google Account again'],
   platform_authenticator_unavailable:['احراز هویت دستگاه در دسترس نیست. قفل صفحه و اثر انگشت را فعال کن و دوباره امتحان کن','A platform authenticator is not available. Set up a screen lock/fingerprint and try again'],
-  google_account_not_linked:['این Google Account هنوز به حساب Poppy وصل نشده. برای اولین ورود، با روش ورود قبلی وارد شو و Google را از بخش حساب من وصل کن.','This Google Account is not linked to a Poppy account yet. Sign in with your existing method first, then link Google from My Account']
+  google_account_not_linked:['این Google Account هنوز به Playtime Channel وصل نشده. برای اولین ورود، با روش قبلی وارد حساب شو و از «حساب من» اتصال Google را انجام بده.','This Google Account is not linked to Playtime Channel yet. Sign in with your existing method first, then link Google from My Account']
 };
 function errorMeta(e){
   var code=e&&e.error?String(e.error):'';
@@ -1577,7 +1577,7 @@ function run(btn,fn,done){
   if(S.busy)return;busy(btn,true);clearErr();
   var p;try{p=Promise.resolve(fn());}catch(e){p=Promise.reject(e);}
   p.then(function(r){busy(btn,false);done(r);},function(e){
-    busy(btn,false);showErr(explain(e));
+    busy(btn,false);showErr(e);
     btn.classList.remove('shake');void btn.offsetWidth;btn.classList.add('shake');setTimeout(function(){btn.classList.remove('shake');},500);
   });
 }
@@ -1619,7 +1619,7 @@ function handleGoogleCredential(resp){
     showDone(f,googleAction==='login'?T('✅ وارد شدی!','✅ Signed in!'):T('✅ حساب ساخته شد!','✅ Account created!'));
   },function(e){
     busy(null,false);
-    showErr(explain(e));
+    showErr(e);
   });
 }
 function ensureGoogleClient(){
@@ -1785,10 +1785,10 @@ function skip(){S.started=true;hideGate();}
 function init(){
   gate=$('authGate');box=$('agBox');errBox=$('agErr');
   if(!gate)return;
-  $('agGoogleLogin').onclick=function(){openGoogleLogin().catch(function(e){showErr(explain(e));});};
+  $('agGoogleLogin').onclick=function(){openGoogleLogin().catch(function(e){showErr(e);});};
   $('agGoogleLoginBack').onclick=function(){view('main');};
   $('agLogin').onclick=function(){run(this,doLogin,function(f){setLogged(f.user);hideGate();});};
-  $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(explain(e));});};
+  $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(e);});};
   $('agGoogleBack').onclick=function(){view('main');};
   $('agAccountClose').onclick=function(){hideGate();};
   $('agGuest').onclick=function(){setGuest();hideGate();};
