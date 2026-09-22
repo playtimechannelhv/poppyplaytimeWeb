@@ -1448,18 +1448,6 @@ function doRegisterWithGoogle(googleIdToken){
 
 /* ---------- flows ---------- */
 function doRegister(){return openGoogleRegister();}
-  needWA();
-  return api('POST','/api/auth/register/begin',{}).then(function(b){
-    if(!b.success)throw b;
-    return navigator.credentials.create({publicKey:toCreate(b.options)}).then(function(c){
-      if(!c)throw {error:'not_verified'};
-      return api('POST','/api/auth/register/finish',{challengeId:b.challengeId,credential:serReg(c)}).then(function(f){
-        if(!f.success)throw f;
-        saveSession(f);addCredId(c.id);return f;
-      });
-    });
-  });
-}
 function doLogin(){
   needWA();
   return api('POST','/api/auth/login/begin',{credentialIds:credIds()}).then(function(b){
