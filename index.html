@@ -5486,6 +5486,16 @@ if (randomBtn) randomBtn.onclick = function(){
 };
 
 // ===== PATCH 11: scroll toggle =====
+// ===== PATCH 11b: side menu home =====
+var menuHomeBtn = _d.getElementById("menuHomeBtn");
+if (menuHomeBtn) menuHomeBtn.onclick = function(){
+  if (typeof window.closeSideMenu === "function") window.closeSideMenu();
+  setTimeout(function(){
+    var home = _d.getElementById("homeBtn");
+    if (home) home.click();
+  }, 320);
+};
+
 var scrollBtn = _d.getElementById("menuScrollToggleBtn");
 if (scrollBtn) scrollBtn.onclick = function(){
   var atBottom = (window.scrollY + window.innerHeight) >= (_d.documentElement.scrollHeight - 120);
