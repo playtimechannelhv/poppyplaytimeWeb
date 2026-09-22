@@ -1150,6 +1150,7 @@ html.authg-open,html.authg-open body{overflow:hidden!important}
 .agRow{display:flex;gap:10px}
 .agRow .agBtn{margin-bottom:10px;min-height:48px;font-size:14px}
 .agSmall{background:none;border:0;color:#c4aeb5;font-family:inherit;font-size:12.5px;padding:8px;cursor:pointer}
+.agGoogleWrap{display:flex;justify-content:center;align-items:center;min-height:48px;margin:16px 0}.agGoogleNote{font-size:12.5px;color:#c4aeb5;line-height:1.9;margin:0 0 14px}.agGoogleBtnWrap{min-height:48px}
 /* header button */
 .topbar .actions>#authBtn{width:auto!important;max-width:none!important;min-width:82px!important;padding:0 12px!important;font-size:12px!important;white-space:nowrap}
 #authBtn.on{cursor:default;border-color:rgba(37,217,145,.55)!important;background:rgba(37,217,145,.08)!important}
@@ -1170,6 +1171,12 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
    <button type="button" class="agBtn" id="agReg"><i class="agSp"></i><span class="gx" data-fa="✨ ساخت حساب جدید" data-en="✨ Create new account">✨ ساخت حساب جدید</span></button>
    <button type="button" class="agBtn ghost" id="agGuest"><span class="gx" data-fa="👤 ورود مهمان" data-en="👤 Continue as guest">👤 ورود مهمان</span></button>
    <button type="button" class="agLink" id="agRecLink"><span class="gx" data-fa="🔑 ورود با کد بازیابی" data-en="🔑 Sign in with recovery code">🔑 ورود با کد بازیابی</span></button>
+  </div>
+  <div class="agView" data-view="googleRegister" hidden>
+   <div class="agDoneT" style="font-size:18px"><span class="gx" data-fa="🟢 انتخاب حساب Google" data-en="🟢 Choose your Google Account">🟢 انتخاب حساب Google</span></div>
+   <p class="agGoogleNote"><span class="gx" data-fa="برای جلوگیری از ساخت چند حساب با یک Google Account، حساب Google تو به حساب Poppy وصل می‌شود." data-en="To prevent duplicate Poppy accounts, your Google Account will be linked to your Poppy account.">برای جلوگیری از ساخت چند حساب با یک Google Account، حساب Google تو به حساب Poppy وصل می‌شود.</span></p>
+   <div class="agGoogleWrap"><div id="agGoogleBtn" class="agGoogleBtnWrap"></div></div>
+   <button type="button" class="agLink" id="agGoogleBack"><span class="gx" data-fa="← بازگشت" data-en="← Back">← بازگشت</span></button>
   </div>
   <div class="agView" data-view="recovery" hidden>
    <div class="agLbl"><span class="gx" data-fa="کد بازیابی خودت رو وارد کن:" data-en="Enter your recovery code:">کد بازیابی خودت رو وارد کن:</span></div>
@@ -1222,7 +1229,7 @@ function lang(){try{return currentLang==='en'?'en':'fa';}catch(e){return 'fa';}}
 function T(fa,en){return lang()==='en'?en:fa;}
 
 var S={logged:false,display:'',started:false,busy:false,hasCode:false,forced:true};
-var gate,box,errBox;
+var gate,box,errBox,googleReady=false,googleClientId='';
 
 /* ---------- texts ---------- */
 function refreshTexts(){
@@ -1243,6 +1250,9 @@ var ERRS={
   not_verified:['تأیید اثر انگشت انجام نشد','Fingerprint verification failed'],
   origin_not_allowed:['این آدرس اجازه‌ی استفاده از اثر انگشت رو نداره','This address is not allowed to use fingerprint login'],
   registration_closed:['ثبت‌نام حساب جدید بسته است. با حساب موجود وارد شو و دستگاه جدید را اضافه کن','New account registration is closed. Sign in to your existing account and add a device'],
+  google_not_configured:['ورود با Google هنوز تنظیم نشده. مدیر سایت باید Google Client ID را تنظیم کند','Google sign-up is not configured yet. The site owner must configure the Google Client ID'],
+  google_account_exists:['این حساب Google قبلاً یک حساب Poppy دارد. با همان حساب وارد شو و دستگاه جدید را اضافه کن','This Google Account already has a Poppy account. Sign in to that account and add this device'],
+  invalid_google_credential:['اعتبار Google تأیید نشد. دوباره حساب Google را انتخاب کن','Google could not verify this account. Please choose your Google Account again'],
   rate_limited:['تعداد تلاش‌ها زیاد است. چند دقیقه بعد دوباره امتحان کن','Too many attempts. Please try again later'],
   not_logged_in:['ابتدا وارد حساب شو','Please sign in first']
 };
@@ -1365,8 +1375,79 @@ function showDone(f,title){
   view('done');refreshTexts();
 }
 
+/* ---------- Google signup + WebAuthn registration ---------- */
+function loadGoogleScript(){
+  if(W.google&&W.google.accounts&&W.google.accounts.id)return Promise.resolve();
+  return new Promise(function(resolve,reject){
+    var existing=D.querySelector('script[data-poppy-google="1"]');
+    if(existing){existing.addEventListener('load',resolve,{once:true});existing.addEventListener('error',reject,{once:true});return;}
+    var sc=D.createElement('script');
+    sc.src='https://accounts.google.com/gsi/client';
+    sc.async=true;sc.defer=true;sc.dataset.poppyGoogle='1';
+    sc.onload=resolve;sc.onerror=function(){reject({error:'google_script_failed',message:T('اتصال به سرویس Google برقرار نشد','Could not load Google Sign-In')});};
+    D.head.appendChild(sc);
+  });
+}
+function openGoogleRegister(){
+  view('googleRegister');
+  clearErr();
+  return api('GET','/api/auth/google/config').then(function(cfg){
+    if(!cfg.success)throw cfg;
+    googleClientId=cfg.clientId;
+    return loadGoogleScript();
+  }).then(function(){
+    if(googleReady)return;
+    W.google.accounts.id.initialize({
+      client_id:googleClientId,
+      callback:function(resp){
+        if(!resp||!resp.credential){
+          showErr(T('از Google اطلاعات لازم دریافت نشد. دوباره انتخاب کن','Google did not return a credential. Please try again'));
+          return;
+        }
+        busy(null,true);clearErr();
+        doRegisterWithGoogle(resp.credential).then(function(f){
+          busy(null,false);
+          showDone(f,T('✅ حساب ساخته شد!','✅ Account created!'));
+        },function(e){
+          busy(null,false);
+          showErr(explain(e));
+        });
+      },
+      auto_select:false,
+      use_fedcm_for_button:true,
+      context:'signup'
+    });
+    googleReady=true;
+  }).then(function(){
+    var host=$('agGoogleBtn');
+    if(!host)return;
+    host.textContent='';
+    W.google.accounts.id.renderButton(host,{
+      theme:'outline',
+      size:'large',
+      text:'signup_with',
+      shape:'pill',
+      width:280,
+      logo_alignment:'left'
+    });
+  });
+}
+function doRegisterWithGoogle(googleIdToken){
+  needWA();
+  return api('POST','/api/auth/register/begin',{googleIdToken:googleIdToken}).then(function(b){
+    if(!b.success)throw b;
+    return navigator.credentials.create({publicKey:toCreate(b.options)}).then(function(c){
+      if(!c)throw {error:'not_verified'};
+      return api('POST','/api/auth/register/finish',{challengeId:b.challengeId,credential:serReg(c)}).then(function(f){
+        if(!f.success)throw f;
+        saveSession(f);addCredId(c.id);return f;
+      });
+    });
+  });
+}
+
 /* ---------- flows ---------- */
-function doRegister(){
+function doRegister(){return openGoogleRegister();}
   needWA();
   return api('POST','/api/auth/register/begin',{}).then(function(b){
     if(!b.success)throw b;
@@ -1485,7 +1566,8 @@ function init(){
   gate=$('authGate');box=$('agBox');errBox=$('agErr');
   if(!gate)return;
   $('agLogin').onclick=function(){run(this,doLogin,function(f){setLogged(f.user);hideGate();});};
-  $('agReg').onclick=function(){run(this,doRegister,function(f){showDone(f,T('✅ حساب ساخته شد!','✅ Account created!'));});};
+  $('agReg').onclick=function(){openGoogleRegister().catch(function(e){showErr(explain(e));});};
+  $('agGoogleBack').onclick=function(){view('main');};
   $('agGuest').onclick=function(){setGuest();hideGate();};
   $('agRecLink').onclick=function(){view('recovery');setTimeout(function(){try{$('agCodeIn').focus();}catch(e){}},50);};
   $('agRecBack').onclick=function(){view('main');};
