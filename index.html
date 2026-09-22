@@ -4240,8 +4240,8 @@ function applyAiDisabledState(resetAt) {
       const kickMsg = document.createElement('div');
       kickMsg.className = 'aiMsg limit';
       kickMsg.innerHTML = currentLang === 'fa'
-        ? '🌙 <b>سرویس هوش مصنوعی موقتاً غیرفعال شد</b><br>سهمیه‌ی روزانه مصرف شد.<br>🕒 به‌زودی دوباره فعال می‌شه.'
-        : '🌙 <b>AI service temporarily disabled</b><br>Daily quota exhausted.<br>🕒 It will be back soon.';
+        ? '🌙 <b>سرویس هوش مصنوعی موقتاً غیرفعال است</b><br>این وضعیت مربوط به خود سرویس AI است، نه محدودیت حساب شما.<br>🕒 بعداً دوباره امتحان کن.'
+        : '🌙 <b>The AI service is temporarily unavailable</b><br>This is a service-wide status, not your account limit.<br>🕒 Please try again later.';
       messages.appendChild(kickMsg);
       messages.scrollTop = messages.scrollHeight;
     }
