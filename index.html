@@ -756,36 +756,17 @@ body.init-gate-active > *:not(#initStatusGate){pointer-events:none!important;use
 .sideMenuLink:hover{background:rgba(255,23,77,.15);padding-right:22px;color:#ff4b6e}
 .modalBackdropGlobal{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:101;display:none;animation:fadeIn .25s;pointer-events:none}
 .modalBackdropGlobal.show{display:block}
-.customizePanel,.faqPanel{position:fixed;inset:0;z-index:99995;display:none;align-items:center;justify-content:center;padding:14px}
-.customizePanel.show,.faqPanel.show{display:flex}
-.customizeBackdrop,.faqBackdrop{position:absolute;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:fadeIn .25s}
-.customizeBox,.faqBox{position:relative;background:#12090d;border:1px solid rgba(255,75,110,.4);border-radius:20px;width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 30px 90px rgba(0,0,0,.7);animation:zoomIn .3s}
-.customizeHeader,.faqHeader{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid rgba(255,49,85,.13);background:linear-gradient(135deg,rgba(255,23,77,.1),transparent);border-radius:20px 20px 0 0}
-.customizeHeader h3,.faqHeader h3{margin:0;font-size:14.5px;font-family:'Oswald',Vazirmatn,sans-serif;color:#ff4b6e;letter-spacing:.5px}
-.customizeClose,.faqClose{width:30px;height:30px;border-radius:50%;background:rgba(255,23,77,.15);border:1px solid rgba(255,75,110,.4);color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;flex-shrink:0}
-.customizeClose:hover,.faqClose:hover{background:rgba(255,23,77,.35);transform:rotate(90deg)}
-.customizeBody,.faqBody{flex:1;overflow-y:auto;padding:12px 18px}
-.customizeBody::-webkit-scrollbar,.faqBody::-webkit-scrollbar{width:5px}
-.customizeBody::-webkit-scrollbar-thumb,.faqBody::-webkit-scrollbar-thumb{background:rgba(255,23,77,.4);border-radius:3px}
-.customizeRow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,49,85,.1);gap:10px}
-.customizeRow:last-child{border-bottom:none}
-.customizeRow label{font-size:12.5px;color:#fff;flex:1}
-.custSwitch{position:relative;width:44px;height:24px;flex-shrink:0}
-.custSwitch input{opacity:0;width:100%;height:100%;position:absolute;margin:0;cursor:pointer;z-index:1}
-.custSwitch .track{position:absolute;inset:0;background:#3a2530;border:1px solid rgba(255,49,85,.2);border-radius:12px;transition:.2s}
-.custSwitch .thumb{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:#c4aeb5;transition:transform .2s,background .2s}
-.custSwitch input:checked ~ .track{background:rgba(255,23,77,.3);border-color:rgba(255,75,110,.5)}
-.custSwitch input:checked ~ .thumb{transform:translateX(-20px);background:#ff174d}
-.sizeChips{display:flex;gap:6px}
-.sizeChips button{padding:6px 12px;border-radius:8px;border:1px solid rgba(255,49,85,.2);background:transparent;color:#c4aeb5;font-size:11.5px;cursor:pointer;font-family:inherit;transition:.2s}
-.sizeChips button.active{background:#ff174d;color:#fff;border-color:transparent}
-.sizeChips button:hover:not(.active){background:rgba(255,23,77,.15);color:#fff}
-.customizeFooter{display:flex;gap:8px;padding:12px 18px;border-top:1px solid rgba(255,49,85,.13);background:rgba(0,0,0,.2);border-radius:0 0 20px 20px}
-.customizeFooter button{flex:1;padding:11px;border-radius:10px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:.2s;border:none}
-#custReset{background:transparent;border:1px solid rgba(255,49,85,.2);color:#c4aeb5}
-#custReset:hover{background:rgba(255,23,77,.15);color:#fff}
-#custSave{background:linear-gradient(135deg,#ff174d,#ff4b6e);color:#fff}
-#custSave:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,23,77,.4)}
+.faqPanel{position:fixed;inset:0;z-index:99995;display:none;align-items:center;justify-content:center;padding:14px}
+.faqPanel.show{display:flex}
+.faqBackdrop{position:absolute;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:fadeIn .25s}
+.faqBox{position:relative;background:#12090d;border:1px solid rgba(255,75,110,.4);border-radius:20px;width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 30px 90px rgba(0,0,0,.7);animation:zoomIn .3s}
+.faqHeader{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid rgba(255,49,85,.13);background:linear-gradient(135deg,rgba(255,23,77,.1),transparent);border-radius:20px 20px 0 0}
+.faqHeader h3{margin:0;font-size:14.5px;font-family:'Oswald',Vazirmatn,sans-serif;color:#ff4b6e;letter-spacing:.5px}
+.faqClose{width:30px;height:30px;border-radius:50%;background:rgba(255,23,77,.15);border:1px solid rgba(255,75,110,.4);color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;flex-shrink:0}
+.faqClose:hover{background:rgba(255,23,77,.35);transform:rotate(90deg)}
+.faqBody{flex:1;overflow-y:auto;padding:12px 18px}
+.faqBody::-webkit-scrollbar{width:5px}
+.faqBody::-webkit-scrollbar-thumb{background:rgba(255,23,77,.4);border-radius:3px}
 .faqBody details{padding:10px 0;border-bottom:1px solid rgba(255,49,85,.1)}
 .faqBody details:last-child{border-bottom:none}
 .faqBody summary{cursor:pointer;font-weight:700;font-size:13px;color:#fff;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-family:inherit}
@@ -806,7 +787,7 @@ body.compact-mode .card.full > h3:after{content:' ▾';color:#ff4b6e;font-size:1
 body.compact-mode .card.full.expanded > h3:after{content:' ▴'}
 body.font-small{zoom:.92}
 body.font-large{zoom:1.08}
-@media(max-width:640px){.sideMenuPanel{width:min(92vw,300px)}.customizeBox,.faqBox{max-width:100%}.menuToggleBtn{width:32px;height:32px;padding:0;font-size:14px}}
+@media(max-width:640px){.sideMenuPanel{width:min(92vw,300px)}.faqBox{max-width:100%}.menuToggleBtn{width:32px;height:32px;padding:0;font-size:14px}}
 
 <style id="auth-recovery-patch">
 .agRecoveryStepTitle{font-size:12px;font-weight:900;color:#d8c5cc;margin:0 0 8px;text-align:center}
@@ -1314,6 +1295,13 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
   <div class="agView" data-view="recoveryCenter" hidden>
      <div class="agRecoveryCenter">
        <div class="agDoneT"><span class="gx" data-fa="کد حساب من" data-en="My account code">کد حساب من</span></div>
+       <div class="agRecoveryForm" id="agSetupPasswordStep">
+         <div class="agRecoveryStepTitle"><span class="gx" data-fa="تنظیم رمز حساب" data-en="Set account password">تنظیم رمز حساب</span></div>
+         <input class="agRecoveryInput" id="agSetupPassword" type="password" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="رمز حساب">
+         <input class="agRecoveryInput" id="agSetupPasswordConfirm" type="password" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="تکرار رمز حساب">
+         <button type="button" class="agBtn primary" id="agSetPassword"><i class="agSp"></i><span class="gx" data-fa="ثبت رمز حساب" data-en="Save account password">ثبت رمز حساب</span></button>
+         <div class="agRecoveryDesc"><span class="gx" data-fa="این رمز برای محافظت از کد بازیابی دائمی حساب استفاده می‌شود." data-en="This password protects your permanent recovery code.">این رمز برای محافظت از کد بازیابی دائمی حساب استفاده می‌شود.</span></div>
+       </div>
        <div id="agRecoveryIntro" class="agRecoveryIntro">
          <div class="agRecoveryMask">
            <div class="agRecoveryMaskLabel"><span class="gx" data-fa="کد بازیابی دائمی" data-en="Permanent recovery code">کد بازیابی دائمی</span></div>
@@ -1484,12 +1472,15 @@ function updateBtn(){
 
 /* ---------- gate view ---------- */
 function resetRecoveryCenter(){
-  var intro=$('agRecoveryIntro'),step=$('agRecoveryPasswordStep'),card=$('agRecoveryCodeCard'),p=$('agRecoveryPassword'),pc=$('agRecoveryPasswordConfirm'),code=$('agRecoveryCodeText'),copy=$('agCopyRecovery');
+  var intro=$('agRecoveryIntro'),step=$('agRecoveryPasswordStep'),card=$('agRecoveryCodeCard'),p=$('agRecoveryPassword'),pc=$('agRecoveryPasswordConfirm'),setup=$('agSetupPassword'),setupConfirm=$('agSetupPasswordConfirm'),setupStep=$('agSetupPasswordStep'),code=$('agRecoveryCodeText'),copy=$('agCopyRecovery');
   if(intro)intro.hidden=false;
   if(step)step.hidden=true;
   if(card)card.classList.remove('show');
   if(p)p.value='';
   if(pc)pc.value='';
+  if(setup)setup.value='';
+  if(setupConfirm)setupConfirm.value='';
+  if(setupStep)setupStep.hidden=false;
   if(code)code.textContent='';
   if(copy){
     copy.classList.remove('agRgbExit');
@@ -3626,8 +3617,8 @@ async function loadComments(){
     bindReportButtons();
   } catch(e) {
     const list = $('commentList');
-    list.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:13px;padding:20px 0;">⚠️ خطا در بارگذاری نظرات. <button type="button" id="retryLoadComments" style="margin-inline-start:6px;cursor:pointer;">تلاش دوباره</button></p>';
-    const retryBtn = $('retryLoadComments');
+    list.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:13px;padding:20px 0;">⚠️ خطا در بارگذاری نظرات. <button type="button" id="retryLoadComments2" style="margin-inline-start:6px;cursor:pointer;">تلاش دوباره</button></p>';
+    const retryBtn = $('retryLoadComments2');
     if (retryBtn) retryBtn.onclick = () => loadComments();
   }
 }
@@ -5306,7 +5297,6 @@ updateFloatingUI();
       <details><summary>موسیقی پس‌زمینه رو چطور خاموش کنم؟</summary><p>روی دکمه‌ی 🎵 توی هدر بزن و «توقف» رو انتخاب کن. یا اسلایدر ولوم رو تا صفر بکش.</p></details>
       <details><summary>اگه مرورگر رو ببندم تنظیماتم می‌مونه؟</summary><p>بله. تم، زبان، اندازه متن، تنظیمات customize و حالت شب/روز همه در localStorage ذخیره می‌شن و با بستن مرورگر پاک نمی‌شن.</p></details>
     </div>
-    </div>
   </div>
 </div>
 
@@ -5344,7 +5334,6 @@ function syncBackdrop(){
   var any=(sideMenu&&sideMenu.classList.contains('show'))
     ||_d.querySelector('.commentModal.show')
     ||_d.querySelector('.aiChatModal.show')
-    ||_d.querySelector('.customizePanel.show')
     ||_d.querySelector('.faqPanel.show');
   bd.classList.toggle('show',!!any);
 }
@@ -5369,58 +5358,6 @@ _d.querySelectorAll('.sideMenuSub button[data-target]').forEach(function(btn){
     setTimeout(function(){var el=_d.getElementById(t);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},350);
   };
 });
-var custPanel=_d.getElementById('customizePanel');
-var CUST_KEY='poppy_customize_state';
-var custState={animations:true,fonts:true,themes:true,btnAnim:true,compact:false,size:'medium',enableBtn:true};
-function loadCust(){try{var r=localStorage.getItem(CUST_KEY);if(r){var p=JSON.parse(r);Object.keys(custState).forEach(function(k){if(typeof p[k]!=='undefined')custState[k]=p[k];});}}catch(e){}}
-function saveCust(){try{localStorage.setItem(CUST_KEY,JSON.stringify(custState));}catch(e){}}
-function applyCust(){
-  if(!_d.body)return;
-  _d.body.classList.toggle('no-animations',!custState.animations);
-  _d.body.classList.toggle('no-fonts',!custState.fonts);
-  _d.body.classList.toggle('no-themes',!custState.themes);
-  _d.body.classList.toggle('no-button-animations',!custState.btnAnim);
-  _d.body.classList.toggle('compact-mode',custState.compact);
-  _d.body.classList.remove('font-small','font-medium','font-large');
-  _d.body.classList.add('font-'+custState.size);
-  var pb=_d.getElementById('perfBtn');
-  // FIXER2: antiLag toggle controls perf-mode + hides header button
-  _d.body.classList.toggle('perf-mode', !!custState.enableBtn);
-  try{localStorage.setItem('poppy_perf', custState.enableBtn ? '1' : '0');}catch(e){}
-  if(pb){
-    pb.style.display = custState.enableBtn ? 'none' : '';
-    pb.classList.toggle('active', !!custState.enableBtn);
-  }
-  if(!custState.themes){
-    ['theme-rose','theme-green','theme-purple','theme-gold','theme-blue','theme-cyber'].forEach(function(c){_d.body.classList.remove(c);});
-    if(!_d.body.classList.contains('theme-classic'))_d.body.classList.add('theme-classic');
-  }
-}
-function refreshCustUI(){
-  var map={'cust-anim':'animations','cust-fonts':'fonts','cust-themes':'themes','cust-btn-anim':'btnAnim','cust-compact':'compact','cust-enable-btn':'enableBtn'};
-  Object.keys(map).forEach(function(id){var el=_d.getElementById(id);if(el)el.checked=custState[map[id]];});
-  _d.querySelectorAll('#sizeChips button').forEach(function(b){b.classList.toggle('active',b.dataset.size===custState.size);});
-}
-function openCustPanel(){refreshCustUI();if(custPanel)custPanel.classList.add('show');if(typeof window.lockBodyScroll==='function')window.lockBodyScroll();syncBackdrop();}
-function closeCustPanel(){if(custPanel)custPanel.classList.remove('show');if(typeof window.unlockBodyScroll==='function')window.unlockBodyScroll();setTimeout(syncBackdrop,120);}
-var openCustBtn=_d.getElementById('openCustomizePanel');
-if(openCustBtn)openCustBtn.onclick=function(){closeSideMenu();setTimeout(openCustPanel,250);};
-var custClose=_d.getElementById('customizeClose');
-if(custClose)custClose.onclick=closeCustPanel;
-var custBd=_d.getElementById('customizeBackdrop');
-if(custBd)custBd.onclick=closeCustPanel;
-var keyMap={'cust-anim':'animations','cust-fonts':'fonts','cust-themes':'themes','cust-btn-anim':'btnAnim','cust-compact':'compact','cust-enable-btn':'enableBtn'};
-Object.keys(keyMap).forEach(function(id){
-  var el=_d.getElementById(id);
-  if(el)el.onchange=function(){custState[keyMap[id]]=el.checked;applyCust();};
-});
-_d.querySelectorAll('#sizeChips button').forEach(function(b){
-  b.onclick=function(){custState.size=b.dataset.size;refreshCustUI();applyCust();};
-});
-var custSave=_d.getElementById('custSave');
-if(custSave)custSave.onclick=function(){saveCust();if(typeof window.showToast==='function')window.showToast(window.currentLang==='fa'?'\u2705 تنظیمات ذخیره شد':'\u2705 Settings saved','success');closeCustPanel();};
-var custReset=_d.getElementById('custReset');
-if(custReset)custReset.onclick=function(){custState.animations=true;custState.fonts=true;custState.themes=true;custState.btnAnim=true;custState.compact=false;custState.size='medium';custState.enableBtn=true;refreshCustUI();applyCust();saveCust();if(typeof window.showToast==='function')window.showToast(window.currentLang==='fa'?'\u21ba بازنشانی شد':'\u21ba Reset done','success');};
 _d.addEventListener('click',function(e){
   if(!_d.body.classList.contains('compact-mode'))return;
   var card=e.target.closest('.card.full');
@@ -5441,22 +5378,6 @@ var menuSupportBtn=_d.getElementById('menuSupportBtn');
 if(menuSupportBtn)menuSupportBtn.onclick=function(){closeSideMenu();setTimeout(function(){var b=_d.getElementById('openSupportTicketBtn');if(b)b.click();},300);};
 var menuRefreshBtn=_d.getElementById('menuRefreshBtn');
 if(menuRefreshBtn)menuRefreshBtn.onclick=function(){if(typeof window.showToast==='function')window.showToast(window.currentLang==='fa'?'\ud83d\udd04 در حال رفرش...':'\ud83d\udd04 Refreshing...','success');setTimeout(function(){location.reload();},600);};
-var menuShareBtn=_d.getElementById('menuShareBtn');
-if(menuShareBtn)menuShareBtn.onclick=function(){try{if(navigator.share){navigator.share({title:'Poppy Playtime Archive',url:location.href});}else if(navigator.clipboard){navigator.clipboard.writeText(location.href);if(typeof window.showToast==='function')window.showToast(window.currentLang==='fa'?'\u2705 لینک کپی شد':'\u2705 Link copied','success');}}catch(e){}closeSideMenu();};
-var menuTopBtn=_d.getElementById('menuTopBtn');
-if(menuTopBtn)menuTopBtn.onclick=function(){closeSideMenu();setTimeout(function(){window.scrollTo({top:0,behavior:'smooth'});},200);};
-var menuHomeBtn=_d.getElementById('menuHomeBtn');
-if(menuHomeBtn)menuHomeBtn.onclick=function(){closeSideMenu();setTimeout(function(){var b=_d.getElementById('homeBtn');if(b)b.click();},200);};
-var menuThemeToggle=_d.getElementById('menuThemeToggle');
-if(menuThemeToggle)menuThemeToggle.onclick=function(){closeSideMenu();setTimeout(function(){var b=_d.getElementById('themeToggle');if(b)b.click();},200);};
-var menuLangToggle=_d.getElementById('menuLangToggle');
-if(menuLangToggle)menuLangToggle.onclick=function(){closeSideMenu();setTimeout(function(){var b=_d.getElementById('lang');if(b)b.click();},200);};
-var menuMusicToggle=_d.getElementById('menuMusicToggle');
-if(menuMusicToggle)menuMusicToggle.onclick=function(){closeSideMenu();setTimeout(function(){var b=_d.getElementById('musicPlayPause');if(b)b.click();},200);};
-var menuPerfToggle=_d.getElementById('menuPerfToggle');
-if(menuPerfToggle)menuPerfToggle.onclick=function(){closeSideMenu();setTimeout(function(){var b=_d.getElementById('perfBtn');if(b)b.click();},200);};
-var menuSearchBtn=_d.getElementById('menuSearchBtn');
-if(menuSearchBtn)menuSearchBtn.onclick=function(){closeSideMenu();setTimeout(function(){var b=_d.getElementById('searchBtn');if(b)b.click();},200);};
 /* v6: settings handled by v6 layer */
 setTimeout(syncBackdrop,500);
 _d.addEventListener('click',function(){setTimeout(syncBackdrop,80);});
