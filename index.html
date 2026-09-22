@@ -1140,7 +1140,7 @@ html.authg-open,html.authg-open body{overflow:hidden!important}
 .agCode .agLbl{color:#f4b52e;text-align:center;margin-bottom:6px;font-weight:700}
 .agCode b{display:block;direction:ltr;font-family:'Courier New',monospace;font-size:14.5px;letter-spacing:.6px;word-break:break-all;color:#fff;margin-bottom:10px;user-select:all}
 .agCode button{padding:8px 18px;border-radius:10px;border:1px solid #f4b52e;background:rgba(244,181,46,.15);color:#ffd76b;font-family:inherit;font-weight:800;font-size:13px}
-.agWarn{font-size:12.5px;color:#ffd76b;line-height:1.9;margin-bottom:16px}
+
 /* lock card */
 .authLock{position:fixed;inset:0;z-index:2147482900;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .authLock.show{display:flex}
@@ -1249,8 +1249,6 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
 .agSuccessIcon{font-size:28px;color:#8cf0c7}
 .agSuccessTitle{font-size:18px;font-weight:900;margin:3px 0 4px}
 .agSuccessDetail{font-size:11.5px;color:#bfe5d7;line-height:1.9}
-#agAddDevice{display:none!important}
-#agGooglePasskeyStep{display:none!important}
 #agLogin{display:none!important}
 @media(max-width:480px){
   .agPremiumShell{padding:18px 13px 13px;border-radius:24px}
@@ -1608,13 +1606,12 @@ function run(btn,fn,done){
   });
 }
 function showDone(f,title){
-  setLogged(f.user);S.hasCode=!!f.recoveryCode;
+  setLogged(f.user);
+  S.hasCode=!!f.recoveryReady;
   $('agDoneT').textContent=title;
   $('agId').textContent=fmtId(S.display);
-  $('agCodeBox').style.display=S.hasCode?'':'none';
-  $('agWarn').style.display=S.hasCode?'':'none';
-  $('agCodeTxt').textContent=f.recoveryCode||'';
-  view('done');refreshTexts();
+  view('done');
+  refreshTexts();
 }
 
 /* ---------- Google signup + WebAuthn registration ---------- */
