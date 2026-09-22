@@ -1624,7 +1624,18 @@ function loadGoogleScript(){
 function handleGoogleCredential(resp){
   if(!resp||!resp.credential){showErr(T('از Google اطلاعات لازم دریافت نشد. دوباره انتخاب کن','Google did not return a credential'));return;}
   clearErr();
-  if(googleAction==='register'){pendingGoogleRegistration=resp.credential;view('passwordSetup');setTimeout(function(){try{$('agPassword').focus();}catch(e){}},60);return;}
+
+  /* New-account flow:
+     Google only verifies the identity here. The account is NOT created yet.
+     The user must choose a password in the next step, then completeGoogleRegistration()
+     sends Google credential + password to /api/auth/google/signup. */
+  if(googleAction==='register'){
+    pendingGoogleRegistration=resp.credential;
+    view('passwordSetup');
+    setTimeout(function(){try{$('agPassword').focus();}catch(e){}},60);
+    return;
+  }
+
   busy(null,true);
   var p=googleAction==='link'?linkGoogleWithCredential(resp.credential):doGoogleLogin(resp.credential);
   p.then(function(f){
