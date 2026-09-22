@@ -1876,9 +1876,17 @@ function initAuthPageControls(){
 
 if(D.readyState==='loading')D.addEventListener('DOMContentLoaded',initAuthPageControls);
 else initAuthPageControls();
-
-init();
-function forceLogout(){
+  init();
+  setTimeout(function(){
+    try{
+      if(gate&&!gate.classList.contains('gone')&&gate.classList.contains('loading')){
+        gate.classList.remove('loading');
+        view(S.logged?'recoveryCenter':'main');
+        refreshTexts();
+      }
+    }catch(e){}
+  },7000);
+  function forceLogout(){
   S.logged=false;
   S.started=true;
   S.busy=false;
