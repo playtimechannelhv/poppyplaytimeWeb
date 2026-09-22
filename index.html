@@ -1516,22 +1516,23 @@ function authErrorMeta(e){
     google_not_configured:{titleFa:'ورود Google موقتاً آماده نیست',titleEn:'Google sign-in is temporarily unavailable',hintFa:'تنظیمات سرویس کامل نیست. بعداً دوباره امتحان کن.',hintEn:'The Google sign-in service is not fully configured. Please try again later.',icon:'!'},
     rate_limited:{titleFa:'تلاش‌های زیادی انجام شد',titleEn:'Too many attempts',hintFa:'چند دقیقه صبر کن و دوباره امتحان کن.',hintEn:'Wait a few minutes and try again.',icon:'!'},
     invalid_recovery_code:{titleFa:'کد بازیابی معتبر نیست',titleEn:'Recovery code is invalid',hintFa:'کد را دقیقاً همان‌طور که هنگام ساخت حساب ذخیره کردی وارد کن.',hintEn:'Enter the recovery code exactly as you saved it.',icon:'!'},
-    origin_not_allowed:{titleFa:'این سایت اجازه‌ی ورود ندارد',titleEn:'This site is not allowed to sign in',hintFa:'از نسخه‌ی رسمی سایت Playtime Channel استفاده کن.',hintEn:'Use the official Playtime Channel website.',icon:'!'},
-    not_verified:{titleFa:'احراز هویت کامل نشد',titleEn:'Verification was not completed',hintFa:'دوباره تلاش کن و مراحل Google را تا پایان انجام بده.',hintEn:'Try again and complete the Google sign-in flow.',icon:'!'},
     server_error:{titleFa:'خطای سرور',titleEn:'Server error',hintFa:'کمی صبر کن و دوباره تلاش کن. اگر مشکل ادامه داشت، به مدیر سایت اطلاع بده.',hintEn:'Wait a moment and try again. If it continues, contact the site admin.',icon:'!'},
     user_create_failed:{titleFa:'ساخت حساب انجام نشد',titleEn:'Account creation failed',hintFa:'مشکلی در ساخت حساب در سرور پیش آمد. دوباره تلاش کن؛ اگر ادامه داشت، به مدیر سایت اطلاع بده.',hintEn:'A problem occurred creating the account on the server. Try again; if it continues, contact the site admin.',icon:'!'}
   };
   return map[code]||null;
 }
+function authErrorDetail(input){
+  if(typeof input==='string')return input;
+  if(input&&input.message)return String(input.message);
+  if(input instanceof TypeError)return T('ارتباط با سرور برقرار نشد. اینترنتت را بررسی کن.','Could not reach the server. Check your connection.');
+  return T('خطایی رخ داد. دوباره تلاش کن.','Something went wrong. Please try again.');
+}
 function showErr(input){
   var obj=(input&&typeof input==='object')?input:null;
-  var detail=typeof input==='string'?input:explain(input);
+  var detail=authErrorDetail(input);
   var meta=authErrorMeta(obj);
   if(!meta){
     meta={titleFa:'احراز هویت انجام نشد',titleEn:'Sign-in could not be completed',hintFa:'جزئیات بالا را بررسی کن و دوباره تلاش کن.',hintEn:'Check the details above and try again.',icon:'!'};
-    if(obj&&obj.error==='unsupported'){
-      meta={titleFa:'این روش ورود در دسترس نیست',titleEn:'This sign-in method is unavailable',hintFa:'برای ورود یا ساخت حساب از Google استفاده کن.',hintEn:'Use Google to sign in or create an account.',icon:'i'};
-    }
   }
   errBox.classList.remove('success');
   $('agErrIcon').textContent=meta.icon;
