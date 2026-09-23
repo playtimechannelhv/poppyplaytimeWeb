@@ -829,6 +829,9 @@ body.perf-mode .trailerCard{transition:none;box-shadow:none}
 body.perf-mode .trailerCard:hover{transform:none;box-shadow:none;border-color:rgba(var(--red-rgb),.16)}
 body.perf-mode .trailerMedia img{transition:none}
 body.perf-mode .trailerCard:hover .trailerMedia img{transform:none}
+.trailerMedia video{width:100%;height:100%;display:block;object-fit:cover;background:#050205}
+.trailerMedia video:focus{outline:none}
+body.perf-mode .trailerMedia video{will-change:auto}
 @media(max-width:900px){
   .trailerGrid{grid-template-columns:1fr}
   .trailersModalBox{width:min(760px,100%)}
@@ -3401,7 +3404,7 @@ const translations = {
   nav_mystery:"رازها",nav_mystery_sub:"اطلاعات تأییدشده و سرنخ",nav_release:"منابع انتشار",nav_release_sub:"تاریخ و پلتفرم",
   nav_about:"توضیحات",nav_about_sub:"جهان بازی",nav_project:"پروژه‌های پلی‌تایم",nav_project_sub:"PROJECTS & NEW GAMES",
   nav_news:"مقالات",nav_news_sub:"تحلیل و اطلاعات تأییدشده",nav_trailers:"تریلرها",nav_trailers_sub:"تریلرهای رسمی فصل‌ها",
-  trailers_title:"تریلرهای رسمی Poppy Playtime",trailers_desc:"تریلرهای فصل‌ها و پروژه‌های مرتبط. منبع ویدیوها YouTube رسمی Mob Entertainment است؛ دسترسی به YouTube بسته به شبکه ممکن است متفاوت باشد.",trailers_back:"بازگشت به آرشیو",
+  trailers_title:"تریلرهای رسمی Poppy Playtime",trailers_desc:"تریلرهای فصل‌ها و پروژه‌های مرتبط؛ ویدیوها مستقیماً از Steam CDN رسمی صفحات Mob Entertainment بارگذاری می‌شوند.",trailers_back:"بازگشت به آرشیو",
   char_title:"پرونده‌ی شخصیت‌ها",char_desc:"روی هر دسته کلیک کن تا فیلتر بشه. روی هر کارت بزن تا عکس بزرگش رو ببینی.",
   char_pj:"PJ Pug-a-Pillar یک اسباب‌بازی از خط Swap-imals شرکت Playtime Co. است که در Chapter 2: Fly in a Web در مینی‌گیم Statues ظاهر می‌شود. شکل Bigger Body او ترکیبی از Pug و Caterpillar است و Experiment 1174 نام دارد.",
   char_pj_theory:"وضعیت تأییدشده: PJ Pug-a-Pillar با عنوان Experiment 1174 شناخته می‌شود و برای نقش آنتاگونیست مینی‌گیم Statues در Game Station ساخته شد. او به خط اسباب‌بازی Swap-imals تعلق دارد.",
@@ -3536,7 +3539,7 @@ const translations = {
   nav_mystery:"Mysteries",nav_mystery_sub:"Theories & clues",nav_release:"Releases",nav_release_sub:"Dates & platforms",
   nav_about:"About",nav_about_sub:"Game world",nav_project:"Playtime Projects",nav_project_sub:"PROJECTS & NEW GAMES",
   nav_news:"Articles",nav_news_sub:"Analysis & theories",nav_trailers:"Trailers",nav_trailers_sub:"Official chapter trailers",
-  trailers_title:"Official Poppy Playtime Trailers",trailers_desc:"Chapter and project trailers. Videos are sourced from Mob Entertainment's official YouTube; availability depends on the network.",trailers_back:"Back to Archive",
+  trailers_title:"Official Poppy Playtime Trailers",trailers_desc:"Chapter and project trailers, loaded directly from the Steam CDN used by Mob Entertainment's Steam store pages.",trailers_back:"Back to Archive",
   char_title:"Character Files",char_desc:"Click a category to filter. Click any card to view the image larger.",
   char_pj:"PJ Pug-a-Pillar is a Playtime Co. toy from the Swap-imals line that appears in Chapter 2: Fly in a Web during the Statues mini-game. Its Bigger Body form is a pug/caterpillar hybrid designated Experiment 1174.",
   char_pj_theory:"Confirmed status: PJ Pug-a-Pillar is designated Experiment 1174 and was used as the antagonist of the Statues mini-game in the Game Station. He belongs to Playtime Co.'s Swap-imals toy line.",
@@ -3677,6 +3680,49 @@ const TRAILERS = [
  {id:'qRLTbHUl44U',kind:'escape',chapter:'Escape From Playtime',fa:{title:'Escape From Playtime — تریلر معرفی',desc:'تریلر معرفی رسمی'},en:{title:'Escape From Playtime — Reveal Trailer',desc:'Official Reveal Trailer'}}
 ];
 
+const TRAILERS = [
+ {kind:'chapter',chapter:'Chapter 1',titleFa:'Chapter 1 — تریلر رسمی',titleEn:'Chapter 1 — Official Trailer',
+  descFa:'تریلر رسمی بازی',descEn:'Official Game Trailer',
+  video:'https://video.fastly.steamstatic.com/store_trailers/1721470/1436595992/a69028002e89be8e99f313aab99851add18f0b10/1770648086/microtrailer.mp4',
+  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256849757/b52ae4fe54af3a183e29ee71515291408dfe6322/movie_600x337.jpg'},
+ {kind:'chapter',chapter:'Chapter 2',titleFa:'Chapter 2 — تریلر رسمی',titleEn:'Chapter 2 — Official Trailer',
+  descFa:'تریلر رسمی بازی',descEn:'Official Game Trailer',
+  video:'https://video.fastly.steamstatic.com/store_trailers/1817490/487921674/234e7a4daae81b8c3489f9dad675edd56a337c22/1770648817/microtrailer.mp4',
+  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256881110/072758395547cf163abd5bc9f3975293e5b7e955/movie_600x337.jpg'},
+ {kind:'chapter',chapter:'Chapter 3',titleFa:'Chapter 3 — تریلر رسمی #۱',titleEn:'Chapter 3 — Official Trailer #1',
+  descFa:'تریلر گیم‌پلی #۱',descEn:'Gameplay Trailer #1',
+  video:'https://video.fastly.steamstatic.com/store_trailers/2555190/652669/cfb079ae1fda1d50342b9eeef17f26ec54128c34/1750816997/microtrailer.mp4',
+  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256995468/movie_600x337.jpg'},
+ {kind:'chapter',chapter:'Chapter 3',titleFa:'Chapter 3 — تریلر رسمی #۲',titleEn:'Chapter 3 — Official Trailer #2',
+  descFa:'تریلر گیم‌پلی #۲',descEn:'Gameplay Trailer #2',
+  video:'https://video.fastly.steamstatic.com/store_trailers/2555190/653763/0377a74e00d69ca3d05202e47d97dd7c67f7aa00/1750816999/microtrailer.mp4',
+  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256996043/movie_600x337.jpg'},
+ {kind:'chapter',chapter:'Chapter 4',titleFa:'Chapter 4 — تریلر سینمایی The Doctor',titleEn:'Chapter 4 — The Doctor Cinematic Trailer',
+  descFa:'تریلر سینمایی',descEn:'Cinematic Trailer',
+  video:'https://video.fastly.steamstatic.com/store_trailers/3008670/803236/8c3bc7a23da685babec13c482b5f67f91de60ed9/1750822935/microtrailer.mp4',
+  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257084059/5c4cb2dd3f90d4e48b850f0589fb74c512b5e4e6/movie_600x337.jpg'},
+ {kind:'chapter',chapter:'Chapter 4',titleFa:'Chapter 4 — تریلر گیم‌پلی Doey',titleEn:'Chapter 4 — Doey the Doughman Gameplay Trailer',
+  descFa:'تریلر گیم‌پلی',descEn:'Gameplay Trailer',
+  video:'https://video.fastly.steamstatic.com/store_trailers/3008670/818391/48634265f6150a90ca8698e4f64ae718375ac2ff/1750822938/microtrailer.mp4',
+  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257092152/efda1c274f19e59eff427fd5de10180c3dc09571/movie_600x337.jpg'},
+ {kind:'chapter',chapter:'Chapter 5',titleFa:'Chapter 5 — تریلر سینمایی Prototype',titleEn:'Chapter 5 — The Prototype Cinematic Trailer',
+  descFa:'تریلر سینمایی',descEn:'Cinematic Trailer',
+  video:'https://video.fastly.steamstatic.com/store_trailers/4100940/635458062/ba9b7f367e9db84a07f430d4c48738532a78240a/1768069038/microtrailer.mp4',
+  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257262823/5aea19d9a8ce3ca33f7463f9b900b3f4ecf62003/movie_600x337.jpg'},
+ {kind:'chapter',chapter:'Chapter 5',titleFa:'Chapter 5 — تریلر رسمی بازی',titleEn:'Chapter 5 — Official Game Trailer',
+  descFa:'تریلر رسمی بازی',descEn:'Official Game Trailer',
+  video:'https://video.fastly.steamstatic.com/store_trailers/4100940/1091952950/93c7e5807878d753448667d45896e15afccf7ae9/1770823590/microtrailer.mp4',
+  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257284636/6bd2ab7e0fb8b93d286f6e97b4ac653d9c83da62/movie_600x337.jpg'},
+ {kind:'project',chapter:'PROJECT: PLAYTIME',titleFa:'PROJECT: PLAYTIME — تریلر سینمایی رسمی',titleEn:'PROJECT: PLAYTIME — Official Cinematic Trailer',
+  descFa:'تریلر رسمی سینمایی',descEn:'Official Cinematic Trailer',
+  video:'https://video.fastly.steamstatic.com/store_trailers/1961460/516396/96261b0e9a5d026d4f01bfc60ae343b976853171/1750742860/microtrailer.mp4',
+  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256917708/movie_600x337.jpg'},
+ {kind:'project',chapter:'Escape From Playtime',titleFa:'Escape From Playtime — تریلر معرفی',titleEn:'Escape From Playtime — Reveal Trailer',
+  descFa:'تریلر معرفی رسمی',descEn:'Official Reveal Trailer',
+  video:'https://video.fastly.steamstatic.com/store_trailers/2087540/1591922245/5c8c3201d7d2ff29022aa4ef8d1db636663e1c05/1787749580/microtrailer.mp4',
+  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257409094/7d485a2ed375df8dba6df55be6548c3377168607/movie_600x337.jpg'}
+];
+
 function syncTrailerViewport(){
   const touch=(navigator.maxTouchPoints||0)>0;
   const compact=window.matchMedia('(max-width:900px)').matches||(touch&&window.innerWidth<1200);
@@ -3688,39 +3734,42 @@ function renderTrailers(){
   if(!grid)return;
   syncTrailerViewport();
   const lang=currentLang==='en'?'en':'fa';
-  grid.innerHTML=TRAILERS.map(v=>{
-    const d=v[lang]||v.fa;
-    const watch='https://www.youtube.com/watch?v='+v.id;
-    const sourceLabel=lang==='fa'?'منبع رسمی • YouTube / Mob Entertainment':'Official source • YouTube / Mob Entertainment';
-    return '<article class="trailerCard" data-video="'+v.id+'" data-kind="'+v.kind+'">'+
+  grid.innerHTML=TRAILERS.map((v,i)=>{
+    const title=lang==='en'?v.titleEn:v.titleFa;
+    const desc=lang==='en'?v.descEn:v.descFa;
+    const sourceLabel=lang==='fa'?'ویدیوی رسمی Steam • Mob Entertainment':'Official Steam video • Mob Entertainment';
+    return '<article class="trailerCard" data-trailer-index="'+i+'">'+
       '<div class="trailerMedia">'+
-        '<img src="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg" alt="'+escapeHtml(d.title)+'" loading="lazy" decoding="async">'+
-        '<button class="trailerPlay" type="button" aria-label="'+(lang==='fa'?'پخش ':'Play ')+escapeHtml(d.title)+'"><span>▶</span></button>'+
+        '<img src="'+v.poster+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async">'+
+        '<button class="trailerPlay" type="button" aria-label="'+(lang==='fa'?'پخش ':'Play ')+escapeHtml(title)+'"><span>▶</span></button>'+
       '</div>'+
       '<div class="trailerBody">'+
         '<div class="trailerEpisode">'+escapeHtml(v.chapter)+'</div>'+
-        '<h3>'+escapeHtml(d.title)+'</h3>'+
-        '<p>'+escapeHtml(d.desc)+'</p>'+
+        '<h3>'+escapeHtml(title)+'</h3>'+
+        '<p>'+escapeHtml(desc)+'</p>'+
         '<span class="trailerSource">'+escapeHtml(sourceLabel)+'</span>'+
-        '<a class="trailerWatch" href="'+watch+'" target="_blank" rel="noopener noreferrer">↗ '+(lang==='fa'?'مشاهده منبع رسمی':'Open official source')+'</a>'+
+        '<a class="trailerWatch" href="'+v.video+'" target="_blank" rel="noopener noreferrer">↗ '+(lang==='fa'?'باز کردن ویدیو':'Open video')+'</a>'+
       '</div>'+
     '</article>';
   }).join('');
 }
 
-function openTrailerVideo(id){
+function openTrailerVideo(index){
   const grid=$('trailerGrid');
-  if(!grid||!id)return;
-  /* Re-render first: any existing iframe is destroyed, so simultaneous playback is impossible. */
+  const item=TRAILERS[index];
+  if(!grid||!item)return;
   renderTrailers();
-  const cards=grid.querySelectorAll('.trailerCard');
-  let card=null;
-  for(const item of cards){if(item.dataset.video===id){card=item;break;}}
+  const card=grid.querySelector('[data-trailer-index="'+index+'"]');
   if(!card)return;
   const media=card.querySelector('.trailerMedia');
   if(!media)return;
-  const title=card.querySelector('h3')?.textContent||'Poppy Playtime trailer';
-  media.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="'+escapeHtml(title)+'" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+  media.innerHTML='<video controls playsinline preload="metadata" poster="'+item.poster+'" aria-label="'+escapeHtml(currentLang==='en'?item.titleEn:item.titleFa)+'"><source src="'+item.video+'" type="video/mp4"></video>';
+  const video=media.querySelector('video');
+  if(video){
+    document.querySelectorAll('.trailersModal video').forEach(v=>{if(v!==video)v.pause();});
+    const p=video.play();
+    if(p&&p.catch)p.catch(()=>{});
+  }
 }
 
 function openTrailers(){
@@ -3749,7 +3798,7 @@ $('trailerGrid').addEventListener('click',e=>{
   const play=e.target.closest('.trailerPlay');
   if(!play)return;
   const card=play.closest('.trailerCard');
-  if(card)openTrailerVideo(card.dataset.video);
+  if(card)openTrailerVideo(Number(card.dataset.trailerIndex));
 });
 window.addEventListener('resize',syncTrailerViewport);
 function setLanguage(lang) {
