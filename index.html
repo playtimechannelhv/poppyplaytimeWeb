@@ -799,59 +799,75 @@ body.font-large{zoom:1.08}
 @keyframes agRgbFlow{0%{background-position:0% 50%;filter:hue-rotate(0deg)}100%{background-position:400% 50%;filter:hue-rotate(360deg)}}
 
 /* ============ Trailers ============ */
-.trailersModal{position:fixed;inset:0;z-index:320;background:#000e;backdrop-filter:blur(18px);display:none;align-items:center;justify-content:center;padding:16px;animation:fadeIn .3s}
+.trailersModal{position:fixed;inset:0;z-index:320;background:rgba(0,0,0,.88);backdrop-filter:blur(20px);display:none;align-items:stretch;justify-content:center;padding:10px;animation:fadeIn .28s}
 .trailersModal.show{display:flex}
-.trailersModalBox{background:var(--panel);border:1px solid #ff496c77;border-radius:26px;width:min(1180px,100%);height:min(92vh,100%);box-shadow:0 30px 110px #000c;display:flex;flex-direction:column;overflow:hidden;animation:zoomIn .3s}
-.trailerHeader{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#ffffff08,transparent);flex:0 0 auto}
-.trailerBack{border:1px solid rgba(var(--red2-rgb),.45);background:rgba(var(--red-rgb),.08);color:var(--white);border-radius:12px;padding:9px 14px;font-family:'Oswald',Vazirmatn,sans-serif;font-size:12px;cursor:pointer;transition:.2s;white-space:nowrap}
-.trailerBack:hover{background:rgba(var(--red-rgb),.18);transform:translateY(-1px)}
-.trailerHeader h2{margin:0;font-family:'Oswald',Vazirmatn,sans-serif;font-size:clamp(20px,3vw,30px);color:var(--white);line-height:1.2}
-.trailerHeader p{margin:3px 0 0;color:var(--muted);font-size:11px;line-height:1.7}
-.trailerClose{margin-inline-start:auto;width:40px;height:40px;border-radius:50%;border:1px solid #ff4b6e88;background:#ff174d22;color:#fff;font-size:19px;cursor:pointer;transition:.2s}
+.trailersModalBox{background:var(--panel);border:1px solid rgba(var(--red2-rgb),.42);border-radius:26px;width:min(1500px,100%);height:calc(100svh - 20px);box-shadow:0 30px 120px #000c;display:flex;flex-direction:column;overflow:hidden;animation:zoomIn .28s}
+.trailerHeader{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;padding:18px 22px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#ffffff0a,transparent);flex:0 0 auto;position:relative}
+.trailerHeaderText{min-width:0;text-align:center}
+.trailerHeader h2{margin:0;font-family:'Oswald',Vazirmatn,sans-serif;font-size:clamp(24px,3vw,34px);color:var(--white);line-height:1.25}
+.trailerHeader p{margin:5px auto 0;color:var(--muted);font-size:12px;line-height:1.8;max-width:760px}
+.trailerBack{border:1px solid rgba(var(--red2-rgb),.5);background:linear-gradient(135deg,rgba(var(--red-rgb),.16),rgba(var(--red-rgb),.05));color:var(--white);border-radius:14px;padding:11px 16px;font-family:'Oswald',Vazirmatn,sans-serif;font-size:12px;cursor:pointer;transition:.2s;white-space:nowrap}
+.trailerBack:hover{background:rgba(var(--red-rgb),.2);transform:translateY(-2px)}
+.trailerClose{width:44px;height:44px;border-radius:14px;border:1px solid #ff4b6e99;background:#ff174d1c;color:#fff;font-size:20px;cursor:pointer;transition:.2s}
 .trailerClose:hover{background:#ff174d44;transform:rotate(90deg)}
-.trailerGrid{padding:18px;overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-content:start;-webkit-overflow-scrolling:touch}
-.trailerCard{background:var(--card-bg);border:1px solid rgba(var(--red-rgb),.16);border-radius:20px;overflow:hidden;box-shadow:0 18px 55px #0008;transition:.25s;position:relative}
-.trailerCard:hover{transform:translateY(-4px);border-color:rgba(var(--red2-rgb),.55);box-shadow:0 18px 55px rgba(var(--red-rgb),.18)}
-.trailerMedia{position:relative;aspect-ratio:16/9;background:#050205;overflow:hidden}
-.trailerMedia img,.trailerMedia iframe{width:100%;height:100%;display:block;border:0}
-.trailerMedia img{object-fit:cover;transition:transform .45s ease}
-.trailerCard:hover .trailerMedia img{transform:scale(1.025)}
-.trailerPlay{position:absolute;inset:0;margin:auto;width:68px;height:68px;border-radius:50%;border:1px solid #ffffff55;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-size:25px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 35px #0008;cursor:pointer;transition:.2s}
-.trailerPlay:hover{transform:scale(1.08);box-shadow:0 14px 45px rgba(var(--red-rgb),.4)}
-.trailerBody{padding:16px}
-.trailerEpisode{color:var(--red2);font-family:'Oswald',Vazirmatn,sans-serif;font-size:10px;letter-spacing:1.6px;margin-bottom:5px;text-transform:uppercase}
-.trailerBody h3{margin:0 0 7px;font-size:17px;line-height:1.5;font-family:'Oswald',Vazirmatn,sans-serif;color:var(--white)}
-.trailerBody p{margin:0;color:var(--muted);font-size:12px;line-height:1.85;min-height:44px}
-.trailerWatch{display:inline-flex;align-items:center;gap:7px;margin-top:12px;color:var(--red2);text-decoration:none;font-family:'Oswald',Vazirmatn,sans-serif;font-size:11px;border-bottom:1px dashed #ff4b6e66;padding-bottom:2px}
+.trailerGrid{flex:1 1 auto;min-height:0;padding:20px 22px 36px;overflow-y:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-content:start;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.trailerGrid::-webkit-scrollbar{width:8px}
+.trailerGrid::-webkit-scrollbar-thumb{background:rgba(var(--red2-rgb),.36);border-radius:999px}
+.trailerGrid::-webkit-scrollbar-track{background:rgba(var(--red-rgb),.05)}
+.trailerGroupTitle{grid-column:1/-1;padding:10px 4px 2px;border-bottom:1px solid var(--line);margin-top:4px}
+.trailerGroupTitle h3{margin:0;color:var(--white);font:700 20px 'Oswald',Vazirmatn,sans-serif}
+.trailerGroupTitle p{margin:3px 0 0;color:var(--muted);font-size:11px;line-height:1.7}
+.trailerCard{background:var(--card-bg);border:1px solid rgba(var(--red-rgb),.18);border-radius:22px;overflow:hidden;box-shadow:0 16px 50px #0008;transition:.25s;position:relative;min-width:0}
+.trailerCard:hover{transform:translateY(-4px);border-color:rgba(var(--red2-rgb),.62);box-shadow:0 20px 60px rgba(var(--red-rgb),.18)}
+.trailerMedia{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#09040a,#230913 55%,#080308);overflow:hidden}
+.trailerMedia img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .45s ease,filter .25s ease}
+.trailerMedia:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.72));pointer-events:none}
+.trailerCard:hover .trailerMedia img{transform:scale(1.035);filter:saturate(1.06)}
+.trailerPlay{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;border:1px solid #ffffff66;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-size:25px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px #0009;cursor:pointer;transition:.2s}
+.trailerPlay:hover{transform:translate(-50%,-50%) scale(1.08);box-shadow:0 14px 50px rgba(var(--red-rgb),.45)}
+.trailerCoverBadge{position:absolute;z-index:2;top:12px;inset-inline-start:12px;padding:6px 9px;border-radius:999px;background:#050205aa;border:1px solid #ffffff2b;color:#fff;font:700 9px 'Oswald',Vazirmatn,sans-serif;letter-spacing:1px;backdrop-filter:blur(8px)}
+.trailerBody{padding:17px 18px 18px}
+.trailerEpisode{color:var(--red2);font:700 10px 'Oswald',Vazirmatn,sans-serif;letter-spacing:1.5px;margin-bottom:6px;text-transform:uppercase}
+.trailerBody h3{margin:0 0 8px;font:700 18px/1.45 'Oswald',Vazirmatn,sans-serif;color:var(--white)}
+.trailerBody p{margin:0;color:var(--muted);font-size:12px;line-height:1.85;min-height:22px}
+.trailerSource{display:block;color:var(--muted);font-size:9px;line-height:1.6;margin-top:9px;opacity:.72}
+.trailerWatch{display:inline-flex;align-items:center;gap:7px;margin-top:11px;color:var(--red2);text-decoration:none;font:600 11px 'Oswald',Vazirmatn,sans-serif;border-bottom:1px dashed #ff4b6e66;padding-bottom:3px}
 .trailerWatch:hover{color:#fff}
-body.perf-mode .trailersModal{backdrop-filter:none}
-body.perf-mode .trailerCard{transition:none;box-shadow:none}
-body.perf-mode .trailerCard:hover{transform:none;box-shadow:none;border-color:rgba(var(--red-rgb),.16)}
-body.perf-mode .trailerMedia img{transition:none}
-body.perf-mode .trailerCard:hover .trailerMedia img{transform:none}
 .trailerMedia video{width:100%;height:100%;display:block;object-fit:cover;background:#050205}
 .trailerMedia video:focus{outline:none}
-body.perf-mode .trailerMedia video{will-change:auto}
-@media(max-width:900px){
-  .trailerGrid{grid-template-columns:1fr}
-  .trailersModalBox{width:min(760px,100%)}
+body.perf-mode .trailersModal{backdrop-filter:none}
+body.perf-mode .trailerCard{transition:none;box-shadow:none}
+body.perf-mode .trailerCard:hover{transform:none;box-shadow:none;border-color:rgba(var(--red-rgb),.18)}
+body.perf-mode .trailerMedia img{transition:none}
+body.perf-mode .trailerCard:hover .trailerMedia img{transform:none;filter:none}
+@media(max-width:1150px){
+  .trailerGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media(max-width:640px){
-  .trailersModal{padding:8px}
-  .trailersModalBox{height:calc(100svh - 16px);border-radius:20px}
-  .trailerHeader{padding:12px;gap:8px}
-  .trailerHeader h2{font-size:20px}
-  .trailerHeader p{font-size:10px}
-  .trailerGrid{padding:12px;gap:12px}
-  .trailerBody{padding:13px}
-  .trailerBody h3{font-size:15px}
-  .trailerPlay{width:58px;height:58px;font-size:22px}
-  .trailerWatch{padding:7px 0}
+@media(max-width:760px){
+  .trailersModal{padding:7px}
+  .trailersModalBox{height:calc(100svh - 14px);border-radius:20px}
+  .trailerHeader{grid-template-columns:auto minmax(0,1fr) auto;gap:9px;padding:13px}
+  .trailerHeader h2{font-size:21px}
+  .trailerHeader p{font-size:10px;line-height:1.65}
+  .trailerBack{padding:9px 11px;font-size:10px}
+  .trailerClose{width:38px;height:38px;border-radius:12px;font-size:18px}
+  .trailerGrid{grid-template-columns:1fr;padding:14px 12px 28px;gap:14px}
+  .trailerGroupTitle{padding:9px 2px 1px}
+  .trailerGroupTitle h3{font-size:18px}
+  .trailerBody{padding:14px 15px 16px}
+  .trailerBody h3{font-size:17px}
+  .trailerPlay{width:60px;height:60px;font-size:22px}
 }
-body.trailer-touch-mode .trailerGrid{grid-template-columns:1fr!important}
-body.trailer-touch-mode .trailerCard{transform:none!important}
-body.trailer-touch-mode .trailerCard:hover{transform:none!important;box-shadow:0 18px 55px #0008}
-</style></style>
+@media(max-width:430px){
+  .trailerHeader{grid-template-columns:40px minmax(0,1fr) 40px}
+  .trailerHeaderText{text-align:center}
+  .trailerBack{width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;font-size:0}
+  .trailerBack span{display:none}
+  .trailerBack:before{content:"↩";font-size:18px}
+  .trailerClose{width:40px;height:40px}
+  .trailerHeader h2{font-size:19px}
+  .trailerHeader p{display:none}
+}</style>
 
 <!-- FIXER-LOTTIE-P1-APPLIED -->
 <script async src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js"></script>
@@ -3668,51 +3684,21 @@ const translations = {
 };
 let currentLang = storageGet('poppy_lang') || 'fa';
 const TRAILERS = [
- {kind:'chapter',chapter:'Chapter 1',titleFa:'Chapter 1 — تریلر رسمی',titleEn:'Chapter 1 — Official Trailer',
-  descFa:'تریلر رسمی بازی',descEn:'Official Game Trailer',
-  video:'https://video.fastly.steamstatic.com/store_trailers/1721470/1436595992/a69028002e89be8e99f313aab99851add18f0b10/1770648086/microtrailer.mp4',
-  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256849757/b52ae4fe54af3a183e29ee71515291408dfe6322/movie_600x337.jpg'},
- {kind:'chapter',chapter:'Chapter 2',titleFa:'Chapter 2 — تریلر رسمی',titleEn:'Chapter 2 — Official Trailer',
-  descFa:'تریلر رسمی بازی',descEn:'Official Game Trailer',
-  video:'https://video.fastly.steamstatic.com/store_trailers/1817490/487921674/234e7a4daae81b8c3489f9dad675edd56a337c22/1770648817/microtrailer.mp4',
-  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256881110/072758395547cf163abd5bc9f3975293e5b7e955/movie_600x337.jpg'},
- {kind:'chapter',chapter:'Chapter 3',titleFa:'Chapter 3 — تریلر رسمی #۱',titleEn:'Chapter 3 — Official Trailer #1',
-  descFa:'تریلر گیم‌پلی #۱',descEn:'Gameplay Trailer #1',
-  video:'https://video.fastly.steamstatic.com/store_trailers/2555190/652669/cfb079ae1fda1d50342b9eeef17f26ec54128c34/1750816997/microtrailer.mp4',
-  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256995468/movie_600x337.jpg'},
- {kind:'chapter',chapter:'Chapter 3',titleFa:'Chapter 3 — تریلر رسمی #۲',titleEn:'Chapter 3 — Official Trailer #2',
-  descFa:'تریلر گیم‌پلی #۲',descEn:'Gameplay Trailer #2',
-  video:'https://video.fastly.steamstatic.com/store_trailers/2555190/653763/0377a74e00d69ca3d05202e47d97dd7c67f7aa00/1750816999/microtrailer.mp4',
-  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256996043/movie_600x337.jpg'},
- {kind:'chapter',chapter:'Chapter 4',titleFa:'Chapter 4 — تریلر سینمایی The Doctor',titleEn:'Chapter 4 — The Doctor Cinematic Trailer',
-  descFa:'تریلر سینمایی',descEn:'Cinematic Trailer',
-  video:'https://video.fastly.steamstatic.com/store_trailers/3008670/803236/8c3bc7a23da685babec13c482b5f67f91de60ed9/1750822935/microtrailer.mp4',
-  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257084059/5c4cb2dd3f90d4e48b850f0589fb74c512b5e4e6/movie_600x337.jpg'},
- {kind:'chapter',chapter:'Chapter 4',titleFa:'Chapter 4 — تریلر گیم‌پلی Doey',titleEn:'Chapter 4 — Doey the Doughman Gameplay Trailer',
-  descFa:'تریلر گیم‌پلی',descEn:'Gameplay Trailer',
-  video:'https://video.fastly.steamstatic.com/store_trailers/3008670/818391/48634265f6150a90ca8698e4f64ae718375ac2ff/1750822938/microtrailer.mp4',
-  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257092152/efda1c274f19e59eff427fd5de10180c3dc09571/movie_600x337.jpg'},
- {kind:'chapter',chapter:'Chapter 5',titleFa:'Chapter 5 — تریلر سینمایی Prototype',titleEn:'Chapter 5 — The Prototype Cinematic Trailer',
-  descFa:'تریلر سینمایی',descEn:'Cinematic Trailer',
-  video:'https://video.fastly.steamstatic.com/store_trailers/4100940/635458062/ba9b7f367e9db84a07f430d4c48738532a78240a/1768069038/microtrailer.mp4',
-  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257262823/5aea19d9a8ce3ca33f7463f9b900b3f4ecf62003/movie_600x337.jpg'},
- {kind:'chapter',chapter:'Chapter 5',titleFa:'Chapter 5 — تریلر رسمی بازی',titleEn:'Chapter 5 — Official Game Trailer',
-  descFa:'تریلر رسمی بازی',descEn:'Official Game Trailer',
-  video:'https://video.fastly.steamstatic.com/store_trailers/4100940/1091952950/93c7e5807878d753448667d45896e15afccf7ae9/1770823590/microtrailer.mp4',
-  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257284636/6bd2ab7e0fb8b93d286f6e97b4ac653d9c83da62/movie_600x337.jpg'},
- {kind:'project',chapter:'PROJECT: PLAYTIME',titleFa:'PROJECT: PLAYTIME — تریلر سینمایی رسمی',titleEn:'PROJECT: PLAYTIME — Official Cinematic Trailer',
-  descFa:'تریلر رسمی سینمایی',descEn:'Official Cinematic Trailer',
-  video:'https://video.fastly.steamstatic.com/store_trailers/1961460/516396/96261b0e9a5d026d4f01bfc60ae343b976853171/1750742860/microtrailer.mp4',
-  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/256917708/movie_600x337.jpg'},
- {kind:'project',chapter:'Escape From Playtime',titleFa:'Escape From Playtime — تریلر معرفی',titleEn:'Escape From Playtime — Reveal Trailer',
-  descFa:'تریلر معرفی رسمی',descEn:'Official Reveal Trailer',
-  video:'https://video.fastly.steamstatic.com/store_trailers/2087540/1591922245/5c8c3201d7d2ff29022aa4ef8d1db636663e1c05/1787749580/microtrailer.mp4',
-  poster:'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/257409094/7d485a2ed375df8dba6df55be6548c3377168607/movie_600x337.jpg'}
+ {kind:'chapter',chapter:'Chapter 1',titleFa:'Chapter 1 — تریلر رسمی',titleEn:'Chapter 1 — Official Trailer',descFa:'تریلر رسمی بازی',descEn:'Official Game Trailer',video:'https://video.fastly.steamstatic.com/store_trailers/1721470/1436595992/a69028002e89be8e99f313aab99851add18f0b10/1770648086/microtrailer.mp4',cover:'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch1header.webp'},
+ {kind:'chapter',chapter:'Chapter 2',titleFa:'Chapter 2 — تریلر رسمی',titleEn:'Chapter 2 — Official Trailer',descFa:'تریلر رسمی بازی',descEn:'Official Game Trailer',video:'https://video.fastly.steamstatic.com/store_trailers/1817490/487921674/234e7a4daae81b8c3489f9dad675edd56a337c22/1770648817/microtrailer.mp4',cover:'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch2MobEntWebsiteBig.webp'},
+ {kind:'chapter',chapter:'Chapter 3',titleFa:'Chapter 3 — تریلر رسمی #۱',titleEn:'Chapter 3 — Official Trailer #1',descFa:'تریلر گیم‌پلی #۱',descEn:'Gameplay Trailer #1',video:'https://video.fastly.steamstatic.com/store_trailers/2555190/652669/cfb079ae1fda1d50342b9eeef17f26ec54128c34/1750816997/microtrailer.mp4',cover:'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch3MobEntWebsiteBig.webp'},
+ {kind:'chapter',chapter:'Chapter 3',titleFa:'Chapter 3 — تریلر رسمی #۲',titleEn:'Chapter 3 — Official Trailer #2',descFa:'تریلر گیم‌پلی #۲',descEn:'Gameplay Trailer #2',video:'https://video.fastly.steamstatic.com/store_trailers/2555190/653763/0377a74e00d69ca3d05202e47d97dd7c67f7aa00/1750816999/microtrailer.mp4',cover:'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch3MobEntWebsiteBig.webp'},
+ {kind:'chapter',chapter:'Chapter 4',titleFa:'Chapter 4 — تریلر سینمایی The Doctor',titleEn:'Chapter 4 — The Doctor Cinematic Trailer',descFa:'تریلر سینمایی',descEn:'Cinematic Trailer',video:'https://video.fastly.steamstatic.com/store_trailers/3008670/803236/8c3bc7a23da685babec13c482b5f67f91de60ed9/1750822935/microtrailer.mp4',cover:'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/DoeyBannerBigger.webp'},
+ {kind:'chapter',chapter:'Chapter 4',titleFa:'Chapter 4 — تریلر گیم‌پلی Doey',titleEn:'Chapter 4 — Doey the Doughman Gameplay Trailer',descFa:'تریلر گیم‌پلی',descEn:'Gameplay Trailer',video:'https://video.fastly.steamstatic.com/store_trailers/3008670/818391/48634265f6150a90ca8698e4f64ae718375ac2ff/1750822938/microtrailer.mp4',cover:'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/DoeyBannerBigger.webp'},
+ {kind:'chapter',chapter:'Chapter 5',titleFa:'Chapter 5 — تریلر سینمایی Prototype',titleEn:'Chapter 5 — The Prototype Cinematic Trailer',descFa:'تریلر سینمایی',descEn:'Cinematic Trailer',video:'https://video.fastly.steamstatic.com/store_trailers/4100940/635458062/ba9b7f367e9db84a07f430d4c48738532a78240a/1768069038/microtrailer.mp4',cover:'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch5EpicGamesBanner.webp'},
+ {kind:'chapter',chapter:'Chapter 5',titleFa:'Chapter 5 — تریلر رسمی بازی',titleEn:'Chapter 5 — Official Game Trailer',descFa:'تریلر رسمی بازی',descEn:'Official Game Trailer',video:'https://video.fastly.steamstatic.com/store_trailers/4100940/1091952950/93c7e5807878d753448667d45896e15afccf7ae9/1770823590/microtrailer.mp4',cover:'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch5EpicGamesBanner.webp'},
+ {kind:'project',chapter:'PROJECT: PLAYTIME',titleFa:'PROJECT: PLAYTIME — تریلر سینمایی رسمی',titleEn:'PROJECT: PLAYTIME — Official Cinematic Trailer',descFa:'تریلر رسمی سینمایی',descEn:'Official Cinematic Trailer',video:'https://video.fastly.steamstatic.com/store_trailers/1961460/516396/96261b0e9a5d026d4f01bfc60ae343b976853171/1750742860/microtrailer.mp4',cover:'https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Project-_Playtime_trailer_banner.webp'},
+ {kind:'project',chapter:'Escape From Playtime',titleFa:'Escape From Playtime — تریلر معرفی',titleEn:'Escape From Playtime — Reveal Trailer',descFa:'تریلر معرفی رسمی',descEn:'Official Reveal Trailer',video:'https://video.fastly.steamstatic.com/store_trailers/2087540/1591922245/5c8c3201d7d2ff29022aa4ef8d1db636663e1c05/1787749580/microtrailer.mp4',cover:'https://mobentertainment.com/payload-api/media/file/escape-from-playtime.webp'}
 ];
 
 function syncTrailerViewport(){
   const touch=(navigator.maxTouchPoints||0)>0;
-  const compact=window.matchMedia('(max-width:900px)').matches||(touch&&window.innerWidth<1200);
+  const compact=window.matchMedia('(max-width:760px)').matches||(touch&&window.innerWidth<900);
   document.body.classList.toggle('trailer-touch-mode',compact);
 }
 
@@ -3721,13 +3707,18 @@ function renderTrailers(){
   if(!grid)return;
   syncTrailerViewport();
   const lang=currentLang==='en'?'en':'fa';
-  grid.innerHTML=TRAILERS.map((v,i)=>{
+  const chapterTitle=lang==='en'?'CHAPTER TRAILERS':'تریلرهای فصل‌ها';
+  const projectTitle=lang==='en'?'PROJECT TRAILERS':'تریلرهای پروژه‌ها';
+  const chapterDesc=lang==='en'?'Official trailers for Chapters 1–5':'تریلرهای رسمی فصل‌های ۱ تا ۵';
+  const projectDesc=lang==='en'?'PROJECT: PLAYTIME and Escape From Playtime':'PROJECT: PLAYTIME و Escape From Playtime';
+  const renderCard=(v,i)=>{
     const title=lang==='en'?v.titleEn:v.titleFa;
     const desc=lang==='en'?v.descEn:v.descFa;
     const sourceLabel=lang==='fa'?'ویدیوی رسمی Steam • Mob Entertainment':'Official Steam video • Mob Entertainment';
-    return '<article class="trailerCard" data-trailer-index="'+i+'">'+
+    return '<article class="trailerCard" data-trailer-index="'+i+'" data-kind="'+v.kind+'">'+
       '<div class="trailerMedia">'+
-        '<img src="'+v.poster+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async">'+
+        '<img src="'+v.cover+'" alt="'+escapeHtml(title)+'" loading="lazy" decoding="async" onerror="this.style.display=&quot;none&quot;">'+
+        '<span class="trailerCoverBadge">OFFICIAL</span>'+
         '<button class="trailerPlay" type="button" aria-label="'+(lang==='fa'?'پخش ':'Play ')+escapeHtml(title)+'"><span>▶</span></button>'+
       '</div>'+
       '<div class="trailerBody">'+
@@ -3738,7 +3729,14 @@ function renderTrailers(){
         '<a class="trailerWatch" href="'+v.video+'" target="_blank" rel="noopener noreferrer">↗ '+(lang==='fa'?'باز کردن ویدیو':'Open video')+'</a>'+
       '</div>'+
     '</article>';
-  }).join('');
+  };
+  const chapters=TRAILERS.map((v,i)=>v.kind==='chapter'?renderCard(v,i):'').join('');
+  const projects=TRAILERS.map((v,i)=>v.kind==='project'?renderCard(v,i):'').join('');
+  grid.innerHTML=
+    '<div class="trailerGroupTitle"><h3>'+chapterTitle+'</h3><p>'+chapterDesc+'</p></div>'+
+    chapters+
+    '<div class="trailerGroupTitle"><h3>'+projectTitle+'</h3><p>'+projectDesc+'</p></div>'+
+    projects;
 }
 
 function openTrailerVideo(index){
@@ -3750,7 +3748,8 @@ function openTrailerVideo(index){
   if(!card)return;
   const media=card.querySelector('.trailerMedia');
   if(!media)return;
-  media.innerHTML='<video controls playsinline preload="metadata" poster="'+item.poster+'" aria-label="'+escapeHtml(currentLang==='en'?item.titleEn:item.titleFa)+'"><source src="'+item.video+'" type="video/mp4"></video>';
+  const title=currentLang==='en'?item.titleEn:item.titleFa;
+  media.innerHTML='<video controls autoplay playsinline preload="metadata" poster="'+item.cover+'" aria-label="'+escapeHtml(title)+'"><source src="'+item.video+'" type="video/mp4"></video>';
   const video=media.querySelector('video');
   if(video){
     document.querySelectorAll('.trailersModal video').forEach(v=>{if(v!==video)v.pause();});
@@ -3763,7 +3762,6 @@ function openTrailers(){
   const modal=$('trailersModal');
   if(!modal)return;
   renderTrailers();
-  syncTrailerViewport();
   modal.classList.add('show');
   modal.setAttribute('aria-hidden','false');
   document.body.style.overflow='hidden';
