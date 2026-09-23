@@ -1270,6 +1270,38 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
   .agSettingBtn{flex:1;min-width:0}
 }
 </style>
+<!-- Datadog Real User Monitoring (Browser SDK) -->
+<script>
+  (function(h,o,u,n,d) {
+    h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}};
+    d=o.createElement(u);
+    d.async=1;
+    d.src=n;
+    d.crossOrigin='';
+    n=o.getElementsByTagName(u)[0];
+    n.parentNode.insertBefore(d,n);
+  })(window,document,'script','https://www.datadoghq-browser-agent.com/us1/v7/datadog-rum.js','DD_RUM');
+
+  window.DD_RUM.onReady(function() {
+    window.DD_RUM.init({
+      applicationId: 'd86e4132-c0ef-47e2-8b81-b1e3718cf666',
+      clientToken: 'pube9861731434fb08f1aa9aec29b0525be',
+      remoteConfiguration: {
+        id: '48b77e4e-aca2-44de-beac-3900d54c7d8c',
+      },
+      site: 'datadoghq.com',
+      service: 'poppy-playtime-web',
+      env: 'production',
+      version: '2026.09.24',
+      sessionSampleRate: 100,
+      sessionReplaySampleRate: 20,
+      trackResources: true,
+      trackUserInteractions: true,
+      trackLongTasks: true,
+      defaultPrivacyLevel: 'mask-user-input'
+    });
+  });
+</script>
 </head>
 <body>
 <div class="authGate loading" id="authGate" role="dialog" aria-modal="true">
