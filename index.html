@@ -532,6 +532,7 @@ body.theme-rose #app:before{background:radial-gradient(circle at 12% 12%,#ff2d70
 .lightbox .zoomControls button{width:42px;height:42px;border-radius:50%;border:1px solid #ffffff33;background:#12060ddd;color:#fff}
 .lightbox .zoomControls button:hover{background:var(--red)}
 body.perf-mode .themePanel,body.perf-mode .search-highlight{transition:none!important}
+body.perf-mode .search-highlight{box-shadow:0 0 0 3px var(--red2),0 0 24px var(--red2)!important;transform:none!important}
 body.perf-mode .char{animation:none!important}
 body.perf-mode .char:hover{transform:none!important}
 @media(max-width:640px){
@@ -3087,6 +3088,44 @@ $('searchInput').addEventListener('input', debounce(e => {
   const seen = new Set();
   const chars = Array.from(document.querySelectorAll('#charGrid .char[data-char-id]'));
 
+  // Project / Escape: این دو مورد فقط با جستجوی متن معمولی همیشه قابل دسترسی نبودند،
+  // چون عنوان اصلی بخش «Projects» خارج از article قرار دارد. اینجا کلیدواژه‌های اختصاصی
+  // تعریف می‌کنیم تا ESC / Escape و نام بخش مستقیماً نتیجه‌ی صحیح را باز کنند.
+  const projectSection = document.getElementById('project');
+  const escapeCard = document.querySelector('#project [data-i18n="escape_title"]')?.closest('article');
+  const qProjectAliases = [
+    'project', 'projects', 'playtime project', 'playtime projects',
+    'project playtime', 'پروژه پلی تایم', 'پروژه‌های پلی‌تایم', 'پروژه های پلی تایم'
+  ].map(normalizeText);
+  const qEscapeAliases = [
+    'esc', 'escape', 'escape from playtime', 'اسکیپ', 'اسکیپ فرام پلی تایم'
+  ].map(normalizeText);
+
+  const matchesProject = qProjectAliases.some(alias => alias && (alias.includes(q) || q.includes(alias)));
+  const matchesEscape = qEscapeAliases.some(alias => alias && (alias.includes(q) || q.includes(alias)));
+
+  if (matchesEscape && escapeCard) {
+    seen.add('__escape_from_playtime__');
+    const titleEl = escapeCard.querySelector('[data-i18n="escape_title"]');
+    const previewEl = escapeCard.querySelector('[data-i18n="escape_p1"]');
+    matches.push({
+      el: escapeCard,
+      title: titleEl ? titleEl.textContent.trim() : 'Escape From Playtime',
+      preview: (previewEl?.textContent || '').trim().substring(0, 110) + '...'
+    });
+  }
+
+  if (matchesProject && projectSection && !matchesEscape) {
+    seen.add('project');
+    const titleEl = projectSection.querySelector('[data-i18n="project_section_title"]');
+    const previewEl = projectSection.querySelector('[data-i18n="project_section_desc"], [data-i18n="project_p1"]');
+    matches.push({
+      el: projectSection,
+      title: titleEl ? titleEl.textContent.trim() : (currentLang === 'fa' ? 'پروژه‌های پلی‌تایم' : 'Playtime Projects'),
+      preview: (previewEl?.textContent || '').trim().substring(0, 110) + '...'
+    });
+  }
+
   // جستجوی مستقیم شخصیت‌ها: نتیجه دقیقاً به کارت همان شخصیت می‌رود.
   chars.forEach(card => {
     const text = normalizeText(card.textContent || '');
@@ -3110,7 +3149,7 @@ $('searchInput').addEventListener('input', debounce(e => {
       const txt = normalizeText(el.textContent || '');
       if (!txt.includes(q)) return;
       const section = el.closest('article') || el.closest('.card');
-      if (!section || seen.has(section.id)) return;
+      if (!section || seen.has(section.id) || section === escapeCard) return;
       const key = section.id || ('section-' + matches.length);
       if (seen.has(key)) return;
       seen.add(key);
@@ -3152,6 +3191,10 @@ $('searchInput').addEventListener('input', debounce(e => {
           setTimeout(() => target.querySelector('.char-img')?.scrollIntoView({behavior:'smooth', block:'center'}), 250);
         } else {
           target.scrollIntoView({behavior:'smooth', block:'start'});
+          target.classList.remove('search-highlight');
+          void target.offsetWidth;
+          target.classList.add('search-highlight');
+          setTimeout(() => target.classList.remove('search-highlight'), 1800);
         }
         results.classList.remove('show');
         $('searchPanel').classList.remove('show');
