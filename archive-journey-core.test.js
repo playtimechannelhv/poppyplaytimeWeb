@@ -5,7 +5,7 @@ const { normalizeState, createProgressStore } = require('./archive-journey-core.
 test('normalizeState keeps an exact word-level reading position and clamps invalid values', () => {
   const out = normalizeState({ article: 2, block: 4, word: 9, speed: 1.5, completed: false }, 7, 5);
   assert.deepEqual(out, { article: 2, block: 4, word: 9, speed: 1.5, completed: false });
-  const clamped = normalizeState({ article: 99, block: -4, word: 99, speed: 7, completed: 'x' }, 2, 3);
+  const clamped = normalizeState({ article: 99, block: -4, word: 99, speed: 7, completed: 'x' }, 2, 3, 3);
   assert.deepEqual(clamped, { article: 1, block: 0, word: 2, speed: 1, completed: false });
 });
 
