@@ -45,7 +45,8 @@ function articleKeys(){
 }
 
 function articleSource(key){
-  const article = window.articles && window.articles[key];
+  const registry = typeof articles !== 'undefined' ? articles : null;
+  const article = registry && registry[key];
   if(!article) return null;
   return article[currentLanguage()] || article.fa || article.en || null;
 }
@@ -599,7 +600,7 @@ function installLifecycle(){
 }
 
 async function init(){
-  if(!window.articles) return;
+  if(typeof articles === 'undefined') return;
   injectUI();
   state.store = makeStore();
   state.metrics = buildMetrics();
