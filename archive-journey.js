@@ -357,12 +357,16 @@ async function loadSavedState(){
 }
 
 function schedulePersist(immediate, keepalive){
-  clearTimeout(state.saveTimer);
   if(immediate){
+    clearTimeout(state.saveTimer);
+    state.saveTimer = null;
     return flushPersist(keepalive);
   }
   if(state.saveTimer) return state.saveTimer;
-  state.saveTimer = setTimeout(() => { state.saveTimer = null; flushPersist(false); }, SAVE_DELAY);
+  state.saveTimer = setTimeout(() => {
+    state.saveTimer = null;
+    void flushPersist(false);
+  }, SAVE_DELAY);
   return state.saveTimer;
 }
 
@@ -527,7 +531,6 @@ async function finishJourney(){
   state.timer = null;
   state.active = false;
   state.paused = false;
-  await flushPersist(true);
   const modal = $('articleModal');
   if(modal) modal.classList.remove('archive-journey-active');
   state.intentionalClose = true;
@@ -542,11 +545,24 @@ async function finishJourney(){
 function handleAuthChange(){
   const tokenNow = authToken();
   const registered = !!tokenNow;
+  if(state.active){
+    clearInterval(state.timer);
+    state.timer = null;
+    clearTimeout(state.saveTimer);
+    state.saveTimer = null;
+    state.active = false;
+    state.paused = false;
+    state.intentionalClose = true;
+    try{
+      if(typeof window.closeArticleModal === 'function') window.closeArticleModal();
+    }catch(_){}
+    state.intentionalClose = false;
+    const modal = $('articleModal');
+    if(modal) modal.classList.remove('archive-journey-active');
+    setBarVisible(false);
+  }
   if(registered){
     state.store && state.store.clearGuest();
-  }
-  if(state.active){
-    void exitJourney();
   }
   state.store = makeStore();
 }
