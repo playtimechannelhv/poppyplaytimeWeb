@@ -1260,6 +1260,8 @@ body.tb-small .topbar .actions>button#authBtn[id]{min-width:62px!important;font-
 .agSuccessDetail{font-size:11.5px;color:#bfe5d7;line-height:1.9}
 #agLogin{display:none!important}
 @media(max-width:480px){
+  .agBox{padding-top:48px}
+  .agClose{top:7px;inset-inline-start:auto;inset-inline-end:7px;z-index:10}
   .agPremiumShell{padding:18px 13px 13px;border-radius:24px}
   .agLogo{font-size:28px}
   .agBtn{min-height:54px}
@@ -2327,7 +2329,7 @@ W.PoppyAuth={start:start,skip:skip,openGate:function(){showGate(false);},forceLo
    <article class="card full fade-in">
     <span class="year">2026 • MOB ENTERTAINMENT</span>
     <div class="chapter-banner">
-      <img src="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/EscapeFromPlaytimeBanner.svg" alt="Escape From Playtime" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://mobentertainment.com/payload-api/media/file/escape-from-playtime.webp';">
+      <img src="https://mobentertainment.com/payload-api/media/file/escape-from-playtime.webp" alt="Escape From Playtime" loading="eager" fetchpriority="high" decoding="async">
     </div>
     <h3 data-i18n="escape_title">Escape From Playtime</h3>
     <span class="theory-tag" data-i18n="escape_tag">Official new project by Mob Entertainment</span>
@@ -3931,7 +3933,27 @@ async function fetchAiStatus() {
     }
     const data = await res.json();
     if (data.success) {
-      updateAiBadge(data.remaining, data.limit, true);
+      const remaining = Number(data.remaining);
+      const limit = Number(data.limit) || 5;
+      const systemDisabled = data.aiDisabled === true;
+
+      if (!systemDisabled && Number.isFinite(remaining) && remaining <= 0) {
+        const serverLimitState = {
+          exhausted: true,
+          remaining: 0,
+          limit,
+          resetAt: Number(data.resetAt) || getNext0330()
+        };
+        storageSet(AI_CLIENT_LIMIT_KEY, JSON.stringify(serverLimitState));
+      } else if (remaining > 0) {
+        storageRemove(AI_CLIENT_LIMIT_KEY);
+      }
+
+      updateAiBadge(remaining, limit, true);
+
+      if (!systemDisabled && remaining <= 0 && typeof showOnlyClientLimitMessage === 'function') {
+        showOnlyClientLimitMessage();
+      }
       return true;
     }
     return false;
@@ -4196,6 +4218,10 @@ $('clearChatHistory').onclick = async () => {
   if (ok) {
     storageRemove(AI_HISTORY_KEY);
     renderAiMessages();
+    if (typeof showOnlyClientLimitMessage === 'function') {
+      const preservedLimit = typeof getAiClientLimitState === 'function' ? getAiClientLimitState() : null;
+      if (preservedLimit) showOnlyClientLimitMessage(preservedLimit);
+    }
     showToast(currentLang === 'fa' ? 'تاریخچه پاک شد ✅' : 'History cleared ✅', 'success');
   }
 };
@@ -4525,7 +4551,8 @@ const aiBadgeObserver = new MutationObserver(() => {
 if ($('aiRemainingBadge')) aiBadgeObserver.observe($('aiRemainingBadge'), {childList:true,subtree:true,characterData:true});
 
 let aiClientLimitTicker = setInterval(() => {
-  if (!getAiClientLimitState()) {
+  const state = getAiClientLimitState();
+  if (!state) {
     $('aiChatToggleBtn')?.classList.remove('client-limit');
     const box = $('aiDailyLimitMessageFinal');
     if (box) box.remove();
