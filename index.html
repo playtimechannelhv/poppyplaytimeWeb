@@ -4797,6 +4797,7 @@ updateFloatingUI();
     const state=clientState();
     if(state){
       if(typeof aiRemaining!=='undefined') aiRemaining=0;
+      if(typeof updateAiBadge==='function') updateAiBadge(0,state.limit||5);
       if($('aiChatModal')?.classList.contains('show')) renderClientLimitMessage(state);
       setAiClientInputDisabled(true);
     }else{
