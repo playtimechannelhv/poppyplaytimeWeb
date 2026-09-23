@@ -3199,7 +3199,7 @@ $('searchInput').addEventListener('input', debounce(e => {
   const trailerNav = document.querySelector('.navcard[data-target="trailers"]');
   const qTrailerAliases = [
     'trailer', 'trailers', 'trailer video', 'poppy trailers', 'chapter trailer',
-    'تریلر', 'تریلرها', 'تریلر ها', 'ویدیو تریلر', 'تیزر'
+    'تریلر', 'تریلرها', 'تریلر ها', 'ویدیو تریلر', 'تیزر', 'project playtime trailer', 'escape from playtime trailer', 'تریلر پروژه پلی تایم', 'تریلر اسکیپ فرام پلی تایم'
   ].map(normalizeText);
 
   const matchesProject = qProjectAliases.some(alias => alias && (alias.includes(q) || q.includes(alias)));
@@ -3401,7 +3401,7 @@ const translations = {
   nav_mystery:"رازها",nav_mystery_sub:"اطلاعات تأییدشده و سرنخ",nav_release:"منابع انتشار",nav_release_sub:"تاریخ و پلتفرم",
   nav_about:"توضیحات",nav_about_sub:"جهان بازی",nav_project:"پروژه‌های پلی‌تایم",nav_project_sub:"PROJECTS & NEW GAMES",
   nav_news:"مقالات",nav_news_sub:"تحلیل و اطلاعات تأییدشده",nav_trailers:"تریلرها",nav_trailers_sub:"تریلرهای رسمی فصل‌ها",
-  trailers_title:"تریلرهای رسمی Poppy Playtime",trailers_desc:"تریلرهای اصلی فصل‌ها؛ ویدیوها از YouTube رسمی Mob Entertainment بارگذاری می‌شوند.",trailers_back:"بازگشت به آرشیو",
+  trailers_title:"تریلرهای رسمی Poppy Playtime",trailers_desc:"تریلرهای فصل‌ها و پروژه‌های مرتبط. منبع ویدیوها YouTube رسمی Mob Entertainment است؛ دسترسی به YouTube بسته به شبکه ممکن است متفاوت باشد.",trailers_back:"بازگشت به آرشیو",
   char_title:"پرونده‌ی شخصیت‌ها",char_desc:"روی هر دسته کلیک کن تا فیلتر بشه. روی هر کارت بزن تا عکس بزرگش رو ببینی.",
   char_pj:"PJ Pug-a-Pillar یک اسباب‌بازی از خط Swap-imals شرکت Playtime Co. است که در Chapter 2: Fly in a Web در مینی‌گیم Statues ظاهر می‌شود. شکل Bigger Body او ترکیبی از Pug و Caterpillar است و Experiment 1174 نام دارد.",
   char_pj_theory:"وضعیت تأییدشده: PJ Pug-a-Pillar با عنوان Experiment 1174 شناخته می‌شود و برای نقش آنتاگونیست مینی‌گیم Statues در Game Station ساخته شد. او به خط اسباب‌بازی Swap-imals تعلق دارد.",
@@ -3536,7 +3536,7 @@ const translations = {
   nav_mystery:"Mysteries",nav_mystery_sub:"Theories & clues",nav_release:"Releases",nav_release_sub:"Dates & platforms",
   nav_about:"About",nav_about_sub:"Game world",nav_project:"Playtime Projects",nav_project_sub:"PROJECTS & NEW GAMES",
   nav_news:"Articles",nav_news_sub:"Analysis & theories",nav_trailers:"Trailers",nav_trailers_sub:"Official chapter trailers",
-  trailers_title:"Official Poppy Playtime Trailers",trailers_desc:"Main chapter trailers, loaded from Mob Entertainment's official YouTube videos.",trailers_back:"Back to Archive",
+  trailers_title:"Official Poppy Playtime Trailers",trailers_desc:"Chapter and project trailers. Videos are sourced from Mob Entertainment's official YouTube; availability depends on the network.",trailers_back:"Back to Archive",
   char_title:"Character Files",char_desc:"Click a category to filter. Click any card to view the image larger.",
   char_pj:"PJ Pug-a-Pillar is a Playtime Co. toy from the Swap-imals line that appears in Chapter 2: Fly in a Web during the Statues mini-game. Its Bigger Body form is a pug/caterpillar hybrid designated Experiment 1174.",
   char_pj_theory:"Confirmed status: PJ Pug-a-Pillar is designated Experiment 1174 and was used as the antagonist of the Statues mini-game in the Game Station. He belongs to Playtime Co.'s Swap-imals toy line.",
@@ -3665,24 +3665,34 @@ const translations = {
 };
 let currentLang = storageGet('poppy_lang') || 'fa';
 const TRAILERS = [
- {id:'xMQm8ubM-Cw',chapter:'Chapter 1',fa:{title:'Chapter 1 — تریلر رسمی',desc:'Official Game Trailer'},en:{title:'Chapter 1 — Official Trailer',desc:'Official Game Trailer'}},
- {id:'XVENjm3Bjk0',chapter:'Chapter 2',fa:{title:'Chapter 2 — تریلر رسمی',desc:'Official Game Trailer'},en:{title:'Chapter 2 — Official Trailer',desc:'Official Game Trailer'}},
- {id:'s3_k03RC668',chapter:'Chapter 3',fa:{title:'Chapter 3 — تریلر رسمی #۱',desc:'Official Game Trailer #1'},en:{title:'Chapter 3 — Official Trailer #1',desc:'Official Game Trailer #1'}},
- {id:'csD8OYxl2Cs',chapter:'Chapter 3',fa:{title:'Chapter 3 — تریلر رسمی #۲',desc:'Official Game Trailer #2'},en:{title:'Chapter 3 — Official Trailer #2',desc:'Official Game Trailer #2'}},
- {id:'DEu8qH2_8IU',chapter:'Chapter 4',fa:{title:'Chapter 4 — تریلر سینمایی The Doctor',desc:'Cinematic Trailer'},en:{title:'Chapter 4 — The Doctor Cinematic Trailer',desc:'Cinematic Trailer'}},
- {id:'tych99G3-P0',chapter:'Chapter 4',fa:{title:'Chapter 4 — تریلر گیم‌پلی Doey',desc:'Gameplay Trailer'},en:{title:'Chapter 4 — Doey the Doughman Gameplay Trailer',desc:'Gameplay Trailer'}},
- {id:'-poSVOan2fw',chapter:'Chapter 5',fa:{title:'Chapter 5 — تریلر سینمایی Prototype',desc:'Cinematic Trailer'},en:{title:'Chapter 5 — The Prototype Cinematic Trailer',desc:'Cinematic Trailer'}},
- {id:'EriEensiy0I',chapter:'Chapter 5',fa:{title:'Chapter 5 — تریلر رسمی بازی',desc:'Official Game Trailer'},en:{title:'Chapter 5 — Official Game Trailer',desc:'Official Game Trailer'}}
+ {id:'xMQm8ubM-Cw',kind:'chapter',chapter:'Chapter 1',fa:{title:'Chapter 1 — تریلر رسمی',desc:'تریلر رسمی بازی'},en:{title:'Chapter 1 — Official Trailer',desc:'Official Game Trailer'}},
+ {id:'XVENjm3Bjk0',kind:'chapter',chapter:'Chapter 2',fa:{title:'Chapter 2 — تریلر رسمی',desc:'تریلر رسمی بازی'},en:{title:'Chapter 2 — Official Trailer',desc:'Official Game Trailer'}},
+ {id:'s3_k03RC668',kind:'chapter',chapter:'Chapter 3',fa:{title:'Chapter 3 — تریلر رسمی #۱',desc:'تریلر رسمی بازی #۱'},en:{title:'Chapter 3 — Official Trailer #1',desc:'Official Game Trailer #1'}},
+ {id:'csD8OYxl2Cs',kind:'chapter',chapter:'Chapter 3',fa:{title:'Chapter 3 — تریلر رسمی #۲',desc:'تریلر رسمی بازی #۲'},en:{title:'Chapter 3 — Official Trailer #2',desc:'Official Game Trailer #2'}},
+ {id:'DEu8qH2_8IU',kind:'chapter',chapter:'Chapter 4',fa:{title:'Chapter 4 — تریلر سینمایی The Doctor',desc:'تریلر سینمایی'},en:{title:'Chapter 4 — The Doctor Cinematic Trailer',desc:'Cinematic Trailer'}},
+ {id:'tych99G3-P0',kind:'chapter',chapter:'Chapter 4',fa:{title:'Chapter 4 — تریلر گیم‌پلی Doey',desc:'تریلر گیم‌پلی'},en:{title:'Chapter 4 — Doey the Doughman Gameplay Trailer',desc:'Gameplay Trailer'}},
+ {id:'-poSVOan2fw',kind:'chapter',chapter:'Chapter 5',fa:{title:'Chapter 5 — تریلر سینمایی Prototype',desc:'تریلر سینمایی'},en:{title:'Chapter 5 — The Prototype Cinematic Trailer',desc:'Cinematic Trailer'}},
+ {id:'EriEensiy0I',kind:'chapter',chapter:'Chapter 5',fa:{title:'Chapter 5 — تریلر رسمی بازی',desc:'تریلر رسمی بازی'},en:{title:'Chapter 5 — Official Game Trailer',desc:'Official Game Trailer'}},
+ {id:'Q-HB94KdBXQ',kind:'project',chapter:'PROJECT: PLAYTIME',fa:{title:'PROJECT: PLAYTIME — تریلر سینمایی رسمی',desc:'تریلر رسمی سینمایی'},en:{title:'PROJECT: PLAYTIME — Official Cinematic Trailer',desc:'Official Cinematic Trailer'}},
+ {id:'qRLTbHUl44U',kind:'escape',chapter:'Escape From Playtime',fa:{title:'Escape From Playtime — تریلر معرفی',desc:'تریلر معرفی رسمی'},en:{title:'Escape From Playtime — Reveal Trailer',desc:'Official Reveal Trailer'}}
 ];
+
+function syncTrailerViewport(){
+  const touch=(navigator.maxTouchPoints||0)>0;
+  const compact=window.matchMedia('(max-width:900px)').matches||(touch&&window.innerWidth<1200);
+  document.body.classList.toggle('trailer-touch-mode',compact);
+}
 
 function renderTrailers(){
   const grid=$('trailerGrid');
   if(!grid)return;
+  syncTrailerViewport();
   const lang=currentLang==='en'?'en':'fa';
   grid.innerHTML=TRAILERS.map(v=>{
     const d=v[lang]||v.fa;
     const watch='https://www.youtube.com/watch?v='+v.id;
-    return '<article class="trailerCard" data-video="'+v.id+'">'+
+    const sourceLabel=lang==='fa'?'منبع رسمی • YouTube / Mob Entertainment':'Official source • YouTube / Mob Entertainment';
+    return '<article class="trailerCard" data-video="'+v.id+'" data-kind="'+v.kind+'">'+
       '<div class="trailerMedia">'+
         '<img src="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg" alt="'+escapeHtml(d.title)+'" loading="lazy" decoding="async">'+
         '<button class="trailerPlay" type="button" aria-label="'+(lang==='fa'?'پخش ':'Play ')+escapeHtml(d.title)+'"><span>▶</span></button>'+
@@ -3691,16 +3701,33 @@ function renderTrailers(){
         '<div class="trailerEpisode">'+escapeHtml(v.chapter)+'</div>'+
         '<h3>'+escapeHtml(d.title)+'</h3>'+
         '<p>'+escapeHtml(d.desc)+'</p>'+
-        '<a class="trailerWatch" href="'+watch+'" target="_blank" rel="noopener noreferrer">↗ '+(lang==='fa'?'تماشا در YouTube':'Watch on YouTube')+'</a>'+
+        '<span class="trailerSource">'+escapeHtml(sourceLabel)+'</span>'+
+        '<a class="trailerWatch" href="'+watch+'" target="_blank" rel="noopener noreferrer">↗ '+(lang==='fa'?'مشاهده منبع رسمی':'Open official source')+'</a>'+
       '</div>'+
     '</article>';
   }).join('');
+}
+
+function openTrailerVideo(id){
+  const grid=$('trailerGrid');
+  if(!grid||!id)return;
+  /* Re-render first: any existing iframe is destroyed, so simultaneous playback is impossible. */
+  renderTrailers();
+  const cards=grid.querySelectorAll('.trailerCard');
+  let card=null;
+  for(const item of cards){if(item.dataset.video===id){card=item;break;}}
+  if(!card)return;
+  const media=card.querySelector('.trailerMedia');
+  if(!media)return;
+  const title=card.querySelector('h3')?.textContent||'Poppy Playtime trailer';
+  media.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id)+'?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="'+escapeHtml(title)+'" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
 }
 
 function openTrailers(){
   const modal=$('trailersModal');
   if(!modal)return;
   renderTrailers();
+  syncTrailerViewport();
   modal.classList.add('show');
   modal.setAttribute('aria-hidden','false');
   document.body.style.overflow='hidden';
@@ -3711,7 +3738,7 @@ function closeTrailers(){
   if(!modal)return;
   modal.classList.remove('show');
   modal.setAttribute('aria-hidden','true');
-  renderTrailers(); // توقف فوری پخش و بازگشت به حالت سبک
+  renderTrailers();
   document.body.style.overflow='';
 }
 
@@ -3722,13 +3749,9 @@ $('trailerGrid').addEventListener('click',e=>{
   const play=e.target.closest('.trailerPlay');
   if(!play)return;
   const card=play.closest('.trailerCard');
-  if(!card)return;
-  const id=card.dataset.video;
-  const media=card.querySelector('.trailerMedia');
-  if(!id||!media)return;
-  media.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="'+escapeHtml(card.querySelector('h3')?.textContent||'Poppy Playtime trailer')+'" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+  if(card)openTrailerVideo(card.dataset.video);
 });
-
+window.addEventListener('resize',syncTrailerViewport);
 function setLanguage(lang) {
   const nextLang=lang==='en'?'en':'fa',dict=translations[nextLang]||translations.fa;
   currentLang=nextLang;storageSet('poppy_lang',nextLang);document.documentElement.lang=nextLang;document.documentElement.dir='rtl';
