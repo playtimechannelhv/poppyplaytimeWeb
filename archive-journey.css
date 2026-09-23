@@ -1,0 +1,38 @@
+.archive-journey-nav{position:relative;border-color:rgba(255,23,77,.5)!important;box-shadow:0 0 0 1px rgba(255,23,77,.06),0 14px 40px rgba(255,23,77,.08)}
+.archive-journey-nav:after{content:"✦";position:absolute;left:14px;top:11px;color:rgba(255,75,110,.75);font-size:14px;pointer-events:none}
+.archive-journey-nav .aj-badge{display:inline-flex;margin-bottom:7px;padding:4px 8px;border-radius:999px;background:rgba(255,23,77,.12);color:#ff4a6e;font-size:10px}
+#archiveJourneyBar{position:fixed;top:88px;left:50%;transform:translateX(-50%);z-index:8999998;width:min(760px,calc(100vw - 24px));display:none;padding:10px 12px;border:1px solid rgba(255,75,110,.25);border-radius:16px;background:rgba(11,5,9,.92);backdrop-filter:blur(18px);box-shadow:0 16px 50px #0009;color:#fff;font-family:Vazirmatn,Inter,Arial,sans-serif;gap:9px;align-items:center}
+#archiveJourneyBar.show{display:grid;grid-template-columns:1fr auto auto;grid-template-areas:"main pct actions" "progress progress progress"}
+#archiveJourneyMain{grid-area:main;min-width:0}
+#archiveJourneyTitle{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#archiveJourneyMeta{margin-top:3px;color:#c4aeb5;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#archiveJourneyPct{grid-area:pct;color:#ff4a6e;font-size:11px;white-space:nowrap}
+#archiveJourneyActions{grid-area:actions;display:flex;gap:5px}
+.archive-journey-btn{height:32px;border:1px solid rgba(255,75,110,.2);border-radius:9px;background:#2e0d14;color:#fff;padding:0 9px;font-size:10px;cursor:pointer}
+.archive-journey-btn.active{background:#ff174d;border-color:transparent;font-weight:800}
+.archive-journey-btn.exit{background:#18070d}
+#archiveJourneyProgress{grid-area:progress;height:5px;background:#290f17;border-radius:99px;overflow:hidden}
+#archiveJourneyProgressFill{height:100%;width:0;background:linear-gradient(90deg,#ff174d,#ff4a6e);border-radius:inherit;transition:width .2s}
+#articleModal.archive-journey-active .closeArticle{visibility:hidden;pointer-events:none}
+#articleContent .archive-journey-block{position:relative;border-radius:9px;transition:background .18s,color .18s}
+#articleContent .archive-journey-block.active{background:rgba(255,23,77,.055);color:inherit}
+#articleContent .archive-journey-block.active:before{content:"";position:absolute;right:-8px;top:10px;width:3px;height:28px;border-radius:9px;background:#ff174d;box-shadow:0 0 15px rgba(255,23,77,.3)}
+#articleContent .archive-journey-word{border-radius:4px;transition:background .08s,color .08s,box-shadow .08s}
+#articleContent .archive-journey-word.read{color:inherit}
+#articleContent .archive-journey-word.current{background:rgba(255,23,77,.22);color:inherit;box-shadow:0 0 0 1px rgba(255,23,77,.18)}
+#archiveJourneyToast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,16px);opacity:0;pointer-events:none;z-index:8999999;padding:10px 13px;border-radius:12px;background:#1a080e;border:1px solid rgba(255,75,110,.3);color:#fff;font-size:11px;line-height:1.7;text-align:center;max-width:min(380px,calc(100vw - 32px));transition:.2s;font-family:Vazirmatn,Inter,Arial,sans-serif}
+#archiveJourneyToast.show{opacity:1;transform:translate(-50%,0)}
+#archiveJourneyResume{position:fixed;inset:0;z-index:8999997;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.66)}
+#archiveJourneyResume.show{display:flex}
+#archiveJourneyResume .aj-dialog{width:min(360px,100%);padding:18px;border:1px solid rgba(255,75,110,.25);border-radius:18px;background:#10060a;box-shadow:0 30px 70px #000b;text-align:right}
+#archiveJourneyResume h3{margin:0 0 8px;font-size:16px}
+#archiveJourneyResume p{margin:0 0 16px;color:#c4aeb5;font-size:12px;line-height:1.8}
+#archiveJourneyResume .aj-dialog-actions{display:flex;gap:8px}
+#archiveJourneyResume button{flex:1;height:38px;border:0;border-radius:11px;background:#2e0d14;color:#fff;font-size:11px;cursor:pointer}
+#archiveJourneyResume button.primary{background:#ff174d;font-weight:800}
+@media(max-width:640px){
+  #archiveJourneyBar{top:78px}
+  #archiveJourneyBar.show{grid-template-columns:1fr auto;grid-template-areas:"main pct" "actions actions" "progress progress"}
+  #archiveJourneyActions{overflow-x:auto;padding-top:2px}
+  #archiveJourneyActions .archive-journey-btn{flex:0 0 auto}
+}
