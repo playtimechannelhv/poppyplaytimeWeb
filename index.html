@@ -85,7 +85,7 @@ body:not(.light-mode):not(.perf-mode) .hero h1{animation:flicker 6s infinite}
 .heading{text-align:center;margin-bottom:34px}
 .heading h2{font-size:clamp(31px,5vw,56px);margin:0 0 7px;font-family:'Oswald',Vazirmatn,sans-serif;font-weight:700;letter-spacing:1px}
 .heading p{color:var(--muted);margin:0}
-.navgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:24px}
+.navgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin-bottom:24px}
 .navcard{border:1px solid rgba(var(--red-rgb),.173);background:linear-gradient(145deg,#170910,#0c0609);padding:15px 10px;border-radius:15px;text-align:center;transition:.25s;min-height:74px}
 body.light-mode .navcard{background:linear-gradient(145deg,#fff,#fdf5f7)}
 .navcard:hover{transform:translateY(-4px);border-color:rgba(var(--red2-rgb),.533);box-shadow:0 12px 35px rgba(var(--red-rgb),.094)}
@@ -797,6 +797,49 @@ body.font-large{zoom:1.08}
 .agRecoveryCenter .agRecoveryCodeCard .agRecoveryStepTitle{color:#bff5dc;margin-bottom:9px}
 .agRecoveryCenter .agRecoveryCopy.agRgbExit{color:#fff;border-color:transparent;background:linear-gradient(90deg,#ff0055,#ff8a00,#ffe600,#00d95a,#00cfff,#365cff,#a300ff,#ff0055);background-size:400% 100%;box-shadow:0 0 26px rgba(255,0,150,.28),0 10px 30px rgba(0,210,255,.18);animation:agRgbFlow 2.6s linear infinite}
 @keyframes agRgbFlow{0%{background-position:0% 50%;filter:hue-rotate(0deg)}100%{background-position:400% 50%;filter:hue-rotate(360deg)}}
+
+/* ============ Trailers ============ */
+.trailersModal{position:fixed;inset:0;z-index:320;background:#000e;backdrop-filter:blur(18px);display:none;align-items:center;justify-content:center;padding:16px;animation:fadeIn .3s}
+.trailersModal.show{display:flex}
+.trailersModalBox{background:var(--panel);border:1px solid #ff496c77;border-radius:26px;width:min(1180px,100%);height:min(92vh,100%);box-shadow:0 30px 110px #000c;display:flex;flex-direction:column;overflow:hidden;animation:zoomIn .3s}
+.trailerHeader{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#ffffff08,transparent);flex:0 0 auto}
+.trailerBack{border:1px solid rgba(var(--red2-rgb),.45);background:rgba(var(--red-rgb),.08);color:var(--white);border-radius:12px;padding:9px 14px;font-family:'Oswald',Vazirmatn,sans-serif;font-size:12px;cursor:pointer;transition:.2s;white-space:nowrap}
+.trailerBack:hover{background:rgba(var(--red-rgb),.18);transform:translateY(-1px)}
+.trailerHeader h2{margin:0;font-family:'Oswald',Vazirmatn,sans-serif;font-size:clamp(20px,3vw,30px);color:var(--white);line-height:1.2}
+.trailerHeader p{margin:3px 0 0;color:var(--muted);font-size:11px;line-height:1.7}
+.trailerClose{margin-inline-start:auto;width:40px;height:40px;border-radius:50%;border:1px solid #ff4b6e88;background:#ff174d22;color:#fff;font-size:19px;cursor:pointer;transition:.2s}
+.trailerClose:hover{background:#ff174d44;transform:rotate(90deg)}
+.trailerGrid{padding:18px;overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-content:start;-webkit-overflow-scrolling:touch}
+.trailerCard{background:var(--card-bg);border:1px solid rgba(var(--red-rgb),.16);border-radius:20px;overflow:hidden;box-shadow:0 18px 55px #0008;transition:.25s;position:relative}
+.trailerCard:hover{transform:translateY(-4px);border-color:rgba(var(--red2-rgb),.55);box-shadow:0 18px 55px rgba(var(--red-rgb),.18)}
+.trailerMedia{position:relative;aspect-ratio:16/9;background:#050205;overflow:hidden}
+.trailerMedia img,.trailerMedia iframe{width:100%;height:100%;display:block;border:0}
+.trailerMedia img{object-fit:cover;transition:transform .45s ease}
+.trailerCard:hover .trailerMedia img{transform:scale(1.025)}
+.trailerPlay{position:absolute;inset:0;margin:auto;width:68px;height:68px;border-radius:50%;border:1px solid #ffffff55;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-size:25px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 35px #0008;cursor:pointer;transition:.2s}
+.trailerPlay:hover{transform:scale(1.08);box-shadow:0 14px 45px rgba(var(--red-rgb),.4)}
+.trailerBody{padding:16px}
+.trailerEpisode{color:var(--red2);font-family:'Oswald',Vazirmatn,sans-serif;font-size:10px;letter-spacing:1.6px;margin-bottom:5px;text-transform:uppercase}
+.trailerBody h3{margin:0 0 7px;font-size:17px;line-height:1.5;font-family:'Oswald',Vazirmatn,sans-serif;color:var(--white)}
+.trailerBody p{margin:0;color:var(--muted);font-size:12px;line-height:1.85;min-height:44px}
+.trailerWatch{display:inline-flex;align-items:center;gap:7px;margin-top:12px;color:var(--red2);text-decoration:none;font-family:'Oswald',Vazirmatn,sans-serif;font-size:11px;border-bottom:1px dashed #ff4b6e66;padding-bottom:2px}
+.trailerWatch:hover{color:#fff}
+body.perf-mode .trailersModal{backdrop-filter:none}
+body.perf-mode .trailerCard{transition:none;box-shadow:none}
+body.perf-mode .trailerCard:hover{transform:none;box-shadow:none;border-color:rgba(var(--red-rgb),.16)}
+body.perf-mode .trailerMedia img{transition:none}
+body.perf-mode .trailerCard:hover .trailerMedia img{transform:none}
+@media(max-width:900px){.trailerGrid{grid-template-columns:1fr}}
+@media(max-width:640px){
+  .trailersModal{padding:8px}
+  .trailersModalBox{height:94vh;border-radius:20px}
+  .trailerHeader{padding:12px}
+  .trailerHeader p{font-size:10px}
+  .trailerGrid{padding:12px;gap:12px}
+  .trailerBody{padding:13px}
+  .trailerBody h3{font-size:15px}
+  .trailerPlay{width:58px;height:58px;font-size:22px}
+}
 </style></style>
 
 <!-- FIXER-LOTTIE-P1-APPLIED -->
@@ -2054,6 +2097,7 @@ W.PoppyAuth={start:start,skip:skip,openGate:function(){showGate(false);},forceLo
    <button class="navcard" data-target="about"><strong data-i18n="nav_about">توضیحات</strong><small data-i18n="nav_about_sub">جهان بازی</small></button>
    <button class="navcard" data-target="project"><strong data-i18n="nav_project">پروژه پلی‌تایم</strong><small data-i18n="nav_project_sub">PROJECT: PLAYTIME</small></button>
    <button class="navcard" data-target="news"><strong data-i18n="nav_news">مقالات</strong><small data-i18n="nav_news_sub">تحلیل و اطلاعات تأییدشده</small></button>
+   <button class="navcard" data-target="trailers"><strong data-i18n="nav_trailers">تریلرها</strong><small data-i18n="nav_trailers_sub">تریلرهای رسمی فصل‌ها</small></button>
   </div>
 
   <div id="story" class="content">
@@ -2495,6 +2539,20 @@ W.PoppyAuth={start:start,skip:skip,openGate:function(){showGate(false);},forceLo
  </div>
 </div>
 
+<div class="trailersModal" id="trailersModal" aria-hidden="true">
+ <div class="trailersModalBox">
+  <div class="trailerHeader">
+   <button class="trailerBack" id="trailersBack" type="button">↩ <span data-i18n="trailers_back">بازگشت به آرشیو</span></button>
+   <div>
+    <h2 data-i18n="trailers_title">تریلرهای رسمی Poppy Playtime</h2>
+    <p data-i18n="trailers_desc">تریلرهای اصلی فصل‌ها؛ ویدیوها از YouTube رسمی Mob Entertainment بارگذاری می‌شوند.</p>
+   </div>
+   <button class="trailerClose" id="trailersClose" type="button" aria-label="Close">✕</button>
+  </div>
+  <div class="trailerGrid" id="trailerGrid"></div>
+ </div>
+</div>
+
 <div class="commentModal" id="commentModal">
  <div class="commentHeader">
   <h4>💬 نظرات</h4>
@@ -2727,7 +2785,10 @@ function customConfirm(message) {
 function showArchive(){ $('home').classList.remove('active'); $('archive').classList.add('active'); $('searchBtn').classList.remove('hidden'); updateFloatingUI(); window.scrollTo({top:0,behavior:'smooth'}); }
 $('openArchive').onclick = showArchive;
 $('homeBtn').onclick = () => { $('archive').classList.remove('active'); $('home').classList.add('active'); $('searchBtn').classList.add('hidden'); $('searchPanel').classList.remove('show'); updateFloatingUI(); window.scrollTo({top:0,behavior:'smooth'}); };
-document.querySelectorAll('.navcard').forEach(b => b.onclick = () => document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth',block:'start'}));
+document.querySelectorAll('.navcard').forEach(b => b.onclick = () => {
+  if (b.dataset.target === 'trailers') { openTrailers(); return; }
+  document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth',block:'start'});
+});
 
 if ($('charHelpBtn')) {
   $('charHelpBtn').onclick = () => {
@@ -3100,8 +3161,14 @@ $('searchInput').addEventListener('input', debounce(e => {
   const qEscapeAliases = [
     'esc', 'escape', 'escape from playtime', 'اسکیپ', 'اسکیپ فرام پلی تایم'
   ].map(normalizeText);
+  const trailerNav = document.querySelector('.navcard[data-target="trailers"]');
+  const qTrailerAliases = [
+    'trailer', 'trailers', 'trailer video', 'poppy trailers', 'chapter trailer',
+    'تریلر', 'تریلرها', 'تریلر ها', 'ویدیو تریلر', 'تیزر'
+  ].map(normalizeText);
 
   const matchesProject = qProjectAliases.some(alias => alias && (alias.includes(q) || q.includes(alias)));
+  const matchesTrailers = qTrailerAliases.some(alias => alias && (alias.includes(q) || q.includes(alias)));
   const matchesEscape = qEscapeAliases.some(alias => alias && (alias.includes(q) || q.includes(alias)));
 
   if (matchesEscape && escapeCard) {
@@ -3115,7 +3182,16 @@ $('searchInput').addEventListener('input', debounce(e => {
     });
   }
 
-  if (matchesProject && projectSection && !matchesEscape) {
+  if (matchesTrailers && trailerNav && !matchesEscape && !matchesProject) {
+    seen.add('trailers');
+    matches.push({
+      el: trailerNav,
+      title: trailerNav.querySelector('[data-i18n="nav_trailers"]')?.textContent.trim() || (currentLang === 'fa' ? 'تریلرها' : 'Trailers'),
+      preview: trailerNav.querySelector('[data-i18n="nav_trailers_sub"]')?.textContent.trim() || (currentLang === 'fa' ? 'تریلرهای رسمی فصل‌ها' : 'Official chapter trailers')
+    });
+  }
+
+  if (matchesProject && projectSection && !matchesEscape && !matchesTrailers) {
     seen.add('project');
     const titleEl = projectSection.querySelector('[data-i18n="project_section_title"]');
     const previewEl = projectSection.querySelector('[data-i18n="project_section_desc"], [data-i18n="project_p1"]');
@@ -3177,8 +3253,14 @@ $('searchInput').addEventListener('input', debounce(e => {
       item.addEventListener('mousedown', e => e.preventDefault());
       item.onclick = () => {
         const target = matches[i].el;
-        // اگر یک شخصیت است، والد کارت و دسته را فعال نگه می‌داریم.
-        if (target.matches('#charGrid .char[data-char-id]')) {
+        // تریلرها یک صفحه‌ی داخلی مستقل دارند.
+        if (target.dataset?.target === 'trailers') {
+          openTrailers();
+          target.classList.remove('search-highlight');
+          void target.offsetWidth;
+          target.classList.add('search-highlight');
+          setTimeout(() => target.classList.remove('search-highlight'), 1800);
+        } else if (target.matches('#charGrid .char[data-char-id]')) {
           document.querySelectorAll('.filterBtn').forEach(b => b.classList.remove('active'));
           const allBtn = document.querySelector('.filterBtn[data-filter="all"]');
           if (allBtn) allBtn.classList.add('active');
@@ -3283,7 +3365,8 @@ const translations = {
   nav_story:"داستان",nav_story_sub:"Chapter 1–5",nav_char:"شخصیت",nav_char_sub:"پرونده شخصیت‌ها",
   nav_mystery:"رازها",nav_mystery_sub:"اطلاعات تأییدشده و سرنخ",nav_release:"منابع انتشار",nav_release_sub:"تاریخ و پلتفرم",
   nav_about:"توضیحات",nav_about_sub:"جهان بازی",nav_project:"پروژه‌های پلی‌تایم",nav_project_sub:"PROJECTS & NEW GAMES",
-  nav_news:"مقالات",nav_news_sub:"تحلیل و اطلاعات تأییدشده",
+  nav_news:"مقالات",nav_news_sub:"تحلیل و اطلاعات تأییدشده",nav_trailers:"تریلرها",nav_trailers_sub:"تریلرهای رسمی فصل‌ها",
+  trailers_title:"تریلرهای رسمی Poppy Playtime",trailers_desc:"تریلرهای اصلی فصل‌ها؛ ویدیوها از YouTube رسمی Mob Entertainment بارگذاری می‌شوند.",trailers_back:"بازگشت به آرشیو",
   char_title:"پرونده‌ی شخصیت‌ها",char_desc:"روی هر دسته کلیک کن تا فیلتر بشه. روی هر کارت بزن تا عکس بزرگش رو ببینی.",
   char_pj:"PJ Pug-a-Pillar یک اسباب‌بازی از خط Swap-imals شرکت Playtime Co. است که در Chapter 2: Fly in a Web در مینی‌گیم Statues ظاهر می‌شود. شکل Bigger Body او ترکیبی از Pug و Caterpillar است و Experiment 1174 نام دارد.",
   char_pj_theory:"وضعیت تأییدشده: PJ Pug-a-Pillar با عنوان Experiment 1174 شناخته می‌شود و برای نقش آنتاگونیست مینی‌گیم Statues در Game Station ساخته شد. او به خط اسباب‌بازی Swap-imals تعلق دارد.",
@@ -3417,7 +3500,8 @@ const translations = {
   nav_story:"Story",nav_story_sub:"Chapter 1–5",nav_char:"Characters",nav_char_sub:"Character files",
   nav_mystery:"Mysteries",nav_mystery_sub:"Theories & clues",nav_release:"Releases",nav_release_sub:"Dates & platforms",
   nav_about:"About",nav_about_sub:"Game world",nav_project:"Playtime Projects",nav_project_sub:"PROJECTS & NEW GAMES",
-  nav_news:"Articles",nav_news_sub:"Analysis & theories",
+  nav_news:"Articles",nav_news_sub:"Analysis & theories",nav_trailers:"Trailers",nav_trailers_sub:"Official chapter trailers",
+  trailers_title:"Official Poppy Playtime Trailers",trailers_desc:"Main chapter trailers, loaded from Mob Entertainment's official YouTube videos.",trailers_back:"Back to Archive",
   char_title:"Character Files",char_desc:"Click a category to filter. Click any card to view the image larger.",
   char_pj:"PJ Pug-a-Pillar is a Playtime Co. toy from the Swap-imals line that appears in Chapter 2: Fly in a Web during the Statues mini-game. Its Bigger Body form is a pug/caterpillar hybrid designated Experiment 1174.",
   char_pj_theory:"Confirmed status: PJ Pug-a-Pillar is designated Experiment 1174 and was used as the antagonist of the Statues mini-game in the Game Station. He belongs to Playtime Co.'s Swap-imals toy line.",
@@ -3545,6 +3629,71 @@ const translations = {
  }
 };
 let currentLang = storageGet('poppy_lang') || 'fa';
+const TRAILERS = [
+ {id:'xMQm8ubM-Cw',chapter:'Chapter 1',fa:{title:'Chapter 1 — تریلر رسمی',desc:'Official Game Trailer'},en:{title:'Chapter 1 — Official Trailer',desc:'Official Game Trailer'}},
+ {id:'XVENjm3Bjk0',chapter:'Chapter 2',fa:{title:'Chapter 2 — تریلر رسمی',desc:'Official Game Trailer'},en:{title:'Chapter 2 — Official Trailer',desc:'Official Game Trailer'}},
+ {id:'s3_k03RC668',chapter:'Chapter 3',fa:{title:'Chapter 3 — تریلر رسمی #۱',desc:'Official Game Trailer #1'},en:{title:'Chapter 3 — Official Trailer #1',desc:'Official Game Trailer #1'}},
+ {id:'csD8OYxl2Cs',chapter:'Chapter 3',fa:{title:'Chapter 3 — تریلر رسمی #۲',desc:'Official Game Trailer #2'},en:{title:'Chapter 3 — Official Trailer #2',desc:'Official Game Trailer #2'}},
+ {id:'DEu8qH2_8IU',chapter:'Chapter 4',fa:{title:'Chapter 4 — تریلر سینمایی The Doctor',desc:'Cinematic Trailer'},en:{title:'Chapter 4 — The Doctor Cinematic Trailer',desc:'Cinematic Trailer'}},
+ {id:'tych99G3-P0',chapter:'Chapter 4',fa:{title:'Chapter 4 — تریلر گیم‌پلی Doey',desc:'Gameplay Trailer'},en:{title:'Chapter 4 — Doey the Doughman Gameplay Trailer',desc:'Gameplay Trailer'}},
+ {id:'-poSVOan2fw',chapter:'Chapter 5',fa:{title:'Chapter 5 — تریلر سینمایی Prototype',desc:'Cinematic Trailer'},en:{title:'Chapter 5 — The Prototype Cinematic Trailer',desc:'Cinematic Trailer'}},
+ {id:'EriEensiy0I',chapter:'Chapter 5',fa:{title:'Chapter 5 — تریلر رسمی بازی',desc:'Official Game Trailer'},en:{title:'Chapter 5 — Official Game Trailer',desc:'Official Game Trailer'}}
+];
+
+function renderTrailers(){
+  const grid=$('trailerGrid');
+  if(!grid)return;
+  const lang=currentLang==='en'?'en':'fa';
+  grid.innerHTML=TRAILERS.map(v=>{
+    const d=v[lang]||v.fa;
+    const watch='https://www.youtube.com/watch?v='+v.id;
+    return '<article class="trailerCard" data-video="'+v.id+'">'+
+      '<div class="trailerMedia">'+
+        '<img src="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg" alt="'+escapeHtml(d.title)+'" loading="lazy" decoding="async">'+
+        '<button class="trailerPlay" type="button" aria-label="'+(lang==='fa'?'پخش ':'Play ')+escapeHtml(d.title)+'"><span>▶</span></button>'+
+      '</div>'+
+      '<div class="trailerBody">'+
+        '<div class="trailerEpisode">'+escapeHtml(v.chapter)+'</div>'+
+        '<h3>'+escapeHtml(d.title)+'</h3>'+
+        '<p>'+escapeHtml(d.desc)+'</p>'+
+        '<a class="trailerWatch" href="'+watch+'" target="_blank" rel="noopener noreferrer">↗ '+(lang==='fa'?'تماشا در YouTube':'Watch on YouTube')+'</a>'+
+      '</div>'+
+    '</article>';
+  }).join('');
+}
+
+function openTrailers(){
+  const modal=$('trailersModal');
+  if(!modal)return;
+  renderTrailers();
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+}
+
+function closeTrailers(){
+  const modal=$('trailersModal');
+  if(!modal)return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+  renderTrailers(); // توقف فوری پخش و بازگشت به حالت سبک
+  document.body.style.overflow='';
+}
+
+$('trailersBack').onclick=closeTrailers;
+$('trailersClose').onclick=closeTrailers;
+$('trailersModal').onclick=e=>{ if(e.target===$('trailersModal')) closeTrailers(); };
+$('trailerGrid').addEventListener('click',e=>{
+  const play=e.target.closest('.trailerPlay');
+  if(!play)return;
+  const card=play.closest('.trailerCard');
+  if(!card)return;
+  const id=card.dataset.video;
+  const media=card.querySelector('.trailerMedia');
+  if(!id||!media)return;
+  media.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="'+escapeHtml(card.querySelector('h3')?.textContent||'Poppy Playtime trailer')+'" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+});
+
 function setLanguage(lang) {
   const nextLang=lang==='en'?'en':'fa',dict=translations[nextLang]||translations.fa;
   currentLang=nextLang;storageSet('poppy_lang',nextLang);document.documentElement.lang=nextLang;document.documentElement.dir='rtl';
@@ -3552,8 +3701,10 @@ function setLanguage(lang) {
   const langBtn=$('lang');if(langBtn)langBtn.textContent=nextLang==='fa'?'ENGLISH':'فارسی';
   document.querySelectorAll('.filterBtn').forEach(btn=>{const f=btn.dataset.filter,labels=nextLang==='fa'?{all:'همه','mini-huggies':'Mini Huggies',smiling:'Smiling',nightmare:'Nightmare',wrongside:'Wrongside'}:{all:'All','mini-huggies':'Mini Huggies',smiling:'Smiling',nightmare:'Nightmare',wrongside:'Wrongside'};btn.textContent=labels[f]||f;});
   if(currentArticleKey){try{openArticle(currentArticleKey);}catch(e){}}
+  try{renderTrailers();}catch(e){}
 }
 $('lang').onclick = () => setLanguage(currentLang === 'fa' ? 'en' : 'fa');
+renderTrailers();
 
 function setTheme(theme) { document.body.classList.toggle('light-mode', theme === 'light'); $('themeToggle').textContent = theme === 'dark' ? '🌙' : '☀️'; storageSet('poppy_theme', theme); }
 $('themeToggle').onclick = () => setTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
