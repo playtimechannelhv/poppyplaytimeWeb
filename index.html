@@ -4115,10 +4115,11 @@ function openAiChat() {
   m.classList.remove('closing');
   $('aiChatToggleBtn').classList.add('active');
   renderAiMessages();
-  fetchAiStatus();
+  const hasLocalDailyLock = typeof getAiClientLimitState === 'function' && getAiClientLimitState();
+  if (!hasLocalDailyLock) fetchAiStatus();
   setTimeout(() => {
     $('aiChatMessages').scrollTop = $('aiChatMessages').scrollHeight;
-    $('aiChatInput').focus();
+    if (!hasLocalDailyLock) $('aiChatInput').focus();
   }, 120);
 }
 
@@ -4389,21 +4390,22 @@ function getAiClientLimitState() {
     if (!raw) { badgeLocked = false; return null; }
     const state = JSON.parse(raw);
     if (!state || !Number.isFinite(Number(state.resetAt))) { badgeLocked = false; return null; }
-    if (Date.now() >= Number(state.resetAt)) {
-      storageRemove(AI_CLIENT_LIMIT_KEY);
-      badgeLocked = false;
-      return null;
-    }
+    // The server is the only authority that can release the daily lock.
+    // Never use the phone's clock here, so changing the device date cannot unlock the UI.
     badgeLocked = true;
     return state;
   } catch { badgeLocked = false; return null; }
 }
 
 function getNext0330() {
-  const d = new Date();
-  d.setHours(3,30,0,0);
-  if (Date.now() >= d.getTime()) d.setDate(d.getDate() + 1);
-  return d.getTime();
+  const now = new Date();
+  const todayReset = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    0, 0, 0, 0
+  );
+  return now.getTime() < todayReset ? todayReset : todayReset + 86400000;
 }
 
 function persistAiDailyLimit(resetAt) {
@@ -4423,7 +4425,14 @@ function removeStoredAiLimit() {
 
 function formatResetTime(ts) {
   const d = new Date(ts);
-  return d.toLocaleTimeString(currentLang === 'fa' ? 'fa-IR' : 'en-US', {hour:'2-digit',minute:'2-digit'});
+  try {
+    return new Intl.DateTimeFormat(
+      currentLang === 'fa' ? 'fa-IR' : 'en-US',
+      { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tehran' }
+    ).format(d);
+  } catch {
+    return d.toLocaleTimeString(currentLang === 'fa' ? 'fa-IR' : 'en-US', {hour:'2-digit',minute:'2-digit'});
+  }
 }
 
 
@@ -4588,7 +4597,7 @@ updateFloatingUI();
   if(document.body.classList.contains('theme-classic')) setClassicVariant(getClassicVariant());
   else updateClassicVariantButton();
 
-  /* ===== AI daily-limit: modal stays open, only sending is blocked ===== */
+  /* ===== AI daily-limit: server-authoritative lock until the real 03:30 reset ===== */
   function clientState(){
     try{
       const state=typeof getAiClientLimitState==='function'?getAiClientLimitState():null;
@@ -4596,65 +4605,134 @@ updateFloatingUI();
       return state;
     }catch{ badgeLocked=false; return null; }
   }
+
   function setAiClientInputDisabled(disabled){
-    const input=$('aiChatInput'), send=$('aiChatSend'), suggs=document.querySelectorAll('.suggBtn'), modal=$('aiChatModal');
-    if(input){input.disabled=!!disabled; input.setAttribute('aria-disabled',disabled?'true':'false');}
-    if(send){send.disabled=!!disabled; send.setAttribute('aria-disabled',disabled?'true':'false');}
-    suggs.forEach(b=>{b.disabled=!!disabled;b.setAttribute('aria-disabled',disabled?'true':'false');});
+    const input=$('aiChatInput');
+    const send=$('aiChatSend');
+    const suggs=document.querySelectorAll('.suggBtn');
+    const modal=$('aiChatModal');
+
+    if(input){
+      input.disabled=!!disabled;
+      input.setAttribute('aria-disabled',disabled?'true':'false');
+      input.placeholder=disabled
+        ? (currentLang==='fa'?'🔒 محدودیت روزانه فعاله؛ بعد از ۰۳:۳۰ دوباره امتحان کن':'🔒 Daily limit active; try again after 3:30 AM')
+        : (currentLang==='fa'?'سوالت رو بپرس...':'Ask your question...');
+    }
+    if(send){
+      send.disabled=!!disabled;
+      send.setAttribute('aria-disabled',disabled?'true':'false');
+    }
+    suggs.forEach(b=>{
+      b.disabled=!!disabled;
+      b.setAttribute('aria-disabled',disabled?'true':'false');
+    });
     if(modal) modal.classList.toggle('ai-client-limit',!!disabled);
   }
-  function showOnlyClientLimitMessage(){
-    const state=clientState();
-    if(!state) { setAiClientInputDisabled(false); return false; }
+
+  function renderClientLimitMessage(state){
+    const list=$('aiChatMessages');
+    if(!list) return;
+    let box=$('aiDailyLimitMessageFinal');
+    if(!box){
+      const welcome=list.querySelector('.aiWelcome');
+      if(welcome) welcome.remove();
+      box=document.createElement('div');
+      box.id='aiDailyLimitMessageFinal';
+      box.className='aiMsg limit';
+      list.appendChild(box);
+    }
+    const fa=currentLang==='fa';
+    const time=typeof formatResetTime==='function'?formatResetTime(state.resetAt):'۰۳:۳۰';
+    box.innerHTML=fa
+      ? `🌙 <b>محدودیت روزانه تمام شد</b><br>۵ پیام امروزت استفاده شد. فردا ساعت ۰۳:۳۰ بامداد دوباره فعال می‌شه. 🎀<br><small>ریست بعدی: ${time}</small>`
+      : `🌙 <b>Daily limit reached</b><br>You used all 5 messages today. It resets tomorrow at 3:30 AM. 🎀<br><small>Next reset: ${time}</small>`;
+    list.scrollTop=list.scrollHeight;
+  }
+
+  function showOnlyClientLimitMessage(stateOverride){
+    const state=stateOverride||clientState();
+    if(!state){
+      setAiClientInputDisabled(false);
+      return false;
+    }
     if(typeof aiRemaining!=='undefined') aiRemaining=0;
     if(typeof updateAiBadge==='function') updateAiBadge(0,state.limit||5);
-    const list=$('aiChatMessages');
-    if(list){
-      let box=$('aiDailyLimitMessageFinal');
-      if(!box){
-        const welcome=list.querySelector('.aiWelcome');
-        if(welcome) welcome.remove();
-        box=document.createElement('div');
-        box.id='aiDailyLimitMessageFinal';
-        box.className='aiMsg limit';
-        list.appendChild(box);
-      }
-      const fa=currentLang==='fa';
-      const time=typeof formatResetTime==='function'?formatResetTime(state.resetAt):'';
-      box.innerHTML=fa
-        ? `🌙 <b>محدودیت روزانه تمام شد</b><br>از فردا ساعت ۰۳:۳۰ بامداد دوباره امتحان کن. 🎀<br><small>ریست بعدی: ${time}</small>`
-        : `🌙 <b>Daily limit reached</b><br>Try again after 3:30 AM tomorrow. 🎀<br><small>Next reset: ${time}</small>`;
-      list.scrollTop=list.scrollHeight;
-    }
+    renderClientLimitMessage(state);
     setAiClientInputDisabled(true);
     return true;
   }
 
-  // Replace only the final wrapper: never reject opening the modal because of the client limit.
+  let aiDailyLimitSyncing=false;
+  async function refreshAiDailyLimitFromServer(){
+    if(aiDailyLimitSyncing) return false;
+    const state=clientState();
+    if(!state) return true;
+
+    aiDailyLimitSyncing=true;
+    try{
+      const res=await fetch(AI_CHAT_STATUS,{headers:authHeaders(),cache:'no-store'});
+      if(res.status===401){
+        const authResult=await confirmAuthSession();
+        if(authResult.state===false) handleAuthExpired(authResult.checkedToken);
+        return false;
+      }
+
+      const data=await res.json();
+      if(!data || !data.success || typeof data.remaining!=='number') return false;
+
+      // The Worker is authoritative. Only it can release this lock.
+      if(Number(data.remaining)>0){
+        storageRemove(AI_CLIENT_LIMIT_KEY);
+        badgeLocked=false;
+        aiRemaining=Number(data.remaining);
+        aiLimit=Number(data.limit)||5;
+        if(typeof updateAiBadge==='function') updateAiBadge(aiRemaining,aiLimit,true);
+        setAiClientInputDisabled(false);
+        const btn=$('aiChatToggleBtn');
+        if(btn) btn.classList.remove('client-limit');
+        const box=$('aiDailyLimitMessageFinal');
+        if(box) box.remove();
+        if($('aiChatModal')?.classList.contains('show') && typeof showToast==='function'){
+          showToast(currentLang==='fa'?'🎀 محدودیت روزانه ریست شد!':'🎀 Daily limit has reset!','success');
+        }
+        return true;
+      }
+
+      const serverState={
+        exhausted:true,
+        remaining:0,
+        limit:Number(data.limit)||5,
+        resetAt:Number(data.resetAt)||state.resetAt||getNext0330()
+      };
+      storageSet(AI_CLIENT_LIMIT_KEY,JSON.stringify(serverState));
+      badgeLocked=true;
+      showOnlyClientLimitMessage(serverState);
+      return true;
+    }catch(e){
+      // Network/device-clock issues must never release the lock.
+      return false;
+    }finally{
+      aiDailyLimitSyncing=false;
+    }
+  }
+
   const _openAiChatOriginal = typeof openAiChat === 'function' ? openAiChat : null;
   if(typeof _openAiChatOriginal==='function'){
     openAiChat=function(){
       const exhausted=clientState();
-      if(exhausted){
-        if(typeof aiRemaining!=='undefined') aiRemaining=0;
-        if(typeof updateAiBadge==='function') updateAiBadge(0,exhausted.limit||5);
-      }
       _openAiChatOriginal();
       if(exhausted){
-        showOnlyClientLimitMessage();
+        showOnlyClientLimitMessage(exhausted);
+        refreshAiDailyLimitFromServer();
       }else{
-        setTimeout(()=>{
-          if(showOnlyClientLimitMessage()) return;
-          setAiClientInputDisabled(false);
-        },180);
+        setTimeout(()=>setAiClientInputDisabled(false),180);
       }
     };
   }
 
-  // The existing heartbeat/auto-disable is untouched. Client-limit is handled separately.
   $('aiChatToggleBtn') && ($('aiChatToggleBtn').onclick=()=>{
     if(typeof aiSystemDisabled!=='undefined' && aiSystemDisabled){
-      // Preserve the existing system-quota behaviour.
       if(typeof showToast==='function') showToast(currentLang==='fa'?'🌙 هوش مصنوعی موقتاً غیرفعاله.':'🌙 AI is temporarily disabled.','error');
       return;
     }
@@ -4663,11 +4741,11 @@ updateFloatingUI();
     else openAiChat();
   });
 
-  // Buttons/suggestions should still give the user the modal limit state instead of an invisible failure.
   $('aiChatSend') && ($('aiChatSend').onclick=()=>{
     if(showOnlyClientLimitMessage()) return;
     sendAiMessage();
   });
+
   document.querySelectorAll('.suggBtn').forEach(btn=>{
     btn.onclick=()=>{
       if(showOnlyClientLimitMessage()) return;
@@ -4675,63 +4753,77 @@ updateFloatingUI();
       sendAiMessage();
     };
   });
+
   $('aiChatInput') && $('aiChatInput').addEventListener('keydown',e=>{
     if(e.key==='Enter'&&!e.shiftKey&&clientState()){
-      e.preventDefault();e.stopImmediatePropagation();showOnlyClientLimitMessage();
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      showOnlyClientLimitMessage();
     }
   },true);
 
-  // Force the local exhausted state to win over a slower status response from the Worker.
-  const badge=$('aiRemainingBadge');
-  if(badge && typeof MutationObserver!=='undefined'){
-    let forcing=false;
-    const obs=new MutationObserver(()=>{
-      if(forcing) return;
-      if(!clientState()) return;
-      const txt=String(badge.textContent||'');
-      const nums=txt.replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
-      const rem=parseInt(nums.split('/')[0].replace(/\D/g,''),10);
-      if(rem!==0){forcing=true; if(typeof updateAiBadge==='function') updateAiBadge(0,5); forcing=false;}
-      setAiClientInputDisabled(true);
-    });
-    obs.observe(badge,{childList:true,subtree:true,characterData:true});
-  }
+  // Keep the original async send function from re-enabling the input in its finally{} block.
+  const _sendAiMessageOriginal=sendAiMessage;
+  sendAiMessage=async function(){
+    if(showOnlyClientLimitMessage()) return;
+    try{
+      return await _sendAiMessageOriginal.apply(this,arguments);
+    }finally{
+      if(clientState()) showOnlyClientLimitMessage();
+      else setAiClientInputDisabled(false);
+    }
+  };
 
-  const originalRenderAiMessages = renderAiMessages;
+  const originalRenderAiMessages=renderAiMessages;
   renderAiMessages=function(){
-    // FIX: قبلاً وقتی محدودیت روزانه فعال بود، رندر تاریخچه‌ی واقعی چت (originalRenderAiMessages)
-    // اصلاً اجرا نمی‌شد و فقط باکس «محدودیت روزانه» نشون داده می‌شد؛ یعنی با بستن و باز کردن مرورگر،
-    // کاربر فقط همون اعلان رو می‌دید و تاریخچه‌ی چت انگار پاک شده بود (با اینکه در localStorage بود).
-    // حالا اول تاریخچه‌ی واقعی رندر می‌شه، بعد در صورت محدود بودن، اعلان محدودیت زیرش اضافه می‌شه.
-    // تاریخچه فقط با زدن دستیِ «پاک کردن تاریخچه» (clearChatHistory) حذف می‌شود، نه با پر شدن سهمیه.
     originalRenderAiMessages();
     showOnlyClientLimitMessage();
   };
 
-  // Language change: re-render the persisted limit message without reopening anything.
-  const previousFinalLang = window.setLanguage;
+  const previousFinalLang=window.setLanguage;
   if(previousFinalLang){
     window.setLanguage=function(lang){
       previousFinalLang(lang);
       updateClassicVariantButton();
-      if(clientState()) showOnlyClientLimitMessage();
+      const state=clientState();
+      if(state) showOnlyClientLimitMessage(state);
+      else setAiClientInputDisabled(false);
     };
     setLanguage=window.setLanguage;
   }
 
-  // Prevent the client limit state from disappearing during the fetch/status race.
+  // UI watchdog + authoritative server polling. The device clock is never trusted to unlock.
   const limitWatch=setInterval(()=>{
     const state=clientState();
     if(state){
       if(typeof aiRemaining!=='undefined') aiRemaining=0;
-      if($('aiChatModal')?.classList.contains('show')) showOnlyClientLimitMessage();
-      else setAiClientInputDisabled(true);
+      if($('aiChatModal')?.classList.contains('show')) renderClientLimitMessage(state);
+      setAiClientInputDisabled(true);
     }else{
       setAiClientInputDisabled(false);
     }
   },1200);
-  window.addEventListener('beforeunload',()=>clearInterval(limitWatch));
 
+  const limitServerPoll=setInterval(()=>{
+    if(clientState()) refreshAiDailyLimitFromServer();
+  },15000);
+
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden && clientState()) refreshAiDailyLimitFromServer();
+  });
+
+  window.addEventListener('beforeunload',()=>{
+    clearInterval(limitWatch);
+    clearInterval(limitServerPoll);
+  });
+
+  if(clientState()){
+    const state=clientState();
+    if(typeof aiRemaining!=='undefined') aiRemaining=0;
+    if(typeof updateAiBadge==='function') updateAiBadge(0,state.limit||5);
+    setAiClientInputDisabled(true);
+    refreshAiDailyLimitFromServer();
+  }
   // Image polish: only the first visible batch gets eager priority; everything else stays lazy.
   // چک فوری state ذخیره‌شده در localStorage بعد از لود صفحه
   if (clientState()) {
