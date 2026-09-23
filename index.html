@@ -3091,21 +3091,31 @@ music.addEventListener('pause', () => {
 });
 
 let lastNotifTime = 0;
+let floatingUiRaf = 0;
+let lastArchiveOpen = null;
 function updateFloatingUI(){
-  const ws = window.scrollY || document.documentElement.scrollTop || 0;
-  const h = Math.max(1, document.documentElement.scrollHeight - document.documentElement.clientHeight);
-  $('progressBar').style.width = Math.min(100, Math.max(0, ws / h * 100)) + '%';
-  const archiveOpen = $('archive')?.classList.contains('active');
-  const chatVisible = archiveOpen && ws > 180;
-  $('chatButton').classList.toggle('show', chatVisible);
-  $('backTop').classList.toggle('show', archiveOpen && ws > 400);
-  if (!archiveOpen) {
-    $('commentModal').classList.remove('show');
-    $('aiChatModal').classList.remove('show');
-    $('aiChatToggleBtn')?.classList.remove('active');
-  }
+  if(floatingUiRaf)return;
+  floatingUiRaf=requestAnimationFrame(function(){
+    floatingUiRaf=0;
+    const ws = window.scrollY || document.documentElement.scrollTop || 0;
+    const h = Math.max(1, document.documentElement.scrollHeight - document.documentElement.clientHeight);
+    const archiveOpen = $('archive')?.classList.contains('active');
+    const chatVisible = archiveOpen && ws > 180;
+    $('progressBar').style.width = Math.min(100, Math.max(0, ws / h * 100)) + '%';
+    $('chatButton').classList.toggle('show', chatVisible);
+    $('backTop').classList.toggle('show', archiveOpen && ws > 400);
+    if (lastArchiveOpen !== archiveOpen) {
+      lastArchiveOpen = archiveOpen;
+      if (!archiveOpen) {
+        $('commentModal').classList.remove('show');
+        $('aiChatModal').classList.remove('show');
+        $('aiChatToggleBtn')?.classList.remove('active');
+      }
+    }
+  });
 }
 window.addEventListener('scroll', updateFloatingUI, {passive:true});
+updateFloatingUI();
 $('backTop').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 
 const observer = new IntersectionObserver(entries => {
