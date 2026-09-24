@@ -1,0 +1,115 @@
+/* ==========================================================================
+   archive-journey.css  —  Reading Mode / Archive Journey
+   Everything is namespaced (.journeyCard, #ajBar, #ajResume, .aj-*) or scoped
+   under html.aj-on, so nothing here affects the site while Reading Mode is off.
+   ========================================================================== */
+
+/* ---------- Entry card (static in the HTML; this only styles it) ---------- */
+#archive .navgrid .journeyCard{
+  grid-column:1/-1;                       /* featured full-width row under the section cards, at every breakpoint */
+  position:relative;overflow:hidden;cursor:pointer;
+  background:linear-gradient(145deg,rgba(var(--red-rgb),.26),#0c0609 72%);
+  border-color:rgba(var(--red2-rgb),.62);
+}
+#archive .navgrid .journeyCard strong{letter-spacing:.2px}
+body.light-mode #archive .navgrid .journeyCard{background:linear-gradient(145deg,rgba(var(--red-rgb),.16),#fff 78%)}
+#archive .navgrid .journeyCard:active{transform:scale(.97)}
+#archive .navgrid .journeyCard:focus-visible{outline:2px solid var(--red2);outline-offset:2px}
+
+/* ---------- Control bar ---------- */
+#ajBar{
+  position:fixed;top:max(10px,env(safe-area-inset-top));left:0;right:0;margin-inline:auto;
+  width:min(780px,calc(100% - 24px));z-index:310;
+  padding:12px 14px 12px;border-radius:18px;
+  background:rgba(14,6,10,.95);color:var(--white);
+  border:1px solid rgba(var(--red2-rgb),.5);box-shadow:0 18px 60px #000a;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-18px) scale(.98);
+  transition:opacity .28s ease,transform .32s cubic-bezier(.2,.9,.3,1.1),visibility 0s linear .32s;
+}
+#ajBar.aj-show{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition-delay:0s}
+body.light-mode #ajBar{background:rgba(255,255,255,.97)}
+#ajBar .aj-row1{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#ajBar .aj-title{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;unicode-bidi:plaintext;
+  font:700 14px/1.6 'Oswald',Vazirmatn,sans-serif}
+#ajBar .aj-pct{min-width:46px;text-align:end;color:var(--red2);font:800 16px/1.4 'Oswald',Vazirmatn,sans-serif;font-variant-numeric:tabular-nums}
+#ajBar .aj-info{margin-top:1px;color:var(--muted);font-size:12px;line-height:1.7;letter-spacing:.3px}
+#ajBar .aj-track{height:6px;margin:8px 0 11px;border-radius:99px;overflow:hidden;background:rgba(var(--red-rgb),.16)}
+#ajBar .aj-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--red2));transition:width .4s ease}
+#ajBar .aj-row3{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#ajBar .aj-speeds{display:flex;gap:6px}
+#ajBar .aj-exit{margin-inline-start:auto}
+
+.aj-btn{
+  min-height:38px;padding:7px 13px;border-radius:12px;cursor:pointer;
+  border:1px solid rgba(var(--red2-rgb),.42);background:rgba(var(--red-rgb),.09);color:var(--white);
+  font:600 13px/1.2 'Oswald',Vazirmatn,sans-serif;white-space:nowrap;
+  transition:transform .16s ease,background .22s ease,box-shadow .22s ease,border-color .22s ease,color .22s ease;
+}
+.aj-btn:hover{background:rgba(var(--red-rgb),.22)}
+.aj-btn:active{transform:scale(.93)}
+.aj-btn:focus-visible{outline:2px solid var(--red2);outline-offset:2px}
+.aj-btn.on{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;border-color:transparent;box-shadow:0 0 22px rgba(var(--red-rgb),.45)}
+.aj-btn:disabled{opacity:.45;pointer-events:none}
+#ajBar.aj-paused #ajToggle{animation:ajPulse 1.5s ease-in-out infinite}
+@keyframes ajPulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--red-rgb),.55)}50%{box-shadow:0 0 0 8px rgba(var(--red-rgb),0)}}
+
+/* While Reading Mode is on, the article modal sits below the bar */
+html.aj-on .articleModal{align-items:flex-start;padding-top:var(--aj-off,140px);padding-bottom:14px}
+html.aj-on .articleModalBox{
+  max-height:calc(100vh - var(--aj-off,140px) - 14px);
+  max-height:calc(100dvh - var(--aj-off,140px) - 14px);
+  overscroll-behavior:contain;
+}
+
+/* ---------- Words / blocks ---------- */
+.aj-w{border-radius:6px;transition:color .2s ease,background-color .2s ease,box-shadow .2s ease}
+.aj-blk{transition:opacity .3s ease,background-color .3s ease,box-shadow .3s ease}
+html.aj-on .articleModalBox .aj-blk:not(.aj-done):not(.aj-active){opacity:.5}
+html.aj-on .articleModalBox .aj-active{background:rgba(var(--red-rgb),.07);box-shadow:0 0 0 8px rgba(var(--red-rgb),.07);border-radius:10px}
+html.aj-on .articleModalBox .aj-read,
+html.aj-on .articleModalBox .aj-done .aj-w{color:var(--white)}
+html.aj-on .articleModalBox h1 .aj-read,html.aj-on .articleModalBox h2 .aj-read,html.aj-on .articleModalBox h3 .aj-read,
+html.aj-on .articleModalBox h4 .aj-read,html.aj-on .articleModalBox h5 .aj-read,html.aj-on .articleModalBox h6 .aj-read,
+html.aj-on .articleModalBox h1.aj-done .aj-w,html.aj-on .articleModalBox h2.aj-done .aj-w,html.aj-on .articleModalBox h3.aj-done .aj-w,
+html.aj-on .articleModalBox h4.aj-done .aj-w,html.aj-on .articleModalBox h5.aj-done .aj-w,html.aj-on .articleModalBox h6.aj-done .aj-w{color:inherit}
+html.aj-on .articleModalBox .aj-cur{
+  color:#fff!important;
+  background:linear-gradient(135deg,var(--red),var(--red2));
+  box-shadow:0 0 0 3px rgba(var(--red-rgb),.35),0 4px 18px rgba(var(--red-rgb),.5);
+}
+
+/* ---------- "Continue reading?" dialog ---------- */
+#ajResume{
+  position:fixed;inset:0;z-index:330;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:#000c;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s;
+}
+#ajResume.aj-show{opacity:1;visibility:visible;transition-delay:0s}
+#ajResume .aj-dlg{
+  width:min(400px,100%);padding:26px 22px 22px;border-radius:22px;text-align:center;
+  background:var(--panel);color:var(--white);border:1px solid rgba(var(--red2-rgb),.5);box-shadow:0 30px 100px #000a;
+  transform:translateY(14px) scale(.96);transition:transform .32s cubic-bezier(.2,.9,.3,1.1);
+}
+#ajResume.aj-show .aj-dlg{transform:none}
+#ajResume h3{margin:0 0 8px;font:800 22px/1.4 'Oswald',Vazirmatn,sans-serif}
+#ajResume p{margin:0 0 20px;color:var(--muted);font-size:13px;line-height:1.9}
+#ajResume .aj-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+#ajResume .aj-actions .aj-btn{min-width:110px}
+
+/* ---------- Small screens ---------- */
+@media(max-width:600px){
+  #ajBar{padding:10px 11px;border-radius:16px}
+  #ajBar .aj-title{font-size:13px}
+  #ajBar .aj-info{font-size:11px}
+  #ajBar .aj-row3{gap:6px}
+  .aj-btn{min-height:40px;padding:7px 10px;font-size:12px}
+  #ajBar .aj-speeds{gap:4px}
+}
+
+/* ---------- Motion preferences ---------- */
+@media(prefers-reduced-motion:reduce){
+  #ajBar,#ajResume,#ajResume .aj-dlg,.aj-w,.aj-blk,.aj-btn,#ajBar .aj-fill{transition:none!important}
+  #ajBar.aj-paused #ajToggle{animation:none!important}
+}
+body.perf-mode #ajBar.aj-paused #ajToggle{animation:none!important}
