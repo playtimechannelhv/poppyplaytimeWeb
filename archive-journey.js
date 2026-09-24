@@ -65,7 +65,7 @@
   var active = false, exiting = false, resumeOpen = false;
   var keys = [], curKey = null;
   var blocks = [], cur = null, activeBlock = null;
-  var scroller = null, anim = null, holdUntil = 0, lastSave = 0, recenterTimer = 0;
+  var scroller = null, anim = null, restoringScroll = false, lastSave = 0;
   var bar = { a: 0, n: 0, b: 0, nb: 0, pct: 0, title: '', shownPct: -1 };
 
   /* ------------------------------------------------------ article discovery */
@@ -188,35 +188,29 @@
   function attachScroller() {
     var s = findScroller();
     if (s !== scroller) { scroller = s; }
-    if (scroller && !scroller.__ajHold) {
-      scroller.__ajHold = true;
-      var hold = function () {
-        holdUntil = now() + 2500;
+
+    if (scroller && !scroller.__ajLock) {
+      scroller.__ajLock = true;
+
+      // Reading Mode owns the article scroll position.
+      // Manual wheel/touch scrolling is blocked instead of being temporarily allowed.
+      var blockManualScroll = function (e) {
+        if (!active) return;
         cancelAnim();
-        if (recenterTimer) { clearTimeout(recenterTimer); recenterTimer = 0; }
-      }; // user takes over for a moment
-
-      var scheduleReturnToCurrent = function () {
-        if (!active || !cur) return;
-        if (recenterTimer) clearTimeout(recenterTimer);
-
-        // After the user's scroll settles, smoothly return to the exact word
-        // currently being highlighted by the reading marker.
-        recenterTimer = setTimeout(function () {
-          recenterTimer = 0;
-          if (!active || !cur) return;
-          holdUntil = 0;
-          autoScroll(cur);
-        }, 850);
+        if (e && e.cancelable) e.preventDefault();
+        if (cur) alignInstant(cur);
       };
 
-      scroller.addEventListener('wheel', hold, { passive: true });
-      scroller.addEventListener('touchstart', hold, { passive: true });
-      scroller.addEventListener('mousedown', hold, { passive: true });
+      scroller.addEventListener('wheel', blockManualScroll, { passive: false });
+      scroller.addEventListener('touchmove', blockManualScroll, { passive: false });
+
+      // Covers scrollbar dragging and any other scroll source that bypasses wheel/touchmove.
       scroller.addEventListener('scroll', function () {
-        if (now() <= holdUntil) scheduleReturnToCurrent();
+        if (!active || !cur || restoringScroll || anim) return;
+        alignInstant(cur);
       }, { passive: true });
     }
+
     if (scroller) scroller.style.scrollBehavior = 'auto';
   }
   function cancelAnim() { if (anim) { if (anim.raf) cancelAnimationFrame(anim.raf); anim = null; } }
@@ -260,7 +254,10 @@
     cancelAnim();
     var H = scroller.clientHeight, top = wordTop(el) - scroller.scrollTop;
     if (top >= H * 0.18 && top + (el.offsetHeight || 20) <= H * 0.62) return;
+
+    restoringScroll = true;
     scroller.scrollTop = clampT(scroller.scrollTop + top - H * 0.26);
+    requestAnimationFrame(function () { restoringScroll = false; });
   }
   function resetScroll() { cancelAnim(); if (scroller) scroller.scrollTop = 0; }
 
@@ -438,7 +435,7 @@
     exiting = true;
     var s = engine.state(), snap = engine.stop();
     cancelAnim();
-    if (recenterTimer) { clearTimeout(recenterTimer); recenterTimer = 0; }
+    restoringScroll = false;
     if (s.status === 'completed') clearSaved();
     else if (curKey) writeSaved({ v: 1, key: curKey, a: snap.a, b: snap.b, w: snap.w, speed: snap.speed, ts: Date.now() });
     active = false;
@@ -476,7 +473,17 @@
       }).observe(content, { childList: true });
       new MutationObserver(applyLang).observe(R, { attributes: true, attributeFilter: ['lang'] });
     }
-    D.addEventListener('keydown', function (e) { if (e.key === 'Escape' && resumeOpen) hideResume(); });
+    D.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && resumeOpen) { hideResume(); return; }
+      if (!active || !scroller || !cur) return;
+
+      var scrollKeys = { ArrowUp:1, ArrowDown:1, PageUp:1, PageDown:1, Home:1, End:1 };
+      if (scrollKeys[e.key] || (e.key === ' ' && e.target !== ui && !e.target.closest?.('input,textarea,button'))) {
+        e.preventDefault();
+        e.stopPropagation();
+        alignInstant(cur);
+      }
+    });
     window.addEventListener('pagehide', persist);
     D.addEventListener('visibilitychange', function () { if (D.hidden) persist(); });
   }
