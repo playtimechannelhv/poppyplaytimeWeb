@@ -65,7 +65,7 @@
   var active = false, exiting = false, resumeOpen = false;
   var keys = [], curKey = null;
   var blocks = [], cur = null, activeBlock = null;
-  var scroller = null, anim = null, holdUntil = 0, lastSave = 0;
+  var scroller = null, anim = null, holdUntil = 0, lastSave = 0, recenterTimer = 0;
   var bar = { a: 0, n: 0, b: 0, nb: 0, pct: 0, title: '', shownPct: -1 };
 
   /* ------------------------------------------------------ article discovery */
@@ -190,10 +190,32 @@
     if (s !== scroller) { scroller = s; }
     if (scroller && !scroller.__ajHold) {
       scroller.__ajHold = true;
-      var hold = function () { holdUntil = now() + 2500; cancelAnim(); };      // user takes over for a moment
+      var hold = function () {
+        holdUntil = now() + 2500;
+        cancelAnim();
+        if (recenterTimer) { clearTimeout(recenterTimer); recenterTimer = 0; }
+      }; // user takes over for a moment
+
+      var scheduleReturnToCurrent = function () {
+        if (!active || !cur) return;
+        if (recenterTimer) clearTimeout(recenterTimer);
+
+        // After the user's scroll settles, smoothly return to the exact word
+        // currently being highlighted by the reading marker.
+        recenterTimer = setTimeout(function () {
+          recenterTimer = 0;
+          if (!active || !cur) return;
+          holdUntil = 0;
+          autoScroll(cur);
+        }, 850);
+      };
+
       scroller.addEventListener('wheel', hold, { passive: true });
       scroller.addEventListener('touchstart', hold, { passive: true });
       scroller.addEventListener('mousedown', hold, { passive: true });
+      scroller.addEventListener('scroll', function () {
+        if (now() <= holdUntil) scheduleReturnToCurrent();
+      }, { passive: true });
     }
     if (scroller) scroller.style.scrollBehavior = 'auto';
   }
@@ -416,6 +438,7 @@
     exiting = true;
     var s = engine.state(), snap = engine.stop();
     cancelAnim();
+    if (recenterTimer) { clearTimeout(recenterTimer); recenterTimer = 0; }
     if (s.status === 'completed') clearSaved();
     else if (curKey) writeSaved({ v: 1, key: curKey, a: snap.a, b: snap.b, w: snap.w, speed: snap.speed, ts: Date.now() });
     active = false;
