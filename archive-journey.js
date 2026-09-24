@@ -239,7 +239,7 @@
   }
   // Called once per word. Does nothing while the word is inside the safe band; otherwise ONE eased move.
   function autoScroll(el) {
-    if (!scroller || !el || now() < holdUntil) return;
+    if (!scroller || !el) return;
     var H = scroller.clientHeight; if (!H) return;
     var top = wordTop(el) - scroller.scrollTop, bot = top + (el.offsetHeight || 20);
     if (top >= H * 0.18 && bot <= H * 0.62) return;                            // safe band
