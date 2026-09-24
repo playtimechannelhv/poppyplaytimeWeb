@@ -3106,6 +3106,25 @@ $('searchInput').addEventListener('input', debounce(e => {
   const matchesProject = qProjectAliases.some(alias => alias && (alias.includes(q) || q.includes(alias)));
   const matchesEscape = qEscapeAliases.some(alias => alias && (alias.includes(q) || q.includes(alias)));
 
+  // Archive Journey: make the reading mode discoverable from site search too.
+  const journeyCard = document.getElementById('journeyStartCard');
+  const qJourneyAliases = [
+    'journey', 'reading mode', 'archive journey', 'study mode',
+    'حالت مطالعه', 'مطالعه', 'مطالعه خودکار', 'آرشیو مطالعه'
+  ].map(normalizeText);
+  const matchesJourney = qJourneyAliases.some(alias => alias && (alias.includes(q) || q.includes(alias)));
+
+  if (matchesJourney && journeyCard) {
+    seen.add('__archive_journey__');
+    const titleEl = journeyCard.querySelector('[data-i18n="nav_journey"]');
+    const previewEl = journeyCard.querySelector('[data-i18n="nav_journey_sub"]');
+    matches.push({
+      el: journeyCard,
+      title: titleEl ? titleEl.textContent.trim() : (currentLang === 'fa' ? '✦ حالت مطالعه' : '✦ Reading Mode'),
+      preview: (previewEl?.textContent || '').trim().substring(0, 110) + '...'
+    });
+  }
+
   if (matchesEscape && escapeCard) {
     seen.add('__escape_from_playtime__');
     const titleEl = escapeCard.querySelector('[data-i18n="escape_title"]');
@@ -3179,6 +3198,14 @@ $('searchInput').addEventListener('input', debounce(e => {
       item.addEventListener('mousedown', e => e.preventDefault());
       item.onclick = () => {
         const target = matches[i].el;
+        // حالت مطالعه باید با همان منطق کارت اصلی اجرا شود، نه فقط scroll شدن.
+        if (target.id === 'journeyStartCard') {
+          target.click();
+          results.classList.remove('show');
+          $('searchPanel').classList.remove('show');
+          $('searchInput').value = '';
+          return;
+        }
         // اگر یک شخصیت است، والد کارت و دسته را فعال نگه می‌داریم.
         if (target.matches('#charGrid .char[data-char-id]')) {
           document.querySelectorAll('.filterBtn').forEach(b => b.classList.remove('active'));
