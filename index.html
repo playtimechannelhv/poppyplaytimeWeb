@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/Ch1header.webp">
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/hosseinasgari898989-dev/images/main/PoppyRemasteredNoCrack.webp">
+<link rel="stylesheet" href="archive-journey.css?v=1">
 <title>Poppy Playtime | پرونده کارخانه</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Vazirmatn:wght@400;500;600;700;800;900&display=swap');
@@ -2054,6 +2055,7 @@ W.PoppyAuth={start:start,skip:skip,openGate:function(){showGate(false);},forceLo
    <button class="navcard" data-target="about"><strong data-i18n="nav_about">توضیحات</strong><small data-i18n="nav_about_sub">جهان بازی</small></button>
    <button class="navcard" data-target="project"><strong data-i18n="nav_project">پروژه پلی‌تایم</strong><small data-i18n="nav_project_sub">PROJECT: PLAYTIME</small></button>
    <button class="navcard" data-target="news"><strong data-i18n="nav_news">مقالات</strong><small data-i18n="nav_news_sub">تحلیل و اطلاعات تأییدشده</small></button>
+   <button class="navcard journeyCard" id="journeyStartCard" type="button"><strong data-i18n="nav_journey">✦ حالت مطالعه</strong><small data-i18n="nav_journey_sub">مطالعه‌ی خودکار مقاله‌ها</small></button>
   </div>
 
   <div id="story" class="content">
@@ -3284,6 +3286,7 @@ const translations = {
   nav_mystery:"رازها",nav_mystery_sub:"اطلاعات تأییدشده و سرنخ",nav_release:"منابع انتشار",nav_release_sub:"تاریخ و پلتفرم",
   nav_about:"توضیحات",nav_about_sub:"جهان بازی",nav_project:"پروژه‌های پلی‌تایم",nav_project_sub:"PROJECTS & NEW GAMES",
   nav_news:"مقالات",nav_news_sub:"تحلیل و اطلاعات تأییدشده",
+  nav_journey:"✦ حالت مطالعه",nav_journey_sub:"مطالعه‌ی خودکار مقاله‌ها",
   char_title:"پرونده‌ی شخصیت‌ها",char_desc:"روی هر دسته کلیک کن تا فیلتر بشه. روی هر کارت بزن تا عکس بزرگش رو ببینی.",
   char_pj:"PJ Pug-a-Pillar یک اسباب‌بازی از خط Swap-imals شرکت Playtime Co. است که در Chapter 2: Fly in a Web در مینی‌گیم Statues ظاهر می‌شود. شکل Bigger Body او ترکیبی از Pug و Caterpillar است و Experiment 1174 نام دارد.",
   char_pj_theory:"وضعیت تأییدشده: PJ Pug-a-Pillar با عنوان Experiment 1174 شناخته می‌شود و برای نقش آنتاگونیست مینی‌گیم Statues در Game Station ساخته شد. او به خط اسباب‌بازی Swap-imals تعلق دارد.",
@@ -3418,6 +3421,7 @@ const translations = {
   nav_mystery:"Mysteries",nav_mystery_sub:"Theories & clues",nav_release:"Releases",nav_release_sub:"Dates & platforms",
   nav_about:"About",nav_about_sub:"Game world",nav_project:"Playtime Projects",nav_project_sub:"PROJECTS & NEW GAMES",
   nav_news:"Articles",nav_news_sub:"Analysis & theories",
+  nav_journey:"✦ Reading Mode",nav_journey_sub:"Automatic article reading",
   char_title:"Character Files",char_desc:"Click a category to filter. Click any card to view the image larger.",
   char_pj:"PJ Pug-a-Pillar is a Playtime Co. toy from the Swap-imals line that appears in Chapter 2: Fly in a Web during the Statues mini-game. Its Bigger Body form is a pug/caterpillar hybrid designated Experiment 1174.",
   char_pj_theory:"Confirmed status: PJ Pug-a-Pillar is designated Experiment 1174 and was used as the antagonist of the Statues mini-game in the Game Station. He belongs to Playtime Co.'s Swap-imals toy line.",
@@ -6740,5 +6744,7 @@ try{start();}catch(err){try{console.error('V6 init failed',err);}catch(e){}}
 })();
 
 </script>
+<script src="archive-journey-core.js?v=1"></script>
+<script src="archive-journey.js?v=1"></script>
 </body>
 </html>
